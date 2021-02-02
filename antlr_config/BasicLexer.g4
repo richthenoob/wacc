@@ -37,14 +37,10 @@ PAIR: 'pair';
 FST: 'fst';
 SND: 'snd';
 
-//null
-NULL: 'null';
-
 //comment
 COMMENT: '#' ~[\r\n]* '\r'? '\n' -> skip ;
 
 //characters
-fragment ALPHA: [a-zA-Z] ;
 fragment ESCAPED: '0'
 | 'b'
 | 't'
@@ -58,12 +54,8 @@ WS: [ \t\n\r]+ -> skip ;
 fragment CHARACTER: ~[\\'"] | '\\' ESCAPED ;
 
 //numbers
-INT_SIGN: '+' | '-' ;
+fragment INT_SIGN: '+' | '-' ;
 fragment DIGIT: '0'..'9' ;
-INTEGER: DIGIT+ ;
-
-//EOL
-EOL: '\n';
 
 //func
 BEGIN: 'begin';
@@ -95,14 +87,13 @@ INT: 'int';
 BOOL: 'bool';
 CHAR: 'char';
 STR: 'string';
-TYPE: INT | BOOL | CHAR | STR;
 
 //literals
 INT_LITER: (INT_SIGN)? (DIGIT)+;
 BOOL_LITER: 'true' | 'false';
 CHAR_LITER: SQUOTE CHARACTER SQUOTE ;
 STR_LITER: DQUOTE (CHARACTER)* DQUOTE ;
-PAIR_LITER: NULL;
+PAIR_LITER: 'null';
 
 //ident
 IDENT: [_a-zA-Z][_a-zA-Z0-9]* ;

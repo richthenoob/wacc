@@ -8,7 +8,7 @@ prog: BEGIN (func)* stat END EOF;
 
 func: type IDENT OPEN_PARENTHESES paramList CLOSE_PARENTHESES IS stat END;
 
-paramList: param (COMMA param)*;
+paramList: param (COMMA param)* | ();
 
 param: type IDENT;
 
