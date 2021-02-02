@@ -1,9 +1,15 @@
 #ignore generated binary files and auto-generated ANTLR code
 bin
-src/antlr
+src/main/java/antlrGenerated/
+*.tokens
 
 #ignore Java class files
 *.class
 
 #ignore other junk files
 *~
+
+#ignore intellij and gradle files
+.gradle/
+.idea/
+build/
