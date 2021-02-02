@@ -1,7 +1,7 @@
 parser grammar BasicParser;
 
 @header {
-    package antlrGenerated;
+    package ic.doc.antlr;
 }
 
 options {

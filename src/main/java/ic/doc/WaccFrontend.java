@@ -1,13 +1,14 @@
-package com.waccgroup22;
+package ic.doc;
 
-import antlrGenerated.*;
+import ic.doc.antlr.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
-public class testFile {
-    public static void main(String[] args) throws Exception {
+public class WaccFrontend {
+
+    public static String parse(String stringInput) {
         // create a CharStream that reads from standard input
-        CharStream input = CharStreams.fromString(args[1]);
+        CharStream input = CharStreams.fromString(stringInput);
 
         // create a lexer that feeds off of input CharStream
         BasicLexer lexer = new BasicLexer(input);
@@ -20,6 +21,10 @@ public class testFile {
 
         ParseTree tree = parser.prog(); // begin parsing at prog rule
 
-        System.out.println(tree.toStringTree(parser)); // print LISP-style tree
+        return tree.toStringTree(parser);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(parse(args[0]));
     }
 }

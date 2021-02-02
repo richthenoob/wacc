@@ -1,3 +1,4 @@
+/* Set up dependencies */
 plugins {
     id 'java'
     id 'antlr'
@@ -10,22 +11,32 @@ repositories {
     mavenCentral()
 }
 
-jar {
-    manifest {
-        attributes 'Main-Class' : 'com.waccgroup22.testFile'
-    }
-}
-
 dependencies {
-    testCompile 'junit:junit:4.13.1'
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.4.2"
     antlr "org.antlr:antlr4:4.9.1"
 }
 
-generateGrammarSource {
-    outputDirectory = file('src/main/java/antlrGenerated')
+/* Compile */
+jar {
+    manifest {
+        attributes 'Main-Class' : 'ic.doc.WaccFrontend'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
+generateGrammarSource {
+    outputDirectory = file 'src/main/java/ic/doc/antlr/'
+}
+
+/* Tests */
 test {
     useJUnitPlatform()
+}
+
+/* Clean-up. Removes generated antlr files and the build directory. */
+clean {
+    delete "${rootDir}/src/main/java/ic/doc/antlr/"
 }

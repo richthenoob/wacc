@@ -1,7 +1,7 @@
 lexer grammar BasicLexer;
 
 @lexer::header {
-    package antlrGenerated;
+    package ic.doc.antlr;
 }
 
 //operators
