@@ -1,5 +1,6 @@
-package ic.doc;
+package ic.doc.frontendtests;
 
+import ic.doc.WaccFrontend;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -10,6 +11,6 @@ public class WaccFrontendTest {
     @Test
     public void frontendAcceptsCommandLineArguments() throws IOException {
         InputStream inputStream = this.getClass().getResourceAsStream("/wacc_examples/valid/variables/intDeclaration.wacc");
-        System.out.println(WaccFrontend.parse(inputStream));
+        System.out.println(WaccFrontend.parseFromInputStream(inputStream));
     }
 }
