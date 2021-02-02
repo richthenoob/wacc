@@ -25,6 +25,8 @@ jar {
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
+    println('The compiled jar can be found at ' + project.libsDir.toString())
+    println('Example wacc files can be found at ' + project.buildDir.toString() + "/resources/test/wacc_examples/")
 }
 
 generateGrammarSource {
