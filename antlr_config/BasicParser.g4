@@ -74,8 +74,13 @@ binaryOper: PLUS | MINUS | MUL | DIV | MOD
 | AND | OR
 ;
 
+//numbers
+int_sign: PLUS | MINUS;
+int_liter: (int_sign)? INTEGER;
+
 //expressions
-expr: INT_LITER
+expr: expr binaryOper expr
+| int_liter
 | BOOL_LITER
 | CHAR_LITER
 | STR_LITER
@@ -83,7 +88,6 @@ expr: INT_LITER
 | IDENT
 | arrayElem
 | unaryOper expr
-| expr binaryOper expr
 | OPEN_PARENTHESES expr CLOSE_PARENTHESES
 ;
 

@@ -38,9 +38,10 @@ FST: 'fst';
 SND: 'snd';
 
 //comment
-COMMENT: '#' ~[\r\n]* '\r'? '\n' -> skip ;
+COMMENT: '#' ~[\r\n]* '\r'? '\n' -> skip;
 
 //characters
+WS: [ \t\n\r]+ -> skip;
 fragment ESCAPED: '0'
 | 'b'
 | 't'
@@ -50,12 +51,10 @@ fragment ESCAPED: '0'
 | SQUOTE
 | DQUOTE
 | '\\' ;
-WS: [ \t\n\r]+ -> skip ;
-fragment CHARACTER: ~[\\'"] | '\\' ESCAPED ;
+fragment CHARACTER: ~[\\'"] | '\\' ESCAPED;
 
 //numbers
-fragment INT_SIGN: '+' | '-' ;
-fragment DIGIT: '0'..'9' ;
+INTEGER: ('0'..'9')+;
 
 //func
 BEGIN: 'begin';
@@ -89,7 +88,6 @@ CHAR: 'char';
 STR: 'string';
 
 //literals
-INT_LITER: (INT_SIGN)? (DIGIT)+;
 BOOL_LITER: 'true' | 'false';
 CHAR_LITER: SQUOTE CHARACTER SQUOTE ;
 STR_LITER: DQUOTE (CHARACTER)* DQUOTE ;
