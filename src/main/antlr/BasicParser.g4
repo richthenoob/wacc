@@ -1,5 +1,9 @@
 parser grammar BasicParser;
 
+@header {
+    package ic.doc.antlr;
+}
+
 options {
   tokenVocab=BasicLexer;
 }

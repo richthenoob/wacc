@@ -1,5 +1,9 @@
 lexer grammar BasicLexer;
 
+@lexer::header {
+    package ic.doc.antlr;
+}
+
 //operators
 PLUS: '+' ;
 MINUS: '-' ;
