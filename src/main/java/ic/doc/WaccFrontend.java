@@ -28,6 +28,11 @@ public class WaccFrontend {
         // create a parser that feeds off the tokens buffer
         BasicParser parser = new BasicParser(tokens);
 
+        // remove ConsoleErrorListener
+        parser.removeErrorListeners();
+        // add ours
+        parser.addErrorListener(new ErrorListener());
+
         ParseTree tree = parser.prog(); // begin parsing at prog rule
 
         return tree.toStringTree(parser);

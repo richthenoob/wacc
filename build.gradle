@@ -16,6 +16,7 @@ dependencies {
     testImplementation 'org.hamcrest:hamcrest:2.2'
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.4.2"
     antlr "org.antlr:antlr4:4.9.1"
+    implementation 'junit:junit:4.12'
 }
 
 /* Compile */
@@ -42,4 +43,10 @@ test {
 /* Clean-up. Removes generated antlr files and the build directory. */
 clean {
     delete "${rootDir}/src/main/java/ic/doc/antlr/"
+}
+
+task myRun(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "ic.doc.WaccFrontend"
+    args "arg1", "arg2"
 }
