@@ -1,0 +1,30 @@
+-- Compiling...
+-- Printing AST...
+loopIntCondition.ast contents are:
+===========================================================
+0	Program
+1	  - int main()
+2	    - DECLARE
+3	      - TYPE
+4	        - int
+5	      - LHS
+6	        - n
+7	      - RHS
+8	        - 0
+9	    - LOOP
+10	      - CONDITION
+11	        - !=
+12	          - n
+13	          - 1
+14	      - DO
+15	        - ASSIGNMENT
+16	          - LHS
+17	            - n
+18	          - RHS
+19	            - 1
+20	        - PRINTLN
+21	          - "Change n"
+22	    - PRINTLN
+23	      - "Should print \"Change n\" once before."
+===========================================================
+-- Finished

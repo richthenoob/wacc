@@ -1,0 +1,72 @@
+-- Compiling...
+-- Printing AST...
+fibonacciRecursive.ast contents are:
+===========================================================
+0	Program
+1	  - int fibonacci(int n, bool toPrint)
+2	    - IF
+3	      - CONDITION
+4	        - <=
+5	          - n
+6	          - 1
+7	      - THEN
+8	        - RETURN
+9	          - n
+10	      - ELSE
+11	        - SKIP
+12	    - DECLARE
+13	      - TYPE
+14	        - int
+15	      - LHS
+16	        - f1
+17	      - RHS
+18	        - fibonacci
+19	        - -
+20	          - n
+21	          - 1
+22	        - toPrint
+23	    - IF
+24	      - CONDITION
+25	        - toPrint
+26	      - THEN
+27	        - PRINT
+28	          - f1
+29	        - PRINT
+30	          - ", "
+31	      - ELSE
+32	        - SKIP
+33	    - DECLARE
+34	      - TYPE
+35	        - int
+36	      - LHS
+37	        - f2
+38	      - RHS
+39	        - fibonacci
+40	        - -
+41	          - n
+42	          - 2
+43	        - false
+44	    - RETURN
+45	      - +
+46	        - f1
+47	        - f2
+48	  - int main()
+49	    - PRINTLN
+50	      - "The first 20 fibonacci numbers are:"
+51	    - PRINT
+52	      - "0, "
+53	    - DECLARE
+54	      - TYPE
+55	        - int
+56	      - LHS
+57	        - result
+58	      - RHS
+59	        - fibonacci
+60	        - 19
+61	        - true
+62	    - PRINT
+63	      - result
+64	    - PRINTLN
+65	      - "..."
+===========================================================
+-- Finished
