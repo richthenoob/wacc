@@ -1,21 +1,23 @@
 package ic.doc.frontendtests.valid;
 
-import ic.doc.WaccFrontend;
-import org.junit.jupiter.api.Test;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Collection;
+import ic.doc.frontendtests.AbstractFrontendTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.IOException;
-import java.io.InputStream;
+public class ValidVariablesTest extends AbstractFrontendTest {
 
-public class ValidVariablesTest {
+  private static final String groupTestPath = "/valid/variables/";
 
-  private static final String basepath = "/wacc_examples/valid/variables/";
-
-  @Test
-  public void intDeclarationReturnsValidExitCode() throws IOException {
-    InputStream inputStream = this.getClass().getResourceAsStream(basepath + "intDeclaration.wacc");
-    String compilerResult = WaccFrontend.parseFromInputStream(inputStream);
-    // todo: compare compilerResult to reference result
+  private static Collection<String> getTestNames() {
+    return getAllTestNames(groupTestPath);
   }
+
+  @ParameterizedTest
+  @MethodSource("getTestNames")
+  public void validVariablesTests(String testName) throws Exception {
+    syntaxTest(groupTestPath + testName);
+  }
+
 }
 
