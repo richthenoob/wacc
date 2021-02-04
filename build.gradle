@@ -14,7 +14,9 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
     testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.4.2'
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.4.2"
+    testCompile "org.junit.jupiter:junit-jupiter-params:5.4.2"
     antlr "org.antlr:antlr4:4.9.1"
     implementation 'junit:junit:4.12'
 }
@@ -27,7 +29,7 @@ jar {
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    println('The compiled jar can be found at ' + project.libsDir.toString())
+    println('The compiled jar can be found at ' + project.buildDir.toString() + "/" + project.libsDirName)
     println('Example wacc files can be found at ' + project.buildDir.toString() + "/resources/test/wacc_examples/")
 }
 

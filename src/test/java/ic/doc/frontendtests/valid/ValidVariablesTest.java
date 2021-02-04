@@ -7,7 +7,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class VariablesTest {
+public class ValidVariablesTest {
 
   private static final String basepath = "/wacc_examples/valid/variables/";
 
