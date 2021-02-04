@@ -1,0 +1,61 @@
+-- Compiling...
+-- Printing AST...
+mutualRecursion.ast contents are:
+===========================================================
+0	Program
+1	  - int r1(int x)
+2	    - IF
+3	      - CONDITION
+4	        - ==
+5	          - x
+6	          - 0
+7	      - THEN
+8	        - SKIP
+9	      - ELSE
+10	        - PRINT
+11	          - "r1: sending "
+12	        - PRINTLN
+13	          - x
+14	        - DECLARE
+15	          - TYPE
+16	            - int
+17	          - LHS
+18	            - y
+19	          - RHS
+20	            - r2
+21	            - x
+22	    - RETURN
+23	      - 42
+24	  - int r2(int y)
+25	    - PRINT
+26	      - "r2: received "
+27	    - PRINTLN
+28	      - y
+29	    - DECLARE
+30	      - TYPE
+31	        - int
+32	      - LHS
+33	        - z
+34	      - RHS
+35	        - r1
+36	        - -
+37	          - y
+38	          - 1
+39	    - RETURN
+40	      - 44
+41	  - int main()
+42	    - DECLARE
+43	      - TYPE
+44	        - int
+45	      - LHS
+46	        - x
+47	      - RHS
+48	        - 0
+49	    - ASSIGNMENT
+50	      - LHS
+51	        - x
+52	      - RHS
+53	        - r1
+54	        - 8
+===========================================================
+-- Finished
