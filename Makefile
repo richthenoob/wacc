@@ -14,6 +14,9 @@ rules:
 clean:
 	$(GRADLE) clean
 
-.PHONY: all rules clean
+check:
+	$(GRADLE) test
+
+.PHONY: all rules clean check
 
 

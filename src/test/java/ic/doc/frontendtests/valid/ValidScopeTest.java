@@ -1,13 +1,12 @@
-package ic.doc.frontendtests.invalid.syntaxErr;
+package ic.doc.frontendtests.valid;
 
-import java.util.Collection;
 import ic.doc.frontendtests.AbstractFrontendTest;
+import java.util.Collection;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class InvalidVariablesTest extends AbstractFrontendTest {
-
-  private static final String groupTestPath = "/invalid/syntaxErr/variables/";
+public class ValidScopeTest extends AbstractFrontendTest {
+  private static final String groupTestPath = "/valid/scope/";
 
   private static Collection<String> getTestNames() {
     return getAllTestNames(groupTestPath);
@@ -15,8 +14,7 @@ public class InvalidVariablesTest extends AbstractFrontendTest {
 
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidVariablesTests(String testName) throws Exception {
+  public void validScopeTests(String testName) throws Exception {
     syntaxTest(groupTestPath + testName);
   }
-
 }
