@@ -34,6 +34,7 @@ jar {
 }
 
 generateGrammarSource {
+    arguments += ["-visitor","-no-listener"]
     outputDirectory = file 'src/main/java/ic/doc/antlr/'
 }
 
