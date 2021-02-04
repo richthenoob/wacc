@@ -2,6 +2,7 @@
 bin
 src/main/java/ic/doc/antlr/
 *.tokens
+*.interp
 
 #ignore Java class files
 *.class
@@ -11,6 +12,8 @@ src/main/java/ic/doc/antlr/
 .DS_Store
 
 #ignore intellij and gradle files
+*.iml
 .gradle/
 .idea/
 build/
+out/
