@@ -7,12 +7,12 @@ stages:
 build:
     stage: compile
     script:
-      - ./gradlew build
+      - gradle build -x test
 
 valid-tests:
     stage: frontend-test
     script:
-      - ./gradlew frontendValidTest
+      - gradle frontendValidTest
     artifacts:
       when: always
       reports:
@@ -21,7 +21,7 @@ valid-tests:
 invalid-syntax-tests:
     stage: frontend-test
     script:
-      - ./gradlew frontendInvalidSyntaxTest
+      - gradle frontendInvalidSyntaxTest
     artifacts:
       when: always
       reports:
