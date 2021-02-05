@@ -16,15 +16,13 @@ dependencies {
     testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.4.2'
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.4.2"
-    testCompile "org.junit.jupiter:junit-jupiter-params:5.4.2"
     antlr "org.antlr:antlr4:4.9.1"
-    implementation 'junit:junit:4.12'
 }
 
 /* Compile */
 jar {
     manifest {
-        attributes 'Main-Class' : 'ic.doc.WaccFrontend'
+        attributes 'Main-Class': 'ic.doc.WaccFrontend'
     }
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
@@ -40,6 +38,24 @@ generateGrammarSource {
 /* Tests */
 test {
     useJUnitPlatform()
+}
+
+task frontendValidTest(type: Test) {
+    useJUnitPlatform {
+        includeTags 'valid'
+    }
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+}
+
+task frontendInvalidSyntaxTest(type: Test) {
+    useJUnitPlatform {
+        includeTags 'syntax'
+    }
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+    }
 }
 
 /* Clean-up. Removes generated antlr files and the build directory. */
