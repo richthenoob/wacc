@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -20,7 +21,9 @@ public abstract class AbstractFrontendTest {
   private static final Integer SUCCESS_EXIT_CODE = 0;
   private static final Integer SYNTAX_EXIT_CODE = 100;
   private static final Integer SEMANTIC_EXIT_CODE = 200;
-  private static final Pattern pattern = Pattern.compile("Exit code (\\d+) returned.");
+  private static final Pattern exitCodePattern = Pattern.compile("Exit code (\\d+) returned.");
+  private static final Pattern errorMessagePattern = Pattern.compile("Syntactic Error at");
+  private static final Pattern endingMessagePattern = Pattern.compile("parser error(s)");
 
   private static final String WACC_FILE_EXTENSION = ".wacc";
   private static final String EXAMPLES_DIR = "/wacc_examples";
@@ -32,7 +35,7 @@ public abstract class AbstractFrontendTest {
     String content = new String(Files.readAllBytes(path));
 
     // Look for exit code in string
-    Matcher matcher = pattern.matcher(content);
+    Matcher matcher = exitCodePattern.matcher(content);
     if (!matcher.find()) {
       return 0;  // No exit code found, presume to be 0
     } else if (matcher.group(1).equals(SEMANTIC_EXIT_CODE.toString())) {
@@ -42,6 +45,24 @@ public abstract class AbstractFrontendTest {
     } else {
       throw new IllegalStateException("Error code other than 100 and 200 found!");
     }
+  }
+
+  private void getErrorMessagesFromFile(String filepath) throws IOException {
+    // Read file into string
+    Path path = Path.of(this.getClass().getResource(filepath).getPath());
+    String content = new String(Files.readAllBytes(path));
+    // Look for exit code in string
+    Matcher matcher = errorMessagePattern.matcher(content);
+    int prevStart = -1; // index of start of previous error message
+    while(matcher.find()) {
+      if (prevStart != -1) {
+        System.out.println(content.substring(prevStart, matcher.start()));
+      }
+      prevStart = matcher.end(); // index of start of previous error message
+    }
+    Matcher endMatcher = endingMessagePattern.matcher(content);
+    endMatcher.find();
+    System.out.println(content.substring(prevStart, matcher.start() - 2));
   }
 
   protected static Collection<String> getAllTestNames(String groupTestPath) {
@@ -84,8 +105,10 @@ public abstract class AbstractFrontendTest {
     // Get reference compiler's exit code
     String filepath = REFERENCE_DIR + testFilepath + "ast";
     int referenceExitCode = getExitCodeFromFile(filepath);
-
+    System.out.println("Error messages from file:");
+    getErrorMessagesFromFile(filepath);
     assertThat("Different error code", frontendExitCode, equalTo(referenceExitCode));
+
   }
 
 }
