@@ -2,19 +2,23 @@ package ic.doc.frontendtests.valid;
 
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.util.Collection;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class ValidSimpleFunctionsTest extends AbstractFrontendTest {
-  private static final String groupTestPath = "/valid/function/simple_functions/";
+public class ValidNestedFunctionTest extends AbstractFrontendTest {
+  private static final String groupTestPath = "/valid/function/nested_functions/";
 
   private static Collection<String> getTestNames() {
     return getAllTestNames(groupTestPath);
   }
 
+  @Tag("valid")
+  @Tag("function")
+  @Tag("nested")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void validSimpleFunctionTests(String testName) throws Exception {
+  public void validNestedFunctionTests(String testName) throws Exception {
     syntaxTest(groupTestPath + testName);
   }
 

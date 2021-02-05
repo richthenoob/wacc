@@ -2,6 +2,7 @@ package ic.doc.frontendtests.valid;
 
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.util.Collection;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -12,6 +13,8 @@ public class ValidWhileTest extends AbstractFrontendTest {
     return getAllTestNames(groupTestPath);
   }
 
+  @Tag("valid")
+  @Tag("while")
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void validWhileTests(String testName) throws Exception {

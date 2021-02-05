@@ -2,6 +2,7 @@ package ic.doc.frontendtests.valid;
 
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.util.Collection;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -13,6 +14,8 @@ public class ValidArrayTest extends AbstractFrontendTest {
     return getAllTestNames(groupTestPath);
   }
 
+  @Tag("valid")
+  @Tag("array")
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void validArrayTests(String testName) throws Exception {

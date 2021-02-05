@@ -54,22 +54,24 @@ public abstract class AbstractFrontendTest {
     // Look for exit code in string
     Matcher matcher = errorMessagePattern.matcher(content);
     int prevStart = -1; // index of start of previous error message
-    while(matcher.find()) {
+    while (matcher.find()) {
       if (prevStart != -1) {
         System.out.println(content.substring(prevStart, matcher.start()));
       }
       prevStart = matcher.end(); // index of start of previous error message
     }
     Matcher endMatcher = endingMessagePattern.matcher(content);
-    endMatcher.find();
-    System.out.println(content.substring(prevStart, matcher.start() - 2));
+    if (endMatcher.find()) {
+      System.out.println(content.substring(prevStart, matcher.start() - 2));
+    }
   }
 
   protected static Collection<String> getAllTestNames(String groupTestPath) {
     List<String> files;
 
     try {
-      String testDirPath = AbstractFrontendTest.class.getResource(EXAMPLES_DIR + groupTestPath).getPath();
+      String testDirPath = AbstractFrontendTest.class.getResource(EXAMPLES_DIR + groupTestPath)
+          .getPath();
 
       // Go through directory and find all .wacc files
       files = Files.walk(Path.of(testDirPath))
