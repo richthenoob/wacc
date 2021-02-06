@@ -1,4 +1,4 @@
-package ic.doc.frontendtests.valid;
+package ic.doc.frontendtests.invalid.syntaxErr;
 
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.util.Collection;
@@ -6,20 +6,19 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class ValidBasicExitTest extends AbstractFrontendTest {
-  private static final String groupTestPath = "/valid/basic/exit/";
+public class InvalidSyntaxWhileTest extends AbstractFrontendTest {
+  private static final String groupTestPath = "/invalid/syntaxErr/while/";
 
   private static Collection<String> getTestNames() {
     return getAllTestNames(groupTestPath);
   }
 
-  @Tag("valid")
-  @Tag("basic")
-  @Tag("exit")
+  @Tag("invalid")
+  @Tag("syntax")
+  @Tag("while")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void validBasicExitTests(String testName) throws Exception {
+  public void invalidSyntaxWhileTests(String testName) throws Exception {
     syntaxTest(groupTestPath + testName);
   }
-
 }

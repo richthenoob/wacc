@@ -7,13 +7,14 @@ GRADLE	:= ./gradlew
 
 all: rules
 
-# runs the antlr build script then attempts to compile all .java files within src
 rules:
 	$(GRADLE) build
 
 clean:
 	$(GRADLE) clean
 
-.PHONY: all rules clean
+test:
+	$(GRADLE) test
 
+.PHONY: all rules clean test
 

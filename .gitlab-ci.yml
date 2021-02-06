@@ -1,0 +1,28 @@
+image: gradle:6.7.1-jdk11-openj9
+    
+stages:
+    - compile
+    - frontend-test
+
+build:
+    stage: compile
+    script:
+      - gradle build -x test
+
+valid-tests:
+    stage: frontend-test
+    script:
+      - gradle frontendValidTest
+    artifacts:
+      when: always
+      reports:
+        junit: build/test-results/frontendValidTest/**/TEST-*.xml
+
+invalid-syntax-tests:
+    stage: frontend-test
+    script:
+      - gradle frontendInvalidSyntaxTest
+    artifacts:
+      when: always
+      reports:
+        junit: build/test-results/frontendInvalidSyntaxTest/**/TEST-*.xml

@@ -6,20 +6,18 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class ValidBasicExitTest extends AbstractFrontendTest {
-  private static final String groupTestPath = "/valid/basic/exit/";
+public class ValidSequenceTest extends AbstractFrontendTest {
+  private static final String groupTestPath = "/valid/sequence/";
 
   private static Collection<String> getTestNames() {
     return getAllTestNames(groupTestPath);
   }
 
   @Tag("valid")
-  @Tag("basic")
-  @Tag("exit")
+  @Tag("sequence")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void validBasicExitTests(String testName) throws Exception {
+  public void validSequenceTests(String testName) throws Exception {
     syntaxTest(groupTestPath + testName);
   }
-
 }
