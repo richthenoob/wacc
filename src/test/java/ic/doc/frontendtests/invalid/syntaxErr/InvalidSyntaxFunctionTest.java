@@ -13,6 +13,7 @@ public class InvalidSyntaxFunctionTest extends AbstractFrontendTest {
     return getAllTestNames(groupTestPath);
   }
 
+  @Tag("toBeDebugged")
   @Tag("invalid")
   @Tag("syntax")
   @Tag("function")

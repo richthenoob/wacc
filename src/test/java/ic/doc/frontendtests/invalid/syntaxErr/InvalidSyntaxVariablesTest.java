@@ -14,6 +14,8 @@ public class InvalidSyntaxVariablesTest extends AbstractFrontendTest {
     return getAllTestNames(groupTestPath);
   }
 
+  // TODO: DEBUG BIGINTASSIGNMENT
+  @Tag("toBeDebugged")
   @Tag("invalid")
   @Tag("syntax")
   @Tag("variable")

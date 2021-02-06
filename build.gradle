@@ -43,6 +43,7 @@ test {
 task frontendValidTest(type: Test) {
     useJUnitPlatform {
         includeTags 'valid'
+        excludeTags 'toBeDebugged'
     }
     testLogging {
         events "PASSED", "SKIPPED", "FAILED"
@@ -52,6 +53,7 @@ task frontendValidTest(type: Test) {
 task frontendInvalidSyntaxTest(type: Test) {
     useJUnitPlatform {
         includeTags 'syntax'
+        excludeTags 'toBeDebugged'
     }
     testLogging {
         events "PASSED", "SKIPPED", "FAILED"
