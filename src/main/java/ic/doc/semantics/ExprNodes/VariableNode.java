@@ -32,7 +32,8 @@ public class VariableNode extends ExprNode {
     Identifier id = visitor.getCurrentSymbolTable().lookupAll(key);
     if (id == null) {
       setType(new ErrorType());
-      visitor.addException(ctx, "Variable " + getName() + " is not defined in this scope.");
+      visitor.getSemanticErrorList()
+          .addException(ctx, "Variable " + getName() + " is not defined in this scope.");
       return;
     }
 

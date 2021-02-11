@@ -15,7 +15,6 @@ import ic.doc.semantics.StatNodes.*;
 import ic.doc.semantics.Types.*;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -25,57 +24,23 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
   private SymbolTable currentSymbolTable;
 
+  private SemanticErrorList semanticErrorList;
+
   private boolean visitingFunctionDeclarations;
 
   public SymbolTable getCurrentSymbolTable() {
     return currentSymbolTable;
   }
 
-  private List<String> semanticErrors;
-
-  public List<String> getSemanticErrors() {
-    return semanticErrors;
-  }
-
-  public void addException(ParserRuleContext ctx, String errorMessage) {
-    semanticErrors.add("Semantic error at line " + ctx.getStart().getLine()
-        + ":" + ctx.getStart().getCharPositionInLine() + " - " + errorMessage);
-  }
-
-  public void addTypeException(ParserRuleContext ctx, String input,
-      String expectedType, String actualType) {
-    if (actualType.equals("STRING")) {
-      semanticErrors.add("Semantic error at line " + ctx.getStart().getLine()
-          + ":" + ctx.getStart().getCharPositionInLine()
-          + " - Incompatible type at \"" + input
-          + "\". Expected type: " + expectedType
-          + ". Actual type: " + actualType + ".");
-    } else {
-      semanticErrors.add("Semantic error at line " + ctx.getStart().getLine()
-          + ":" + ctx.getStart().getCharPositionInLine()
-          + " - Incompatible type at '" + input
-          + "'. Expected type: " + expectedType
-          + ". Actual type: " + actualType + ".");
-    }
-  }
-
-  public void addSuggestion(String suggestion) {
-    semanticErrors.add(suggestion);
-  }
-
-  public void addTokenException(ParserRuleContext ctx, String token,
-      String input) {
-    semanticErrors.add("Semantic error at line " + ctx.getStart().getLine()
-        + ":" + ctx.getStart().getCharPositionInLine()
-        + " - Invalid character token '" + token + "' in string: " + input
-        + ".");
+  public SemanticErrorList getSemanticErrorList() {
+    return semanticErrorList;
   }
 
   @Override
   public Node visitProg(BasicParser.ProgContext ctx) {
     SymbolTable globalSymbolTable = new SymbolTable(null);
     currentSymbolTable = globalSymbolTable;
-    semanticErrors = new LinkedList<>();
+    semanticErrorList = new SemanticErrorList();
 
     List<FuncContext> functionCtxs = ctx.func();
     List<FunctionNode> functionNodes = new ArrayList<>();
@@ -111,7 +76,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
             paramList.getType());
         currentSymbolTable.getParentSymbolTable().add(key, id);
       } else {
-        addException(ctx, "Function '" + funcName
+        semanticErrorList.addException(ctx, "Function '" + funcName
             + "' already declared in current scope.");
       }
       currentSymbolTable = currentSymbolTable.getParentSymbolTable();
@@ -172,7 +137,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     String name = ctx.IDENT().toString();
     SymbolKey key = new SymbolKey(name, false);
     if (currentSymbolTable.lookup(key) != null) {
-      addException(ctx,
+      semanticErrorList.addException(ctx,
           "Variable " + name + " was already defined in this scope.");
     }
 

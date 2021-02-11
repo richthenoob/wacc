@@ -23,7 +23,7 @@ public class CharacterLiteralNode extends LiteralNode {
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     if (!CharType.isValidChar(getValue())) {
-      visitor.addException(ctx, "Invalid character token at " + value);
+      visitor.getSemanticErrorList().addException(ctx, "Invalid character token at " + value);
     }
   }
 

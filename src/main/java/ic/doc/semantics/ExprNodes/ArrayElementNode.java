@@ -47,12 +47,13 @@ public class ArrayElementNode extends ExprNode {
     if (entry == null) {
       isErrored = true;
       /* Identifier should have already been defined. */
-      visitor.addException(ctx, "Variable " + identNode.getInput()
-              + " is not defined in this scope.");
+      visitor.getSemanticErrorList().addException(ctx, "Variable " + identNode.getInput()
+          + " is not defined in this scope.");
     } else if (!(entry.getType() instanceof ArrayType)) {
       isErrored = true;
       /* Identifier should be of type "Array". */
-      visitor.addException(ctx, "Incompatible type at " + identNode.getInput()
+      visitor.getSemanticErrorList().addException(ctx,
+          "Incompatible type at " + identNode.getInput()
               + ". Expected type: T[]. Actual type: "
               + identNode.getType().toString());
     }
@@ -64,7 +65,8 @@ public class ArrayElementNode extends ExprNode {
 
     for (ExprNode mismatchedTypeNode : mismatchedTypeNodes) {
       isErrored = true;
-      visitor.addTypeException(ctx, mismatchedTypeNode.getInput(), "INT", mismatchedTypeNode.getType().toString());
+      visitor.getSemanticErrorList().addTypeException(ctx,
+          mismatchedTypeNode.getInput(), "INT", mismatchedTypeNode.getType().toString());
     }
 
     /* Check index is not longer than length. */
@@ -82,7 +84,8 @@ public class ArrayElementNode extends ExprNode {
         if (type instanceof ArrayType) {
           type = ((ArrayType) type).getInternalType();
         } else {
-          visitor.addTypeException(ctx, getInput(), "T[]", type.toString());
+          visitor.getSemanticErrorList()
+              .addTypeException(ctx, getInput(), "T[]", type.toString());
         }
       }
       setType(type);
