@@ -112,7 +112,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         currentSymbolTable.getParentSymbolTable().add(key, id);
       } else {
         addException(ctx, "Function '" + funcName
-            + "' already declared in current symbol table");
+            + "' already declared in current scope.");
       }
       currentSymbolTable = currentSymbolTable.getParentSymbolTable();
     }
