@@ -45,7 +45,8 @@ public class WaccFrontend {
 
     if (!visitor.getSemanticErrorList().getSemanticErrors().isEmpty()) {
       System.err.println("Error messages from compiler:");
-      for (int i = visitor.getSemanticErrorList().getSemanticErrors().size() - 1; i > -1; i--) {
+      visitor.getSemanticErrorList().sortErrors();
+      for (int i = 0; i < visitor.getSemanticErrorList().getSemanticErrors().size(); i++) {
         System.err.println(visitor.getSemanticErrorList().getSemanticErrors().get(i));
       }
       throw new SemanticException();

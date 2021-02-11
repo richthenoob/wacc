@@ -1,5 +1,6 @@
 package ic.doc.semantics;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -48,6 +49,12 @@ public class SemanticErrorList {
         + ":" + ctx.getStart().getCharPositionInLine()
         + " - Invalid character token '" + token + "' in string: " + input
         + ".");
+  }
+
+  public void sortErrors() {
+    String[] errors = semanticErrors.toArray(String[]::new);
+    Arrays.sort(errors);
+    semanticErrors = Arrays.asList(errors);
   }
 
 }
