@@ -374,17 +374,23 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   }
 
   @Override
-  public Node visitBaseType(BasicParser.BaseTypeContext ctx) {
-    if (ctx.INT() != null) {
-      return new TypeNode(new IntType());
-    } else if (ctx.BOOL() != null) {
-      return new TypeNode(new BoolType());
-    } else if (ctx.CHAR() != null) {
-      return new TypeNode(new CharType());
-    } else if (ctx.STR() != null) {
-      return new TypeNode(new StringType());
-    }
-    return new TypeNode(new ErrorType());
+  public Node visitIntType(BasicParser.IntTypeContext ctx){
+    return new TypeNode(new IntType());
+  }
+
+  @Override
+  public Node visitBoolType(BasicParser.BoolTypeContext ctx){
+    return new TypeNode(new BoolType());
+  }
+
+  @Override
+  public Node visitCharType(BasicParser.CharTypeContext ctx){
+    return new TypeNode(new CharType());
+  }
+
+  @Override
+  public Node visitStrType(BasicParser.StrTypeContext ctx){
+    return new TypeNode(new StringType());
   }
 
   @Override
