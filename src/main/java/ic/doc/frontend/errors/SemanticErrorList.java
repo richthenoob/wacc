@@ -39,8 +39,10 @@ public class SemanticErrorList {
     }
   }
 
-  public void addSuggestion(String suggestion) {
-    semanticErrors.add(suggestion);
+  public void addSuggestion(ParserRuleContext ctx, String suggestion) {
+    semanticErrors.add("Semantic error at line " + ctx.getStart().getLine()
+        + ":" + ctx.getStart().getCharPositionInLine()
+        + " ---- Suggestion: " + suggestion);
   }
 
   public void addTokenException(ParserRuleContext ctx, String token,

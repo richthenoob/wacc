@@ -38,11 +38,11 @@ public class AssignmentNode extends StatNode {
         if (lhs.getType() instanceof CharType && rhs.getInput().length() == 1) {
           // e.g. char c = "a"
           visitor.getSemanticErrorList()
-              .addSuggestion("Did you mean '"
+              .addSuggestion(ctx,"Did you mean '"
                   + rhs.getInput() + "' instead of \"" + rhs.getInput() + "\"?");
         } else {
           visitor.getSemanticErrorList()
-              .addSuggestion("Did you mean "
+              .addSuggestion(ctx,"Did you mean "
                   + rhs.getInput() + " instead of \"" + rhs.getInput() + "\"?");
         }
       }
@@ -51,12 +51,12 @@ public class AssignmentNode extends StatNode {
         if (rhs.getType() instanceof CharType) {
           // e.g. String s = 'a'
           visitor.getSemanticErrorList()
-              .addSuggestion("Did you mean \""
+              .addSuggestion(ctx,"Did you mean \""
                   + rhs.getInput() + "\" instead of '" + rhs.getInput() + "'?");
         } else {
           // e.g. String greeting = hey
           visitor.getSemanticErrorList()
-              .addSuggestion("Did you mean \""
+              .addSuggestion(ctx,"Did you mean \""
                   + rhs.getInput() + "\" instead of " + rhs.getInput() + "?");
         }
       }
