@@ -4,6 +4,7 @@ import java.util.Objects;
 
 public class PairType implements Type {
 
+  public final static String CLASS_NAME = "PAIR";
   private final Type type1;
   private final Type type2;
 
@@ -52,6 +53,6 @@ public class PairType implements Type {
 
   @Override
   public String toString() {
-    return "PAIR(" + getType1() + ", " + getType2() + ")";
+    return "PAIR" + "(" + getType1() + ", " + getType2() + ")";
   }
 }

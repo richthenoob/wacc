@@ -14,9 +14,6 @@ public class InvalidSyntaxFunctionTest extends AbstractFrontendTest {
     return getAllTestNames(groupTestPath);
   }
 
-  @Disabled("Disabled until multiple failing tests are fixed:"
-      + "functionReturnInLoop, functionNoReturn, functionConditionalNoReturn, "
-      + "mutualRecursionNoReturn, functionJunkAfterReturn")
   @Tag("invalid")
   @Tag("syntax")
   @Tag("function")

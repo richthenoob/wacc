@@ -1,6 +1,5 @@
 package ic.doc.semantics.ExprNodes;
 
-import ic.doc.SyntaxException;
 import ic.doc.semantics.IdentifierObjects.Identifier;
 import ic.doc.semantics.SymbolKey;
 import ic.doc.semantics.Types.ArrayType;
@@ -82,7 +81,9 @@ public class ArrayElementNode extends ExprNode {
       for (int i = 0; i < exprNodes.size(); i++) {
         if (type instanceof ArrayType) {
           type = ((ArrayType) type).getInternalType();
-        } // else??
+        } else {
+          visitor.addTypeException(ctx, getInput(), "T[]", type.toString());
+        }
       }
       setType(type);
     }

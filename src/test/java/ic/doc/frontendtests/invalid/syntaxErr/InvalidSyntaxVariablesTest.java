@@ -15,7 +15,6 @@ public class InvalidSyntaxVariablesTest extends AbstractFrontendTest {
     return getAllTestNames(groupTestPath);
   }
 
-  @Disabled("Disabled until bigIntAssignment.wacc is fixed")
   @Tag("invalid")
   @Tag("syntax")
   @Tag("variable")

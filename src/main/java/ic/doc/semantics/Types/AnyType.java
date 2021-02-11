@@ -4,8 +4,10 @@ import java.util.Objects;
 
 public class AnyType implements Type {
 
+  public final static String CLASS_NAME = "ANY";
+
   @Override
-  public java.lang.String toString() {
+  public String toString() {
     return "T";
   }
 

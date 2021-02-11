@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class CharType implements Type {
+
+  public final static String CLASS_NAME = "CHAR";
+
   private static final List<Character> validEscapedChars
       = Arrays.asList('\0', '\b', '\t', '\n', '\f', '\r', '\"', '\'', '\\');
 
@@ -13,8 +16,8 @@ public class CharType implements Type {
   }
 
   @Override
-  public java.lang.String toString() {
-    return "CHAR";
+  public String toString() {
+    return CLASS_NAME;
   }
 
   @Override

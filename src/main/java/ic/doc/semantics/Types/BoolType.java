@@ -4,9 +4,11 @@ import java.util.Objects;
 
 public class BoolType implements Type {
 
+  public final static String CLASS_NAME = "BOOL";
+
   @Override
-  public java.lang.String toString() {
-    return "BOOL";
+  public String toString() {
+    return CLASS_NAME;
   }
 
   @Override

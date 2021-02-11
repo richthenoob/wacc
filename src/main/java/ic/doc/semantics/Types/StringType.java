@@ -4,9 +4,11 @@ import java.util.Objects;
 
 public class StringType implements Type {
 
+  public final static String CLASS_NAME = "STRING";
+
   @Override
-  public java.lang.String toString() {
-    return "STRING";
+  public String toString() {
+    return CLASS_NAME;
   }
 
   @Override

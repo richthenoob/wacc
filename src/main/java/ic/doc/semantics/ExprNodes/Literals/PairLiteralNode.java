@@ -19,6 +19,6 @@ public class PairLiteralNode extends LiteralNode {
 
   @Override
   public String getInput() {
-    return "nullpair";
+    return "null";
   }
 }

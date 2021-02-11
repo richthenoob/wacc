@@ -9,7 +9,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * by a '+' or a '-' symbol. */
 public class IntLiteralNode extends LiteralNode {
 
-  private final Long value; // Can be negative
+  /* Store a larger value than the WACC specification, in case we are passed in
+   * a very large value. */
+  private final Long value;
 
   public IntLiteralNode(Long value) {
     this.value = value;
@@ -22,9 +24,12 @@ public class IntLiteralNode extends LiteralNode {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-    if (getValue() > IntType.INTMAX || getValue() < IntType.INTMIN) {
-//      throw new SyntaxException("Integer is of value: " + getValue() + ", but must be between " +
-//              IntType.INTMIN + " and " + IntType.INTMAX, ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+    if (getValue() > IntType.INT_MAX || getValue() < IntType.INT_MIN) {
+      throw new SyntaxException(
+          "Integer is of value: " + getValue() +
+              ", but must be between " + IntType.INT_MIN +
+              " and " + IntType.INT_MAX,
+          ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
     }
   }
 

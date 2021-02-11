@@ -15,7 +15,6 @@ public class InvalidSemanticWhileTest extends AbstractFrontendTest {
     return getAllTestNames(groupTestPath);
   }
 
-  @Disabled("Disabled until visitors properly implemented. ")
   @Tag("invalid")
   @Tag("semantic")
   @Tag("while")

@@ -4,25 +4,27 @@ import java.util.Objects;
 
 public class IntType implements Type {
 
-    public static final int INTMAX = 2147483647;
-    public static final int INTMIN = -2147483648;
+  public static final long INT_MAX = (long) (Math.pow(2, 31) - 1);
+  public static final long INT_MIN = (long) -Math.pow(2, 31);
 
-    @Override
-    public java.lang.String toString() {
-        return "INT";
-    }
+  public final static String CLASS_NAME = "INT";
 
-    @Override
-    public boolean equals(Object obj) {
-      /* AnyType is considered the same type as any other type classes. */
-      if (obj.getClass().equals(AnyType.class)) {
-        return true;
-      }
-      return this.getClass().equals(obj.getClass());
-    }
+  @Override
+  public String toString() {
+    return CLASS_NAME;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.getClass());
+  @Override
+  public boolean equals(Object obj) {
+    /* AnyType is considered the same type as any other type classes. */
+    if (obj.getClass().equals(AnyType.class)) {
+      return true;
     }
+    return this.getClass().equals(obj.getClass());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.getClass());
+  }
 }
