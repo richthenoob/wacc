@@ -40,6 +40,16 @@ public class AssignmentNode extends StatNode {
                     visitor.addSuggestion("Did you mean " + rhs.getInput() + " instead of \"" + rhs.getInput() + "\"?");
                 }
             }
+
+            if (lhs.getType() instanceof StringType) {
+                if (rhs.getType() instanceof CharType) {
+                    // e.g. String s = 'a'
+                    visitor.addSuggestion("Did you mean \"" + rhs.getInput() + "\" instead of '" + rhs.getInput() + "'?");
+                } else {
+                    // e.g. String greeting = hey
+                    visitor.addSuggestion("Did you mean \"" + rhs.getInput() + "\" instead of " + rhs.getInput() + "?");
+                }
+            }
         }
     }
 
