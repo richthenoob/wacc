@@ -1,6 +1,3 @@
 begin
-  int i = 3;
-  begin
-    int i = 3
-  end
+  int i = true
 end

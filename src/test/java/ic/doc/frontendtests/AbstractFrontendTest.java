@@ -2,11 +2,10 @@ package ic.doc.frontendtests;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.stringContainsInOrder;
 
-import ic.doc.SemanticException;
-import ic.doc.SyntaxException;
-import ic.doc.WaccFrontend;
+import ic.doc.frontend.errors.SemanticException;
+import ic.doc.frontend.errors.SyntaxException;
+import ic.doc.frontend.WaccFrontend;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -73,10 +72,6 @@ public abstract class AbstractFrontendTest {
     } else {
       System.out.println("No error messages expected.");
     }
-
-
-
-
   }
 
   protected static Collection<String> getAllTestNames(String groupTestPath) {
@@ -88,7 +83,7 @@ public abstract class AbstractFrontendTest {
           .getPath();
 
       /* Go through directory and find all .wacc files */
-      files = Files.walk(Path.of(testDirPath))
+      files = Files.walk(Path.of(testDirPath), 1)
           .filter(name -> name.toString()
               .toLowerCase()
               .endsWith(WACC_FILE_EXTENSION))
@@ -111,10 +106,9 @@ public abstract class AbstractFrontendTest {
         .getResourceAsStream(EXAMPLES_DIR + testFilepath);
 
     try {
-      String compilerResult = WaccFrontend.parseFromInputStream(inputStream);
+      String compilerResult = WaccFrontend.parse(inputStream);
       // Do something with compilerResult
     } catch (SyntaxException e) {
-      // System.out.println(e.getMessage());
       frontendExitCode = SYNTAX_EXIT_CODE;
     } catch (SemanticException e) {
       frontendExitCode = SEMANTIC_EXIT_CODE;
@@ -127,5 +121,4 @@ public abstract class AbstractFrontendTest {
     assertThat("Different error code", frontendExitCode,
         equalTo(referenceExitCode));
   }
-
 }
