@@ -19,7 +19,7 @@ public class ValidSimpleFunctionTest extends AbstractFrontendTest {
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void validSimpleFunctionTests(String testName) throws Exception {
-    syntaxTest(groupTestPath + testName);
+    testFile(groupTestPath + testName);
   }
 
 }

@@ -1,0 +1,6 @@
+begin
+  int i = 3;
+  begin
+    int i = 3
+  end
+end

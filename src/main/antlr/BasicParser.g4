@@ -8,6 +8,7 @@ options {
   tokenVocab=BasicLexer;
 }
 
+/* ----------------------------- PROGRAMS AND FUNCTIONS ----------------------------- */
 prog: BEGIN (func)* stat END EOF;
 
 func: type IDENT OPEN_PARENTHESES paramList CLOSE_PARENTHESES IS stat END;
@@ -16,19 +17,20 @@ paramList: param (COMMA param)* | ();
 
 param: type IDENT;
 
-stat: SKP
-| type IDENT ASSIGN assignRhs
-| assignLhs ASSIGN assignRhs
-| READ assignLhs
-| FREE expr
-| RETURN expr
-| EXIT expr
-| PRINT expr
-| PRINTLN expr
-| IF expr THEN stat ELSE stat FI
-| WHILE expr DO stat DONE
-| BEGIN stat END
-| stat SEMI stat
+/* ----------------------------------- STATEMENTS ----------------------------------- */
+stat: SKP                                                     #skip
+| type IDENT ASSIGN assignRhs                                 #declarativeAssignment
+| assignLhs ASSIGN assignRhs                                  #assignment
+| READ assignLhs                                              #read
+| FREE expr                                                   #free
+| RETURN expr                                                 #return
+| EXIT expr                                                   #exit
+| PRINT expr                                                  #print
+| PRINTLN expr                                                #println
+| IF expr THEN stat ELSE stat FI                              #if
+| WHILE expr DO stat DONE                                     #while
+| BEGIN stat END                                              #begin
+| stat SEMI stat                                              #semi
 ;
 
 assignLhs: IDENT
@@ -36,20 +38,20 @@ assignLhs: IDENT
 | pairElem
 ;
 
-assignRhs: expr
-| arrayLiter
-| NEWPAIR OPEN_PARENTHESES expr COMMA expr CLOSE_PARENTHESES
-| pairElem
-| CALL IDENT OPEN_PARENTHESES (argList)? CLOSE_PARENTHESES
+assignRhs: expr                                               #exprDup
+| arrayLiter                                                  #arrayLiterDup
+| NEWPAIR OPEN_PARENTHESES expr COMMA expr CLOSE_PARENTHESES  #newPair
+| pairElem                                                    #pairElemDup
+| CALL IDENT OPEN_PARENTHESES argList CLOSE_PARENTHESES    #call
 ;
 
-argList: expr (COMMA expr)*;
+argList: expr (COMMA expr)* | ();
 
-pairElem: FST expr
-| SND expr
+pairElem: FST expr #fstPairElem
+| SND expr         #sndPairElem
 ;
 
-//types
+/* ------------------------------------- TYPES ------------------------------------- */
 type: baseType
 | type OPEN_BRACKETS CLOSE_BRACKETS
 | pairType
@@ -70,31 +72,26 @@ pairElemType: baseType
 | PAIR
 ;
 
-//operators
-unaryOper: NOT | MINUS | LEN | ORD | CHR;
+/* ---------------------------------- EXPRESSIONS ---------------------------------- */
 
-binaryOper: PLUS | MINUS | MUL | DIV | MOD
-| GT | GTE | LT | LTE | EQ | NEQ
-| AND | OR
+/* Binary operators in order of precedence, with 1 being the highest and 6 being the lowest */
+expr: expr (MUL | DIV | MOD) expr                             #binOp1Application
+| expr (PLUS | MINUS) expr                                    #binOp2Application
+| expr (GT | GTE | LT | LTE) expr                             #binOp3Application
+| expr (EQ | NEQ) expr                                        #binOp4Application
+| expr (AND) expr                                             #binOp5Application
+| expr (OR) expr                                              #binOp6Application
+| (intLiter| BOOL_LITER | CHAR_LITER | STR_LITER| PAIR_LITER) #literal
+| IDENT                                                       #identifier
+| arrayElem                                                   #arrayElemDup
+| (NOT | MINUS | LEN | ORD | CHR) expr                        #unOpApplication
+| OPEN_PARENTHESES expr CLOSE_PARENTHESES                     #brackets
 ;
 
-//numbers
-int_sign: PLUS | MINUS;
-int_liter: (int_sign)? INTEGER;
+/* Numbers */
+intSign: PLUS | MINUS;
+intLiter: (intSign)? INTEGER;
 
-//expressions
-expr: expr binaryOper expr
-| int_liter
-| BOOL_LITER
-| CHAR_LITER
-| STR_LITER
-| PAIR_LITER
-| IDENT
-| arrayElem
-| unaryOper expr
-| OPEN_PARENTHESES expr CLOSE_PARENTHESES
-;
-
+/* Arrays */
 arrayElem: IDENT (OPEN_BRACKETS expr CLOSE_BRACKETS)+;
-
 arrayLiter: OPEN_BRACKETS (expr (COMMA expr)*)? CLOSE_BRACKETS;

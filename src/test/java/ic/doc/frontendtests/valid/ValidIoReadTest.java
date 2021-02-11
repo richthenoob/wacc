@@ -19,7 +19,7 @@ public class ValidIoReadTest extends AbstractFrontendTest {
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void validIoReadTests(String testName) throws Exception {
-    syntaxTest(groupTestPath + testName);
+    testFile(groupTestPath + testName);
   }
 
 }

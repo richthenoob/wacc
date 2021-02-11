@@ -23,6 +23,6 @@ public class InvalidSyntaxFunctionTest extends AbstractFrontendTest {
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void invalidSyntaxFunctionTests(String testName) throws Exception {
-    syntaxTest(groupTestPath + testName);
+    testFile(groupTestPath + testName);
   }
 }

@@ -16,8 +16,8 @@ public class ErrorListener extends BaseErrorListener {
 //        System.err.println("rule stack: "+stack);
 //        System.err.println("line "+line+":"+charPositionInLine+" at "+
 //            offendingSymbol+": "+msg);
-        System.out.println(line + ":" + charPositionInLine + " -- " + msg);
-        throw new SyntaxException();
+//        throw new SyntaxException(line + ":" + charPositionInLine + " -- " + msg);
+        throw new SyntaxException(msg, line, charPositionInLine);
     }
 
 }

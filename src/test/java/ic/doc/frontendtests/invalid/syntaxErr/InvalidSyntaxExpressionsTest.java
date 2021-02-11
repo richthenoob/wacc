@@ -19,6 +19,6 @@ public class InvalidSyntaxExpressionsTest extends AbstractFrontendTest {
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void invalidSyntaxExpressionTests(String testName) throws Exception {
-    syntaxTest(groupTestPath + testName);
+    testFile(groupTestPath + testName);
   }
 }
