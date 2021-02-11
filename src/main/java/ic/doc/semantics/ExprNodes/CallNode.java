@@ -46,9 +46,7 @@ public class CallNode extends ExprNode {
         visitor.addException(ctx, "Incompatible parameter count at " + this.getInput()
                 + ". Expected count: " + expectedParamListType.size()
                 + ". Actual count: " + args.getNumParas());
-      }
-      if (!args.getType()
-              .equals(expectedParamListType)) {
+      } else if (!args.getType().equals(expectedParamListType)) {
         visitor.addTypeException(ctx, args.getInput(), functionId.printTypes(), args.getType().toString());
       }
     }

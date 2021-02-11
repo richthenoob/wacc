@@ -23,7 +23,7 @@ public class FunctionIdentifier extends Identifier {
       types.append(", ");
     }
     if (paramTypeList.size() > 0) {
-      types.delete(types.length() - 2, types.length() - 1);
+      types.delete(types.length() - 2, types.length());
     }
     return types.toString();
   }

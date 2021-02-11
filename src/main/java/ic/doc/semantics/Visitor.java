@@ -62,13 +62,13 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
                 + ":" + ctx.getStart().getCharPositionInLine()
                 + " - Incompatible type at \"" + input
                 + "\". Expected type: " + expectedType
-                + ", Actual type: " + actualType + ".");
+                + ". Actual type: " + actualType + ".");
         } else {
             semanticErrors.add("Semantic error at line " + ctx.getStart().getLine()
                 + ":" + ctx.getStart().getCharPositionInLine()
                 + " - Incompatible type at '" + input
                 + "'. Expected type: " + expectedType
-                + ", Actual type: " + actualType + ".");
+                + ". Actual type: " + actualType + ".");
         }
     }
 

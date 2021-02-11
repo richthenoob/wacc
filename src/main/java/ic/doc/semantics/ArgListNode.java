@@ -40,21 +40,9 @@ public class ArgListNode extends Node {
       input.append(", ");
     }
     if (numArgs > 0) {
-      input.delete(input.length() - 2, input.length() - 1);
+      input.delete(input.length() - 2, input.length());
     }
     return input.toString();
-  }
-
-  public String printTypes() {
-    StringBuilder types = new StringBuilder();
-    for (int i = 0; i < numArgs; i++) {
-      types.append(exprs.get(i).getType().toString());
-      types.append(", ");
-    }
-    if (numArgs > 0) {
-      types.delete(types.length() - 2, types.length() - 1);
-    }
-    return types.toString();
   }
 
   @Override
