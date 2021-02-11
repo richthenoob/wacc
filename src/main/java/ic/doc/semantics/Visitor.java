@@ -95,26 +95,18 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     if (!ctx.IDENT().getText().equals("main")) {
       String funcName = ctx.IDENT().toString();
       Type returnType = ((TypeNode) visit(ctx.type())).getType();
-      /* create new symbol table here*/
 
-      /* Visiting stat should be visiting with the enclosing symbol table, should contain function already*/
-      /* In other words, we need to add this function to the symbol table before visiting the STAT */
-      /* This means that we need to add it to the symbol table here, NOT in the function node */
-      /* This is because functionNode needs a stat in its constructor */
-      currentSymbolTable = new SymbolTable(currentSymbolTable);
       ParamListNode paramList = (ParamListNode) visit(ctx.paramList());
 
-      /* Function symbol table needs to be added to the parent symbol table*/
       SymbolKey key = new SymbolKey(funcName, true);
-      if (currentSymbolTable.getParentSymbolTable().lookup(key) == null) {
+      if (currentSymbolTable.lookup(key) == null) {
         FunctionIdentifier id = new FunctionIdentifier(returnType,
             paramList.getType());
-        currentSymbolTable.getParentSymbolTable().add(key, id);
+        currentSymbolTable.add(key, id);
       } else {
         addException(ctx, "Function '" + funcName
             + "' already declared in current scope.");
       }
-      currentSymbolTable = currentSymbolTable.getParentSymbolTable();
     }
   }
 
@@ -132,12 +124,17 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       /* This is because functionNode needs a stat in its constructor */
       currentSymbolTable = new SymbolTable(currentSymbolTable);
       ParamListNode paramList = (ParamListNode) visit(ctx.paramList());
-
+      List<ParamNode> params = paramList.getParams();
+      for(ParamNode p : params){
+        String name = p.getInput();
+        Type type = p.getType();
+        SymbolKey key = new SymbolKey(name, false);
+        currentSymbolTable.add(key, new ParamIdentifier(type));
+      }
       StatNode stat = (StatNode) visit(ctx.stat());
       /* Needs to check current and outer scope*/
       FunctionNode node = new FunctionNode(currentSymbolTable, funcName,
           returnType, paramList, stat);
-//            currentSymbolTable = currentSymbolTable.getParentSymbolTable();
       node.check(this, ctx);
       currentSymbolTable = node.getParentSymbolTable();
       return node;
@@ -160,8 +157,6 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     Type type = ((TypeNode) visit(ctx.type())).getType();
     String name = ctx.IDENT().getText();
     ParamNode node = new ParamNode(type, ctx.IDENT().getText());
-    SymbolKey key = new SymbolKey(name, false);
-    currentSymbolTable.add(key, new ParamIdentifier(type));
     return node;
   }
 
