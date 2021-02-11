@@ -1,35 +1,41 @@
 package ic.doc.semantics;
 
+import ic.doc.semantics.IdentifierObjects.Identifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SymbolTable {
 
-    private SymbolTable encSymTable;
-    private Map<String, Node> dictionary;
+  private SymbolTable parentSymbolTable;
+  private Map<SymbolKey, Identifier> dictionary;
 
-    public SymbolTable(SymbolTable encSymTable) {
-        this.encSymTable = encSymTable;
-        dictionary = new LinkedHashMap<>();
-    }
+  public SymbolTable(SymbolTable parentSymbolTable) {
+    this.parentSymbolTable = parentSymbolTable;
+    dictionary = new LinkedHashMap<>();
+  }
 
-    public void add(String name, Node obj){
-        dictionary.put(name,obj);
-    }
+  public SymbolTable getParentSymbolTable() {
+    return parentSymbolTable;
+  }
 
-    public Node lookup(String name){
-        return dictionary.get(name);
-    }
+  public void add(SymbolKey key, Identifier obj) {
+    dictionary.put(key, obj);
+  }
 
-    public Node lookupAll(String name){
-        SymbolTable curr = this;
-        while(curr != null){
-            Node obj = curr.lookup(name);
-            if(obj!= null){
-                return obj;
-            }
-            curr = curr.encSymTable;
-        }
-        return null;
+
+  public Identifier lookup(SymbolKey key) {
+    return dictionary.get(key);
+  }
+
+  public Identifier lookupAll(SymbolKey key) {
+    SymbolTable curr = this;
+    while (curr != null) {
+      Identifier obj = curr.lookup(key);
+      if (obj != null) {
+        return obj;
+      }
+      curr = curr.parentSymbolTable;
     }
+    return null;
+  }
 }

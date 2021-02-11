@@ -19,6 +19,6 @@ public class ValidRuntimeErrOutOfBoundsTest extends AbstractFrontendTest {
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void validArrayOutOfBoundsTests(String testName) throws Exception {
-    syntaxTest(groupTestPath + testName);
+    testFile(groupTestPath + testName);
   }
 }

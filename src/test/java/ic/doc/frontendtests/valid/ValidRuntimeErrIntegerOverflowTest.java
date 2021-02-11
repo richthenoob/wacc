@@ -19,6 +19,6 @@ public class ValidRuntimeErrIntegerOverflowTest extends AbstractFrontendTest {
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void validIntegerOverflowTests(String testName) throws Exception {
-    syntaxTest(groupTestPath + testName);
+    testFile(groupTestPath + testName);
   }
 }

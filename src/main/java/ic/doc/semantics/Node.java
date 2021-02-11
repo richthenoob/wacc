@@ -1,17 +1,8 @@
 package ic.doc.semantics;
 
-import ic.doc.semantics.IdentifierObjects.Type;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 public abstract class Node {
 
-    private String name;
-    private Type type;
-
-    public String getName() {
-        return name;
-    }
-
-    public Type getType() {
-        return type;
-    }
+  public abstract void check(Visitor visitor, ParserRuleContext ctx);
 }
