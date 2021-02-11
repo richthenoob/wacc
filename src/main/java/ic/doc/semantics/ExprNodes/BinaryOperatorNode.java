@@ -122,32 +122,36 @@ public class BinaryOperatorNode extends ExprNode {
 
     /* Invalid type1 but valid type2. */
     if (!type1IsValid && type2IsValid) {
-      visitor.addTypeException(ctx, expr1.getInput(), type2.toString(),
-          type1.toString());
+      visitor.getSemanticErrorList()
+          .addTypeException(ctx, expr1.getInput(),
+              type2.toString(), type1.toString());
       return false;
     }
 
     /* Valid type1 but invalid type2. */
     if (type1IsValid && !type2IsValid) {
-      visitor.addTypeException(ctx, expr2.getInput(), type1.toString(),
-          type2.toString());
+      visitor.getSemanticErrorList()
+          .addTypeException(ctx, expr2.getInput(),
+              type1.toString(), type2.toString());
       return false;
     }
 
     /* Both invalid types. */
     if (!type1IsValid && !type2IsValid) {
-      visitor.addTypeException(ctx, expr1.getInput(), stringValidTypes,
-          type1.toString());
-      visitor.addTypeException(ctx, expr2.getInput(), stringValidTypes,
-          type2.toString());
+      visitor.getSemanticErrorList()
+          .addTypeException(ctx, expr1.getInput(),
+              stringValidTypes, type1.toString());
+      visitor.getSemanticErrorList()
+          .addTypeException(ctx, expr2.getInput(),
+              stringValidTypes, type2.toString());
       return false;
     }
 
     /* Both valid types but are different from one another. */
     if (type1IsValid && type2IsValid && !type1.equals(type2)) {
-      visitor
-          .addTypeException(ctx, expr2.getInput(), expr1.getType().toString(),
-              type2.toString());
+      visitor.getSemanticErrorList()
+          .addTypeException(ctx, expr2.getInput(),
+              expr1.getType().toString(), type2.toString());
       return false;
     }
 

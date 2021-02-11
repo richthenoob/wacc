@@ -24,7 +24,7 @@ public class StringLiteralNode extends LiteralNode {
   public void check(Visitor visitor, ParserRuleContext ctx) {
     for (char c : getValue().toCharArray()) {
       if (!CharType.isValidChar(c)) {
-        visitor.addTokenException(ctx, Character.toString(c), getValue());
+        visitor.getSemanticErrorList().addTokenException(ctx, Character.toString(c), getValue());
       }
     }
   }

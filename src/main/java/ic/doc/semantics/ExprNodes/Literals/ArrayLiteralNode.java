@@ -43,7 +43,7 @@ public class ArrayLiteralNode extends LiteralNode {
         .collect(Collectors.toList());
 
     for (ExprNode mismatchedTypeNode : mismatchedTypeNodes) {
-      visitor.addTypeException(ctx, mismatchedTypeNode.getInput(),
+      visitor.getSemanticErrorList().addTypeException(ctx, mismatchedTypeNode.getInput(),
           values.get(0).getType().toString(),
           mismatchedTypeNode.getType().toString());
     }

@@ -29,35 +29,40 @@ public class UnaryOperatorNode extends ExprNode {
     switch (unaryOperator) {
       case LOGICAL_NOT:
         if (!(exprType instanceof BoolType)) {
-          visitor.addTypeException(ctx, expr.getInput(), "BOOL", expr.toString());
+          visitor.getSemanticErrorList()
+              .addTypeException(ctx, expr.getInput(), "BOOL", expr.toString());
           isErrored = true;
         }
         setType(new BoolType());
         break;
       case MATH_NEGATION:
         if (!(exprType instanceof IntType)) {
-          visitor.addTypeException(ctx, expr.getInput(), "INT", expr.toString());
+          visitor.getSemanticErrorList()
+              .addTypeException(ctx, expr.getInput(), "INT", expr.toString());
           isErrored = true;
         }
         setType(new IntType());
         break;
       case CHR:
         if (!(exprType instanceof IntType)) {
-          visitor.addTypeException(ctx, expr.getInput(), "INT", expr.toString());
+          visitor.getSemanticErrorList()
+              .addTypeException(ctx, expr.getInput(), "INT", expr.toString());
           isErrored = true;
         }
         setType(new CharType());
         break;
       case LEN:
         if (!(exprType instanceof ArrayType)) {
-          visitor.addTypeException(ctx, expr.getInput(), "T[]", expr.toString());
+          visitor.getSemanticErrorList()
+              .addTypeException(ctx, expr.getInput(), "T[]", expr.toString());
           isErrored = true;
         }
         setType(new IntType());
         break;
       case ORD:
         if (!(exprType instanceof CharType)) {
-          visitor.addTypeException(ctx, expr.getInput(), "CHAR", expr.toString());
+          visitor.getSemanticErrorList()
+              .addTypeException(ctx, expr.getInput(), "CHAR", expr.toString());
           isErrored = true;
         }
         setType(new IntType());

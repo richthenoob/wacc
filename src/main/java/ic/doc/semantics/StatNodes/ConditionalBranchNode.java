@@ -36,15 +36,20 @@ public class ConditionalBranchNode extends StatNode {
     return falseBody;
   }
 
-  public SymbolTable getTrueBodySymbolTable() { return trueBodySymbolTable; }
+  public SymbolTable getTrueBodySymbolTable() {
+    return trueBodySymbolTable;
+  }
 
-  public SymbolTable getFalseBodySymbolTable() { return falseBodySymbolTable; }
+  public SymbolTable getFalseBodySymbolTable() {
+    return falseBodySymbolTable;
+  }
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     //Expr must be a bool
     if (!(cond.getType() instanceof BoolType)) {
-      visitor.addTypeException(ctx,cond.getInput(),"BOOL",cond.getType().toString());
+      visitor.getSemanticErrorList()
+          .addTypeException(ctx, cond.getInput(), "BOOL", cond.getType().toString());
     }
   }
 }
