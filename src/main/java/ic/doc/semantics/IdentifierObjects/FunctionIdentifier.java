@@ -18,6 +18,7 @@ public class FunctionIdentifier extends Identifier {
 
   public String printTypes() {
     StringBuilder types = new StringBuilder();
+    types.append("(");
     for (int i = 0; i < paramTypeList.size(); i++) {
       types.append(paramTypeList.get(i).toString());
       types.append(", ");
@@ -25,6 +26,7 @@ public class FunctionIdentifier extends Identifier {
     if (paramTypeList.size() > 0) {
       types.delete(types.length() - 2, types.length());
     }
+    types.append(")");
     return types.toString();
   }
 

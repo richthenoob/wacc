@@ -48,14 +48,14 @@ public class ParamListNode extends Node {
   }
 
   public String printTypes() {
-    StringBuilder types = new StringBuilder();
+    StringBuilder typesString = new StringBuilder();
     for (int i = 0; i < numParas; i++) {
-      types.append(params.get(i).getType().toString());
-      types.append(", ");
+      typesString.append(params.get(i).getType().toString());
+      typesString.append(", ");
     }
     if (numParas > 0) {
-      types.delete(types.length() - 2, types.length() - 1);
+      typesString.delete(typesString.length() - 2, typesString.length() - 1);
     }
-    return types.toString();
+    return typesString.toString();
   }
 }

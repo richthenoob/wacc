@@ -33,6 +33,20 @@ public class ArgListNode extends Node {
     return types;
   }
 
+  public String printTypes() {
+    StringBuilder typesString = new StringBuilder();
+    typesString.append("(");
+    for (int i = 0; i < types.size() ; i++) {
+      typesString.append(types.get(i).toString());
+      typesString.append(", ");
+    }
+    if (types.size() > 0) {
+      typesString.delete(typesString.length() - 2, typesString.length());
+    }
+    typesString.append(")");
+    return typesString.toString();
+  }
+
   public String getInput() {
     StringBuilder input = new StringBuilder();
     for (int i = 0; i < numArgs; i++) {

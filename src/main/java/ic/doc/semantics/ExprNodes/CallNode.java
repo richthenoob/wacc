@@ -48,7 +48,7 @@ public class CallNode extends ExprNode {
                 + ". Actual count: " + args.getNumParas()
                 + ".");
       } else if (!args.getType().equals(expectedParamListType)) {
-        visitor.addTypeException(ctx, args.getInput(), functionId.printTypes(), args.getType().toString());
+        visitor.addTypeException(ctx, args.getInput(), functionId.printTypes(), args.printTypes());
       }
     }
   }
