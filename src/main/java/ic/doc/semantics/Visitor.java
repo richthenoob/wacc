@@ -157,7 +157,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
   @Override
   public Node visitParam(BasicParser.ParamContext ctx) {
-    Type type = ((TypeNode) visitType(ctx.type())).getType();
+    Type type = ((TypeNode) visit(ctx.type())).getType();
     String name = ctx.IDENT().getText();
     ParamNode node = new ParamNode(type, ctx.IDENT().getText());
     SymbolKey key = new SymbolKey(name, false);
@@ -307,8 +307,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     Type type = null;
     if (!main) {
-      Node functionType = visitType(
-          ((BasicParser.FuncContext) curr.getParent()).type());
+      Node functionType = visit(((BasicParser.FuncContext) curr.getParent()).type());
       type = ((TypeNode) functionType).getType();
     }
 
@@ -390,22 +389,19 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   }
 
   @Override
-  public Node visitType(BasicParser.TypeContext ctx) {
+  public Node visitPairTypeDup(BasicParser.PairTypeDupContext ctx){
+    return visit(ctx.pairType());
+  }
 
-    if (ctx.pairType() != null) {
-      return visit(ctx.pairType());
-    }
+  @Override
+  public Node visitBaseTypeDup(BasicParser.BaseTypeDupContext ctx){
+    return visit(ctx.baseType());
+  }
 
-    if (ctx.baseType() != null) {
-      return visit(ctx.baseType());
-    }
-
-    if (ctx.type() != null) {
-      TypeNode elemType = (TypeNode) visit(ctx.type());
-      return new TypeNode(new ArrayType(elemType.getType()));
-    }
-
-    return new TypeNode(new ErrorType());
+  @Override
+  public Node visitArrayTypeDup(BasicParser.ArrayTypeDupContext ctx){
+    TypeNode elemType = (TypeNode) visit(ctx.type());
+    return new TypeNode(new ArrayType(elemType.getType()));
   }
 
   @Override
