@@ -20,7 +20,6 @@ public class FunctionNode extends Node {
 
   public FunctionNode(SymbolTable funcSymbolTable, String funcName,
       Type returnType, ParamListNode paramListNode, StatNode functionBody) {
-//    this.parentSymbolTable = parentSymbolTable;
     this.funcSymbolTable = funcSymbolTable;
     this.parentSymbolTable = funcSymbolTable.getParentSymbolTable();
     this.funcName = funcName;

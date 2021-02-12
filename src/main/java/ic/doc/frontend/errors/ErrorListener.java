@@ -7,19 +7,20 @@ import org.antlr.v4.runtime.*;
 public class ErrorListener extends BaseErrorListener {
 
   @Override
-  public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
-      int line, int charPositionInLine, String msg,
+  public void syntaxError(
+      Recognizer<?, ?> recognizer,
+      Object offendingSymbol,
+      int line,
+      int charPositionInLine,
+      String msg,
       RecognitionException e) {
-    underlineError(recognizer, (Token) offendingSymbol,
-        line, charPositionInLine);
+    underlineError(recognizer, (Token) offendingSymbol, line, charPositionInLine);
     throw new SyntaxException(msg, line, charPositionInLine);
   }
 
-  protected void underlineError(Recognizer recognizer,
-      Token offendingToken, int line,
-      int charPositionInLine) {
-    CommonTokenStream tokens = (CommonTokenStream) recognizer
-        .getInputStream();
+  protected void underlineError(
+      Recognizer recognizer, Token offendingToken, int line, int charPositionInLine) {
+    CommonTokenStream tokens = (CommonTokenStream) recognizer.getInputStream();
     String input = tokens.getTokenSource().getInputStream().toString();
     String[] lines = input.split("\n");
 
@@ -45,5 +46,4 @@ public class ErrorListener extends BaseErrorListener {
     }
     System.err.println();
   }
-
 }
