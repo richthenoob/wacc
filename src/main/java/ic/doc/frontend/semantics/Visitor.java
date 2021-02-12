@@ -47,7 +47,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   @Override
   public Node visitProg(BasicParser.ProgContext ctx) {
     currentSymbolTable = new SymbolTable(null);
-    semanticErrorList = new SemanticErrorList();
+    semanticErrorList = new SemanticErrorList(
+        ctx.getStart().getInputStream().toString().split("\n"));
 
     List<FuncContext> functionCtxs = ctx.func();
     List<FunctionNode> functionNodes = new ArrayList<>();
@@ -77,8 +78,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
             paramList.getType());
         currentSymbolTable.add(key, id);
       } else {
-        semanticErrorList.addException(ctx, "Function '" + funcName
-            + "' already declared in current scope.");
+        semanticErrorList.addScopeException(ctx, true, "Function", "'" + funcName + "'");
       }
     }
   }

@@ -53,7 +53,7 @@ public class ArrayElementNode extends ExprNode {
       isErrored = true;
       /* Identifier should be of type "Array". */
       visitor.getSemanticErrorList().addTypeException(ctx,
-          identNode.getInput(), "T[]", identNode.getType().toString());
+          identNode.getInput(), "T[]", identNode.getType().toString(), "");
     }
 
     /* Go through all exprNodes to check index is of correct type, INT. */
@@ -64,7 +64,7 @@ public class ArrayElementNode extends ExprNode {
     for (ExprNode mismatchedTypeNode : mismatchedTypeNodes) {
       isErrored = true;
       visitor.getSemanticErrorList().addTypeException(ctx,
-          mismatchedTypeNode.getInput(), "INT", mismatchedTypeNode.getType().toString());
+          mismatchedTypeNode.getInput(), "INT", mismatchedTypeNode.getType().toString(), "");
     }
 
     /* Check index is not longer than length. */
@@ -83,7 +83,7 @@ public class ArrayElementNode extends ExprNode {
           type = ((ArrayType) type).getInternalType();
         } else {
           visitor.getSemanticErrorList()
-              .addTypeException(ctx, getInput(), "T[]", type.toString());
+              .addTypeException(ctx, getInput(), "T[]", type.toString(), "");
         }
       }
       setType(type);

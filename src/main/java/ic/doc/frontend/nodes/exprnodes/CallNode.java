@@ -50,9 +50,9 @@ public class CallNode extends ExprNode {
                 + ". Expected count: " + expectedParamListType.size()
                 + ". Actual count: " + args.getNumParas()
                 + ".");
-      } else if (!args.getType().equals(expectedParamListType)) {
+      } else if (!(Type.checkTypeListCompatibility(args.getType(), expectedParamListType))) {
         visitor.getSemanticErrorList().addTypeException(ctx,
-            args.getInput(), functionId.printTypes(), args.printTypes());
+            args.getInput(), functionId.printTypes(), args.printTypes(), "");
       }
     }
   }
