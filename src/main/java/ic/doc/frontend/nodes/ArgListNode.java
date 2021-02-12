@@ -17,8 +17,7 @@ public class ArgListNode extends Node {
   public ArgListNode(List<ExprNode> exprs) {
     this.numArgs = exprs.size();
     this.exprs = exprs;
-    types = exprs.stream().map(ExprNode::getType)
-        .collect(Collectors.toList());
+    types = exprs.stream().map(ExprNode::getType).collect(Collectors.toList());
   }
 
   public int getNumParas() {

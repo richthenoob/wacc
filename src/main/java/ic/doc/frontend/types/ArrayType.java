@@ -1,10 +1,8 @@
 package ic.doc.frontend.types;
 
-import java.util.Objects;
-
 public class ArrayType extends Type {
 
-  public final static String CLASS_NAME = "ARRAY";
+  public static final String CLASS_NAME = "ARRAY";
   private final Type internalType;
 
   public ArrayType(Type type) {

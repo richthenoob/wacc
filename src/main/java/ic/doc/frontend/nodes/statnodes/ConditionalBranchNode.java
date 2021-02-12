@@ -14,8 +14,12 @@ public class ConditionalBranchNode extends StatNode {
   private final SymbolTable trueBodySymbolTable;
   private final SymbolTable falseBodySymbolTable;
 
-  public ConditionalBranchNode(ExprNode cond, StatNode trueBody,
-      StatNode falseBody, SymbolTable trueBodySymbolTable, SymbolTable falseBodySymbolTable) {
+  public ConditionalBranchNode(
+      ExprNode cond,
+      StatNode trueBody,
+      StatNode falseBody,
+      SymbolTable trueBodySymbolTable,
+      SymbolTable falseBodySymbolTable) {
     this.cond = cond;
     this.trueBody = trueBody;
     this.falseBody = falseBody;
@@ -47,8 +51,10 @@ public class ConditionalBranchNode extends StatNode {
   public void check(Visitor visitor, ParserRuleContext ctx) {
     /* Expr must be a bool */
     if (!(cond.getType() instanceof BoolType)) {
-      visitor.getSemanticErrorList()
-          .addTypeException(ctx, cond.getInput(), "BOOL", cond.getType().toString(), "", "'if' condition");
+      visitor
+          .getSemanticErrorList()
+          .addTypeException(
+              ctx, cond.getInput(), "BOOL", cond.getType().toString(), "", "'if' condition");
     }
   }
 }

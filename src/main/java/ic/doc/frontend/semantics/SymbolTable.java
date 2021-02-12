@@ -22,7 +22,6 @@ public class SymbolTable {
     dictionary.put(key, obj);
   }
 
-
   public Identifier lookup(SymbolKey key) {
     return dictionary.get(key);
   }

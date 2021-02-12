@@ -1,10 +1,8 @@
 package ic.doc.frontend.types;
 
-import java.util.Objects;
-
 public class PairType extends Type {
 
-  public final static String CLASS_NAME = "PAIR";
+  public static final String CLASS_NAME = "PAIR";
   private final Type type1;
   private final Type type2;
 

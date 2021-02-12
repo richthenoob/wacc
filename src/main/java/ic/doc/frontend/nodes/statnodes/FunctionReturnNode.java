@@ -11,8 +11,7 @@ public class FunctionReturnNode extends StatNode {
   private final Boolean main;
   private final Type functionType;
 
-  public FunctionReturnNode(ExprNode exprNode, Boolean main,
-      Type functionType) {
+  public FunctionReturnNode(ExprNode exprNode, Boolean main, Type functionType) {
     this.exprNode = exprNode;
     this.main = main;
     this.functionType = functionType;
@@ -26,15 +25,19 @@ public class FunctionReturnNode extends StatNode {
   public void check(Visitor visitor, ParserRuleContext ctx) {
     /* Returns can only be present in the body of a non-main function */
     if (main) {
-      visitor.getSemanticErrorList()
-          .addException(ctx, "Cannot return from the global scope.");
+      visitor.getSemanticErrorList().addException(ctx, "Cannot return from the global scope.");
     } else if (!exprNode.getType().getClass().equals(functionType.getClass())) {
       /* Type of the expression given to the return statement
        * must match the return type of the function */
-      visitor.getSemanticErrorList()
-          .addTypeException(ctx, exprNode.getInput(),
-              functionType.toString(), exprNode.getType().toString(), "", "'return' statement");
+      visitor
+          .getSemanticErrorList()
+          .addTypeException(
+              ctx,
+              exprNode.getInput(),
+              functionType.toString(),
+              exprNode.getType().toString(),
+              "",
+              "'return' statement");
     }
-
   }
 }

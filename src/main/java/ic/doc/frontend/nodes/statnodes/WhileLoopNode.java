@@ -8,8 +8,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 public class WhileLoopNode extends StatNode {
 
-  private ExprNode cond;
-  private StatNode body;
+  private final ExprNode cond;
+  private final StatNode body;
 
   public WhileLoopNode(ExprNode cond, StatNode body) {
     this.cond = cond;
@@ -30,11 +30,11 @@ public class WhileLoopNode extends StatNode {
      * There is no need to print the type error message
      * if the condition was not present in the symbol table
      * - i.e. if the type was Error. */
-    if (!(cond.getType() instanceof BoolType
-        || cond.getType() instanceof ErrorType)) {
-      visitor.getSemanticErrorList()
-          .addTypeException(ctx, cond.getInput(), "BOOL", cond.getType().toString(), "", "'while' condition");
+    if (!(cond.getType() instanceof BoolType || cond.getType() instanceof ErrorType)) {
+      visitor
+          .getSemanticErrorList()
+          .addTypeException(
+              ctx, cond.getInput(), "BOOL", cond.getType().toString(), "", "'while' condition");
     }
   }
-
 }

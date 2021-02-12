@@ -6,8 +6,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ParamNode extends Node {
 
-  private Type type;
-  private String input;
+  private final Type type;
+  private final String input;
 
   public Type getType() {
     return type;

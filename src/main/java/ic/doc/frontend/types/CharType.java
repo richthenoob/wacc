@@ -2,14 +2,13 @@ package ic.doc.frontend.types;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class CharType extends Type {
 
-  public final static String CLASS_NAME = "CHAR";
+  public static final String CLASS_NAME = "CHAR";
 
-  private static final List<Character> validEscapedChars
-      = Arrays.asList('\0', '\b', '\t', '\n', '\f', '\r', '\"', '\'', '\\');
+  private static final List<Character> validEscapedChars =
+      Arrays.asList('\0', '\b', '\t', '\n', '\f', '\r', '\"', '\'', '\\');
 
   public static boolean isValidChar(char c) {
     return validEscapedChars.contains(c) || Character.isAlphabetic(c);
@@ -19,6 +18,4 @@ public class CharType extends Type {
   public String toString() {
     return CLASS_NAME;
   }
-
-
 }
