@@ -25,46 +25,14 @@ public class ReadNode extends StatNode {
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     Type type = expr.getType();
-    /* Errors should have already been caught, no need to print again*/
     if(type instanceof ErrorType){
+      /* Other errors should have already been caught, no need to print again */
       return;
     }
     if (!(type instanceof CharType || type instanceof IntType)) {
+      /* Type of expression should be Char or Int */
       visitor.getSemanticErrorList()
           .addTypeException(ctx, expr.getInput(), "CHAR or INT", type.toString(), "");
     }
-//    Type type = null;
-//    String input = "";
-//
-//    /* If it is a variable node, we need to check if the identifier exists*/
-//    if(expr instanceof VariableNode){
-//      String name = ((VariableNode) expr).getName();
-//      SymbolKey key = new SymbolKey(name, false);
-//      Identifier id = visitor.getCurrentSymbolTable().lookupAll(key);
-//      if(id == null){
-//        /* throw not found in symbol table error*/
-//      } else {
-//        type = id.getType();
-//        input = "Read: " + name;
-//      }
-//    } else {
-//      /* Otherwise, just get the type*/
-//        type = expr.getType();
-//    }
-//
-//    String input = "";
-//    if (exprNode != null) {
-//      type = exprNode.getType();
-//      input = "READ:" + exprNode.getInput();
-//    } else if (identifierName != null) {
-//      Identifier id = visitor.getCurrentSymbolTable().lookupAll(identifierName);
-//      type = id.getType();
-//      input = "READ" + id.toString();
-//    } else {
-//      throw new IllegalStateException("Attempting to read something that is not an expr");
-//    }
-//    if (!(type instanceof CharType || type instanceof IntType)) {
-//      visitor.addTypeException(ctx, input, "CHAR or INT", type.toString());
-//    }
   }
 }

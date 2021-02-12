@@ -20,14 +20,13 @@ public class VariableNode extends ExprNode {
 
   @Override
   public String getInput() {
-    // return something like "type: name"
-//    return getType().toString() + ":" + getName();
     return getName();
   }
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     SymbolKey key = new SymbolKey(getName(), false);
+    /* Checks if name was defined in symbol table */
     Identifier id = visitor.getCurrentSymbolTable().lookupAll(key);
     if (id == null) {
       setType(new ErrorType());

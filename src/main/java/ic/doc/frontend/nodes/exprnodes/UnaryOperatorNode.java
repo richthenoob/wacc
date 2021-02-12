@@ -25,7 +25,7 @@ public class UnaryOperatorNode extends ExprNode {
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     Type exprType = expr.getType();
-
+    /* Checks if type of expr is valid for each operator */
     switch (unaryOperator) {
       case LOGICAL_NOT:
         if (!(exprType instanceof BoolType)) {
@@ -69,6 +69,7 @@ public class UnaryOperatorNode extends ExprNode {
     }
 
     if (isErrored) {
+      /* Sets type of this node to error if type of expr not valid */
       setType(new ErrorType());
     }
   }

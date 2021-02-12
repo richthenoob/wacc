@@ -8,17 +8,17 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ProgNode extends Node {
 
-    private List<FunctionNode> functions;
-    private StatNode stat;
+  private List<FunctionNode> functions;
+  private StatNode stat;
 
 
-    public ProgNode(List<FunctionNode> functions, StatNode stat) {
-        this.functions = functions;
-        this.stat = stat;
-    }
+  public ProgNode(List<FunctionNode> functions, StatNode stat) {
+    this.functions = functions;
+    this.stat = stat;
+  }
 
-    @Override
-    public void check(Visitor visitor, ParserRuleContext ctx) {
-        /* No checks needed. */
-    }
+  @Override
+  public void check(Visitor visitor, ParserRuleContext ctx) {
+    /* No checks needed. */
+  }
 }

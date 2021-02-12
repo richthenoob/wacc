@@ -22,6 +22,7 @@ public class CharacterLiteralNode extends LiteralNode {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
+    /* Checks that input character tokens are valid */
     if (!CharType.isValidChar(getValue())) {
       visitor.getSemanticErrorList().addException(ctx, "Invalid character token at " + value);
     }

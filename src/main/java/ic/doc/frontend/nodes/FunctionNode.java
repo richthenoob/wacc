@@ -53,7 +53,7 @@ public class FunctionNode extends Node {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-    /* Check if the last stat ends with return or exit */
+    /* Last stat should end with return or exit */
     if(!endsWithReturnOrExit(functionBody)){
       throw new SyntaxException("Function " + getInput() + " is not ended with a return or exit statement",
               ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());

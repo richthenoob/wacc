@@ -33,23 +33,30 @@ public class AssignmentNode extends StatNode {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-    if(isDeclaration){
+    if (isDeclaration) {
       VariableNode lhsVar = (VariableNode) lhs;
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, false);
+      /* If node corresponds to declarative assignment,
+      variable must not have been already defined earlier */
       if (visitor.getCurrentSymbolTable().lookup(key) != null) {
         visitor
-                .getSemanticErrorList()
-                .addScopeException(ctx, true, "Variable", name);
+            .getSemanticErrorList()
+            .addScopeException(ctx, true, "Variable", name);
       } else {
         visitor.getCurrentSymbolTable().add(key, new VariableIdentifier(lhs.getType()));
       }
     }
 
+    /* Checks if types of lhs and rhs are the same.
+     * If their types are errors, an error should already have been thrown
+     * for the variable not being defined in the scope
+     * and thus further error throwing is unnecessary */
     if (!(Type.checkTypeCompatibility(lhs.getType(), rhs.getType()))
         && !(lhs.getType() instanceof ErrorType)
         && !(rhs.getType() instanceof ErrorType)) {
-
+      /* Suggesting fixes to frequently occurring mistakes
+       * that would lead to type mismatches */
       if (rhs.getType() instanceof StringType) {
         if (lhs.getType() instanceof CharType && rhs.getInput().length() == 1) {
           // e.g. char c = "a"
@@ -60,6 +67,7 @@ public class AssignmentNode extends StatNode {
                       "' instead of \"" + rhs.getInput() + "\"?");
           return;
         } else {
+          // e.g. bool c = "true"
           visitor.getSemanticErrorList()
               .addTypeException(ctx, rhs.getInput(),
                   lhs.getType().toString(), rhs.getType().toString(),
@@ -81,7 +89,7 @@ public class AssignmentNode extends StatNode {
         } else {
           // e.g. String greeting = hey
           visitor.getSemanticErrorList()
-              .addTypeException(ctx,rhs.getInput(),
+              .addTypeException(ctx, rhs.getInput(),
                   lhs.getType().toString(), rhs.getType().toString(),
                   "Did you mean \"" + rhs.getInput()
                       + "\" instead of " + rhs.getInput() + "?");
@@ -89,6 +97,8 @@ public class AssignmentNode extends StatNode {
         }
       }
 
+      /* Prints out error message without suggestions
+       * if no suggestions are applicable */
       visitor.getSemanticErrorList()
           .addTypeException(ctx, rhs.getInput(),
               lhs.getType().toString(), rhs.getType().toString(), "");

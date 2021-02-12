@@ -18,7 +18,7 @@ public class ArgListNode extends Node {
     this.numArgs = exprs.size();
     this.exprs = exprs;
     types = exprs.stream().map(ExprNode::getType)
-            .collect(Collectors.toList());
+        .collect(Collectors.toList());
   }
 
   public int getNumParas() {
@@ -36,7 +36,7 @@ public class ArgListNode extends Node {
   public String printTypes() {
     StringBuilder typesString = new StringBuilder();
     typesString.append("(");
-    for (int i = 0; i < types.size() ; i++) {
+    for (int i = 0; i < types.size(); i++) {
       typesString.append(types.get(i).toString());
       typesString.append(", ");
     }

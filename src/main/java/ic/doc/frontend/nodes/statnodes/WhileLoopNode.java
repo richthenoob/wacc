@@ -26,9 +26,10 @@ public class WhileLoopNode extends StatNode {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-    // Expr must be a bool.
-    // There is no need to print the type error message
-    // if the condition was not present in the symbol table - i.e. if the type was Error.
+    /* Expr must be a bool.
+     * There is no need to print the type error message
+     * if the condition was not present in the symbol table
+     * - i.e. if the type was Error. */
     if (!(cond.getType() instanceof BoolType
         || cond.getType() instanceof ErrorType)) {
       visitor.getSemanticErrorList()

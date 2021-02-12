@@ -24,13 +24,13 @@ public class FunctionReturnNode extends StatNode {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-    // can only be present in the body of a non-main function
+    /* Returns can only be present in the body of a non-main function */
     if (main) {
       visitor.getSemanticErrorList()
           .addException(ctx, "Cannot return from the global scope.");
     } else if (!exprNode.getType().getClass().equals(functionType.getClass())) {
-      // type of the expression given to the return statement
-      // must match the return type of the function
+      /* Type of the expression given to the return statement
+       * must match the return type of the function */
       visitor.getSemanticErrorList()
           .addTypeException(ctx, exprNode.getInput(),
               functionType.toString(), exprNode.getType().toString(), "");

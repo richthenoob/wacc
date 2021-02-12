@@ -19,9 +19,9 @@ public class StringLiteralNode extends LiteralNode {
     return value;
   }
 
-  /* Check that all characters in a string are valid. */
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
+    /* Check that all characters in a string are valid. */
     for (char c : getValue().toCharArray()) {
       if (!CharType.isValidChar(c)) {
         visitor.getSemanticErrorList().addTokenException(ctx, Character.toString(c), getValue());

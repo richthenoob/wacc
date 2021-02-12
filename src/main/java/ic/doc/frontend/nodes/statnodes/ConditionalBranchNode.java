@@ -45,7 +45,7 @@ public class ConditionalBranchNode extends StatNode {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-    //Expr must be a bool
+    /* Expr must be a bool */
     if (!(cond.getType() instanceof BoolType)) {
       visitor.getSemanticErrorList()
           .addTypeException(ctx, cond.getInput(), "BOOL", cond.getType().toString(), "");

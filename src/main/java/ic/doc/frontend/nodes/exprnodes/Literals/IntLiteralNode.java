@@ -24,6 +24,7 @@ public class IntLiteralNode extends LiteralNode {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
+    /* Check that input integer is within valid bounds */
     if (getValue() > IntType.INT_MAX || getValue() < IntType.INT_MIN) {
       throw new SyntaxException(
           "Integer is of value: " + getValue() +

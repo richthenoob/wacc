@@ -19,7 +19,7 @@ public class ExitNode extends StatNode {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-    // The type of the expression given to the exit statement must be an integer.
+    /* The type of the expression given to the exit statement must be an integer. */
     if (!(exprNode.getType() instanceof IntType)) {
       visitor.getSemanticErrorList()
           .addTypeException(ctx, exprNode.getInput(), "INT", exprNode.getType().toString(), "");
