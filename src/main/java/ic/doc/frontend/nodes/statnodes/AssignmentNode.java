@@ -57,14 +57,14 @@ public class AssignmentNode extends StatNode {
               .addTypeException(ctx, rhs.getInput(),
                   lhs.getType().toString(), rhs.getType().toString(),
                   "Did you mean '" + rhs.getInput() +
-                      "' instead of \"" + rhs.getInput() + "\"?");
+                      "' instead of \"" + rhs.getInput() + "\"?", "assignment");
           return;
         } else {
           visitor.getSemanticErrorList()
               .addTypeException(ctx, rhs.getInput(),
                   lhs.getType().toString(), rhs.getType().toString(),
                   "Did you mean " + rhs.getInput()
-                      + " instead of \"" + rhs.getInput() + "\"?");
+                      + " instead of \"" + rhs.getInput() + "\"?", "assignment");
           return;
         }
       }
@@ -76,7 +76,7 @@ public class AssignmentNode extends StatNode {
               .addTypeException(ctx, rhs.getInput(),
                   lhs.getType().toString(), rhs.getType().toString(),
                   "Did you mean \"" + rhs.getInput()
-                      + "\" instead of '" + rhs.getInput() + "'?");
+                      + "\" instead of '" + rhs.getInput() + "'?", "assignment");
           return;
         } else {
           // e.g. String greeting = hey
@@ -84,14 +84,14 @@ public class AssignmentNode extends StatNode {
               .addTypeException(ctx,rhs.getInput(),
                   lhs.getType().toString(), rhs.getType().toString(),
                   "Did you mean \"" + rhs.getInput()
-                      + "\" instead of " + rhs.getInput() + "?");
+                      + "\" instead of " + rhs.getInput() + "?", "assignment");
           return;
         }
       }
 
       visitor.getSemanticErrorList()
           .addTypeException(ctx, rhs.getInput(),
-              lhs.getType().toString(), rhs.getType().toString(), "");
+              lhs.getType().toString(), rhs.getType().toString(), "", "assignment");
     }
   }
 

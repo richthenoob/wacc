@@ -30,7 +30,7 @@ public class UnaryOperatorNode extends ExprNode {
       case LOGICAL_NOT:
         if (!(exprType instanceof BoolType)) {
           visitor.getSemanticErrorList()
-              .addTypeException(ctx, expr.getInput(), "BOOL", expr.toString(), "");
+              .addTypeException(ctx, expr.getInput(), "BOOL", expr.toString(), "", "binary operator '" +  unaryOperator + "'");
           isErrored = true;
         }
         setType(new BoolType());
@@ -38,7 +38,7 @@ public class UnaryOperatorNode extends ExprNode {
       case MATH_NEGATION:
         if (!(exprType instanceof IntType)) {
           visitor.getSemanticErrorList()
-              .addTypeException(ctx, expr.getInput(), "INT", expr.toString(), "");
+              .addTypeException(ctx, expr.getInput(), "INT", expr.toString(), "", "binary operator '" +  unaryOperator + "'");
           isErrored = true;
         }
         setType(new IntType());
@@ -46,7 +46,7 @@ public class UnaryOperatorNode extends ExprNode {
       case CHR:
         if (!(exprType instanceof IntType)) {
           visitor.getSemanticErrorList()
-              .addTypeException(ctx, expr.getInput(), "INT", expr.toString(), "");
+              .addTypeException(ctx, expr.getInput(), "INT", expr.toString(), "", "binary operator '" +  unaryOperator + "'");
           isErrored = true;
         }
         setType(new CharType());
@@ -54,7 +54,7 @@ public class UnaryOperatorNode extends ExprNode {
       case LEN:
         if (!(exprType instanceof ArrayType)) {
           visitor.getSemanticErrorList()
-              .addTypeException(ctx, expr.getInput(), "T[]", expr.toString(), "");
+              .addTypeException(ctx, expr.getInput(), "T[]", expr.toString(), "", "binary operator '" +  unaryOperator + "'");
           isErrored = true;
         }
         setType(new IntType());
@@ -62,7 +62,7 @@ public class UnaryOperatorNode extends ExprNode {
       case ORD:
         if (!(exprType instanceof CharType)) {
           visitor.getSemanticErrorList()
-              .addTypeException(ctx, expr.getInput(), "CHAR", expr.toString(), "");
+              .addTypeException(ctx, expr.getInput(), "CHAR", expr.toString(), "", "binary operator '" +  unaryOperator + "'");
           isErrored = true;
         }
         setType(new IntType());

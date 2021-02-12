@@ -16,33 +16,6 @@ public class ArrayType extends Type {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null) {
-      return false;
-    }
-
-    if (o.getClass().equals(AnyType.class)) {
-      return true;
-    }
-
-    if (getClass() != o.getClass()) {
-      return false;
-    }
-
-    ArrayType array = (ArrayType) o;
-
-    return getInternalType().equals(array.internalType);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(internalType);
-  }
-
-  @Override
   public String toString() {
     return getInternalType() + "[]";
   }
