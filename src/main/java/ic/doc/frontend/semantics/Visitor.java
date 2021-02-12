@@ -300,7 +300,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   }
 
   /* Called when assigning the target in an assignment  eg. x = EXPRESSION
-     Finds out variable type and creates a variable node*/
+     Determines variable type and creates a variable node*/
   @Override
   public Node visitAssignLhs(BasicParser.AssignLhsContext ctx) {
     // decide which lhs
@@ -336,6 +336,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return this.visit(ctx.pairElem());
   }
 
+  /* Called when assigning value of function return eg. call increment(int x)
+     Creates a call node*/
   @Override
   public Node visitCall(BasicParser.CallContext ctx) {
     ArgListNode args = (ArgListNode) visit(ctx.argList());
@@ -344,7 +346,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return node;
   }
 
-
+  /* Called when argument list is reached eg. FUNCTION(int i, bool b)
+     Iterates through the arguments and creates an arg list node*/
   @Override
   public Node visitArgList(BasicParser.ArgListContext ctx) {
     List<ExprNode> exprNodes = new ArrayList<>();
@@ -355,6 +358,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return new ArgListNode(exprNodes);
   }
 
+  /* Called when accessing first element of a pair eg. fst pair
+     Creates a pair elem node*/
   @Override
   public Node visitFstPairElem(BasicParser.FstPairElemContext ctx) {
     ExprNode exprNode = (ExprNode) visit(ctx.expr());
@@ -364,6 +369,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return node;
   }
 
+  /* Called when accessing first element of a pair eg. snd pair
+     Creates a pair elem node*/
   @Override
   public Node visitSndPairElem(BasicParser.SndPairElemContext ctx) {
     ExprNode exprNode = (ExprNode) visit(ctx.expr());
@@ -373,48 +380,63 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return node;
   }
 
+  /* Duplicate visit due to labeling in parsing, calls visit on the pairType */
   @Override
   public Node visitPairTypeDup(BasicParser.PairTypeDupContext ctx) {
     return visit(ctx.pairType());
   }
 
+  /* Duplicate visit due to labeling in parsing, calls visit on the baseType */
   @Override
   public Node visitBaseTypeDup(BasicParser.BaseTypeDupContext ctx) {
     return visit(ctx.baseType());
   }
 
+  /* Duplicate visit due to labeling in parsing, calls visit on the ArrayType */
   @Override
   public Node visitArrayTypeDup(BasicParser.ArrayTypeDupContext ctx) {
     TypeNode elemType = (TypeNode) visit(ctx.type());
     return new TypeNode(new ArrayType(elemType.getType()));
   }
 
+  /* Called when the int type is reached eg. int
+     Creates a type node*/
   @Override
   public Node visitIntType(BasicParser.IntTypeContext ctx) {
     return new TypeNode(new IntType());
   }
 
+  /* Called when the bool type is reached eg. bool
+     Creates a type node*/
   @Override
   public Node visitBoolType(BasicParser.BoolTypeContext ctx) {
     return new TypeNode(new BoolType());
   }
 
+  /* Called when the char type is reached eg. char
+     Creates a type node*/
   @Override
   public Node visitCharType(BasicParser.CharTypeContext ctx) {
     return new TypeNode(new CharType());
   }
 
+  /* Called when the str type is reached eg. str
+     Creates a type node*/
   @Override
   public Node visitStrType(BasicParser.StrTypeContext ctx) {
     return new TypeNode(new StringType());
   }
 
+  /* Called when the array type is reached eg. int []
+     Creates a type node*/
   @Override
   public Node visitArrayType(BasicParser.ArrayTypeContext ctx) {
     TypeNode elemType = (TypeNode) visit(ctx.type());
     return new TypeNode(new ArrayType(elemType.getType()));
   }
 
+  /* Called when the pair type is reached eg. pair (int, bool)
+     Creates a type node*/
   @Override
   public Node visitPairType(BasicParser.PairTypeContext ctx) {
     TypeNode fst = (TypeNode) visit(ctx.pairElemType(0));
@@ -422,6 +444,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return new TypeNode(new PairType(fst.getType(), snd.getType()));
   }
 
+  /* Called when the type of the individual pair element is reached eg. pair (int, TYPE)
+     Determines the subtype and creates a type node*/
   @Override
   public Node visitPairElemType(BasicParser.PairElemTypeContext ctx) {
     if (ctx.baseType() != null) {
@@ -435,24 +459,28 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return new TypeNode(new ErrorType());
   }
 
+  /* Called when an identifier is reached eg. increment
+     Creates a variable node*/
   @Override
   public Node visitIdentifier(BasicParser.IdentifierContext ctx) {
     String name = ctx.IDENT().getText();
     VariableNode node = new VariableNode(name);
 
-    /* Check symbol table to see if it exists already. Throws
-     * a semantic exception if it does not. Has side-effect of setting
+    /* Has side-effect of setting
      * its type when calling check(). */
     node.check(this, ctx);
 
     return node;
   }
 
+  /* Duplicate visit due to labeling in parsing, calls visit on the ArrayElemType */
   @Override
   public Node visitArrayElemDup(BasicParser.ArrayElemDupContext ctx) {
     return visitArrayElem(ctx.arrayElem());
   }
 
+  /* Called when a type literal is reached eg. true
+     Determines the type of the literal and creates the corresponding node*/
   @Override
   public Node visitLiteral(BasicParser.LiteralContext ctx) {
 
@@ -486,8 +514,11 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return exprNode;
   }
 
+  /* Called when applying an unary operator to an expression eg. not b
+     Determines the subtype and creates a unary operator node*/
   @Override
   public Node visitUnOpApplication(BasicParser.UnOpApplicationContext ctx) {
+
     /* Determine operator. */
     unaryOperators operator;
     TerminalNode typeNode = (TerminalNode) ctx.getChild(0);
@@ -521,11 +552,15 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return unaryOperatorNode;
   }
 
+  /* Called when brackets are reached eg. (EXPRESSION)
+     Visits the inner expression */
   @Override
   public Node visitBrackets(BasicParser.BracketsContext ctx) {
     return visit(ctx.expr());
   }
 
+  /* Called when accessing specific element of an array eg. cars[5]
+     Iterates through expressions , checks the identifier and creates a array element node*/
   @Override
   public Node visitArrayElem(BasicParser.ArrayElemContext ctx) {
 
@@ -549,6 +584,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return arrayElementNode;
   }
 
+  /* Called when an array literal is reached eg. [1,2,3]
+     Iterates through the expressions and creates a array literal node*/
   @Override
   public Node visitArrayLiter(BasicParser.ArrayLiterContext ctx) {
     List<ExprNode> exprNodes = new ArrayList<>();
@@ -560,6 +597,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return arrayLiteralNode;
   }
 
+  /* Called when applying a binary operation of precedence 1 to 2 expressions eg. 5 * 6
+     Creates a binary operator node*/
   @Override
   public Node visitBinOp1Application(BinOp1ApplicationContext ctx) {
     /* Determine operator. */
@@ -591,6 +630,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return binaryOperatorNode;
   }
 
+  /* Called when applying a binary operation of precedence 2 to 2 expressions eg. 5 + 6
+     Creates a binary operator node*/
   @Override
   public Node visitBinOp2Application(BinOp2ApplicationContext ctx) {
     /* Determine operator. */
@@ -622,6 +663,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return binaryOperatorNode;
   }
 
+  /* Called when applying a binary operation of precedence 3 to 2 expressions eg. 5 < 6
+     Creates a binary operator node*/
   @Override
   public Node visitBinOp3Application(BinOp3ApplicationContext ctx) {
     /* Determine operator. */
@@ -656,6 +699,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return binaryOperatorNode;
   }
 
+  /* Called when applying a binary operation of precedence 4 to 2 expressions eg. 5 != 6
+     Creates a binary operator node*/
   @Override
   public Node visitBinOp4Application(BinOp4ApplicationContext ctx) {
     /* Determine operator. */
@@ -684,6 +729,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return binaryOperatorNode;
   }
 
+  /* Called when applying a binary operation of precedence 5 to 2 expressions eg. true && true
+     Creates a binary operator node*/
   @Override
   public Node visitBinOp5Application(BinOp5ApplicationContext ctx) {
     /* Only one operator with precedence 5 : AND. */
@@ -705,6 +752,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return binaryOperatorNode;
   }
 
+  /* Called when applying a binary operation of precedence 6 to 2 expressions eg. true || true
+     Creates a binary operator node*/
   @Override
   public Node visitBinOp6Application(BinOp6ApplicationContext ctx) {
     /* Only one operator with precedence 5 : AND. */
@@ -726,6 +775,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return binaryOperatorNode;
   }
 
+  /* Called when an int literal is reached eg. 5
+     Checks if the integer is within the permissible range and creates a int literal node*/
   @Override
   public Node visitIntLiter(IntLiterContext ctx) {
     long value;
