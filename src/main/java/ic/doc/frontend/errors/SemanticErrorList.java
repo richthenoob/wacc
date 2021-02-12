@@ -57,11 +57,15 @@ public class SemanticErrorList {
     return stringBuilder.toString();
   }
 
+  /* Adds a custom error message together with its line and character position */
   public void addException(ParserRuleContext ctx, String errorMessage) {
     semanticErrors.add("Semantic error at line " + ctx.getStart().getLine()
         + ":" + ctx.getStart().getCharPositionInLine() + " - " + errorMessage);
   }
 
+  /* Adds an error message for mismatched types
+   * together with its line and character position.
+   * Appends careted code and suggestion (if not empty) */
   public void addTypeException(ParserRuleContext ctx, String input,
       String expectedType, String actualType, String suggestion) {
 
@@ -90,12 +94,9 @@ public class SemanticErrorList {
     }
   }
 
-  public void addSuggestion(ParserRuleContext ctx, String suggestion) {
-    semanticErrors.add("Semantic error at line " + ctx.getStart().getLine()
-        + ":" + ctx.getStart().getCharPositionInLine()
-        + " ---- Suggestion: " + suggestion);
-  }
-
+  /* Adds an error message for invalid character tokens
+   * together with its line and character position.
+   * Appends careted code*/
   public void addTokenException(ParserRuleContext ctx, String token,
       String input) {
     String underlineError = getUnderlineError(ctx, input);
@@ -107,6 +108,9 @@ public class SemanticErrorList {
             + "." + underlineError);
   }
 
+  /* Adds an error message for definition errors
+   * together with its line and character position.
+   * Appends careted code */
   public void addScopeException(ParserRuleContext ctx, Boolean presentInScope,
       String object, String input) {
     String underlineError = getUnderlineError(ctx, input);
@@ -117,6 +121,7 @@ public class SemanticErrorList {
         + underlineError);
   }
 
+  /* Sorts list of errors according to line and character position */
   public void sortErrors() {
     String[] errors = semanticErrors.toArray(String[]::new);
     Arrays.sort(errors);
