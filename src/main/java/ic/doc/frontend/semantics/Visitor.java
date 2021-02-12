@@ -42,6 +42,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return semanticErrorList;
   }
 
+  /* Called once at the start of any program eg. begin FUNCTIONS STATEMENT end
+     initialises symbol table an semantic list */
   @Override
   public Node visitProg(BasicParser.ProgContext ctx) {
     currentSymbolTable = new SymbolTable(null);
@@ -61,6 +63,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return new ProgNode(functionNodes, statNode);
   }
 
+  /* Helper function to called to declare functions, adds to symbol table if function name is not already defined */
   private void declareFunction(BasicParser.FuncContext ctx) {
     if (!ctx.IDENT().getText().equals("main")) {
       String funcName = ctx.IDENT().toString();
@@ -80,19 +83,23 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     }
   }
 
+  /* Called during function declaration eg. int myFunction(int a, int b) is STAT end
+     Adds params to symbol table  and creates a function node */
   @Override
   public Node visitFunc(BasicParser.FuncContext ctx) {
-    // need to check if we have a return statement
+
     if (!ctx.IDENT().getText().equals("main")) {
       String funcName = ctx.IDENT().toString();
       Type returnType = ((TypeNode) visit(ctx.type())).getType();
+
       /* create new symbol table here*/
+      currentSymbolTable = new SymbolTable(currentSymbolTable);
 
       /* Visiting stat should be visiting with the enclosing symbol table, should contain function already*/
       /* In other words, we need to add this function to the symbol table before visiting the STAT */
       /* This means that we need to add it to the symbol table here, NOT in the function node */
       /* This is because functionNode needs a stat in its constructor */
-      currentSymbolTable = new SymbolTable(currentSymbolTable);
+
       ParamListNode paramList = (ParamListNode) visit(ctx.paramList());
       List<ParamNode> params = paramList.getParams();
       for (ParamNode p : params) {
@@ -112,6 +119,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return null;
   }
 
+  /* Called when a parameter list is reached. eg. FUNCTION_NAME(int a, int b)
+     Iterates through the params and creates a paramList node */
   @Override
   public Node visitParamList(BasicParser.ParamListContext ctx) {
     List<ParamNode> params = new ArrayList<>();
@@ -121,12 +130,16 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return new ParamListNode(params);
   }
 
+  /* Called when a parameter is reached. eg. FUNCTION_NAME(int a, PARAM)
+     Gets the type of parameter and creates a param node */
   @Override
   public Node visitParam(BasicParser.ParamContext ctx) {
     Type type = ((TypeNode) visit(ctx.type())).getType();
     return new ParamNode(type, ctx.IDENT().getText());
   }
 
+  /* Called when declaring a variable while assigning it to a value. eg. int i = 5
+     Adds variable to symbol table if not already defined in current scope and creates an assignment node*/
   @Override
   public Node visitDeclarativeAssignment(
       BasicParser.DeclarativeAssignmentContext ctx) {
@@ -149,9 +162,10 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return node;
   }
 
+  /* Called when assigning a value from standard input into an expression eg. read i
+     Creates read node with the expression */
   @Override
   public Node visitRead(BasicParser.ReadContext ctx) {
-//        String name = ctx.assignLhs().getText();
     ExprNode exprNode = (ExprNode) visit(ctx.assignLhs());
     ReadNode node = new ReadNode(exprNode);
     node.check(this, ctx);
@@ -159,6 +173,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return node;
   }
 
+  /* Called when assigning a variable to a value. eg. i = 5
+     Looks up variable in symbol table and creates an assignment node*/
   @Override
   public Node visitAssignment(BasicParser.AssignmentContext ctx) {
     ExprNode lhs;
@@ -175,12 +191,15 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return node;
   }
 
+  /* Called when a statement that does nothing is required by syntax eg. skip
+     Creates a skip node*/
   @Override
   public Node visitSkip(BasicParser.SkipContext ctx) {
     return new SkipNode();
   }
 
-
+  /* Called when a while loop is reached eg. while true do skip done
+     Creates a while loop node*/
   @Override
   public Node visitWhile(BasicParser.WhileContext ctx) {
     StatNode body = (StatNode) visit(ctx.stat());
@@ -190,6 +209,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return node;
   }
 
+  /* Called to exit with an exit code eg. exit 5
+     Creates an exit node*/
   @Override
   public Node visitExit(BasicParser.ExitContext ctx) {
     ExitNode node = new ExitNode((ExprNode) visit(ctx.expr()));
@@ -197,16 +218,22 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return node;
   }
 
+  /* Called when printing an expression eg. print 5
+     Creates a print node*/
   @Override
   public Node visitPrint(BasicParser.PrintContext ctx) {
     return new PrintNode((ExprNode) visit(ctx.expr()), false);
   }
 
+  /* Called when a printing an expression with a new line after  eg. println 5
+     Creates a print node*/
   @Override
   public Node visitPrintln(BasicParser.PrintlnContext ctx) {
     return new PrintNode((ExprNode) visit(ctx.expr()), true);
   }
 
+  /* Called when statements are to be executed in sequence eg. print 5; print 6
+     Iterates through the statements and creates a sequential composition node node*/
   @Override
   public Node visitSemi(BasicParser.SemiContext ctx) {
     SequentialCompositionNode node = new SequentialCompositionNode();
