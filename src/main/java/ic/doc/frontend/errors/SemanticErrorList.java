@@ -86,30 +86,25 @@ public class SemanticErrorList {
    * Appends careted code and suggestion (if not empty) */
   public void addTypeException(ParserRuleContext ctx, String input,
       String expectedType, String actualType, String suggestion) {
-
     String underlineError = getUnderlineError(ctx, input);
+
     String sugg = "";
     if (!suggestion.isEmpty()) {
       sugg = "Suggestion: " + suggestion;
     }
 
+    String apostrophe = "'";
     if (actualType.equals("STRING")) {
-      semanticErrors.add(
-          "Semantic error at line " + ctx.getStart().getLine()
-              + ":" + ctx.getStart().getCharPositionInLine()
-              + " - Incompatible type at \"" + input
-              + "\". Expected type: " + expectedType
-              + ". Actual type: " + actualType + "."
-              + underlineError + sugg);
-    } else {
-      semanticErrors.add(
-          "Semantic error at line " + ctx.getStart().getLine()
-              + ":" + ctx.getStart().getCharPositionInLine()
-              + " - Incompatible type at '" + input
-              + "'. Expected type: " + expectedType
-              + ". Actual type: " + actualType + "."
-              + underlineError + sugg);
+      apostrophe = "\"";
     }
+
+    semanticErrors.add(
+        "Semantic error at line " + ctx.getStart().getLine()
+            + ":" + ctx.getStart().getCharPositionInLine()
+            + " - Incompatible type at " + apostrophe + input + apostrophe
+            + ". Expected type: " + expectedType
+            + ". Actual type: " + actualType + "."
+            + underlineError + sugg);
   }
 
   /* Adds an error message for mismatched types
