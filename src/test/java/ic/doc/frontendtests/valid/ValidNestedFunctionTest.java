@@ -21,5 +21,4 @@ public class ValidNestedFunctionTest extends AbstractFrontendTest {
   public void validNestedFunctionTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }

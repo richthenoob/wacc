@@ -1,13 +1,10 @@
-# Sample Makefile for the WACC Compiler lab: edit this to build your own compiler
-# Tools
-
+# Use gradle wrapper to help compile run and test our code.
 GRADLE	:= ./gradlew
 
-# the make rules
+all: build
 
-all: rules
-
-rules:
+# Build without testing. Also compiles a jar file to build/libs
+build:
 	$(GRADLE) build -x test
 
 clean:
@@ -16,5 +13,5 @@ clean:
 test:
 	$(GRADLE) test
 
-.PHONY: all rules clean test
+.PHONY: all build clean test
 

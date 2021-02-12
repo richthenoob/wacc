@@ -52,15 +52,15 @@ pairElem: FST expr #fstPairElem
 ;
 
 /* ------------------------------------- TYPES ------------------------------------- */
-type: baseType
-| type OPEN_BRACKETS CLOSE_BRACKETS
-| pairType
+type: baseType                          #baseTypeDup
+| type OPEN_BRACKETS CLOSE_BRACKETS     #arrayTypeDup
+| pairType                              #pairTypeDup
 ;
 
-baseType: INT
-| BOOL
-| CHAR
-| STR
+baseType: INT   #intType
+| BOOL          #boolType
+| CHAR          #charType
+| STR           #strType
 ;
 
 arrayType : type OPEN_BRACKETS CLOSE_BRACKETS;

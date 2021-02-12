@@ -20,5 +20,4 @@ public class ValidExpressionsTest extends AbstractFrontendTest {
   public void validExpressionsTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }

@@ -21,5 +21,4 @@ public class ValidSimpleFunctionTest extends AbstractFrontendTest {
   public void validSimpleFunctionTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }

@@ -23,5 +23,4 @@ public class InvalidSemanticExitTest extends AbstractFrontendTest {
   public void invalidSemanticExitTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }

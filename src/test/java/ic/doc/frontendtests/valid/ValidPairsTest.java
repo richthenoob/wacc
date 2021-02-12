@@ -20,5 +20,4 @@ public class ValidPairsTest extends AbstractFrontendTest {
   public void validPairTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }

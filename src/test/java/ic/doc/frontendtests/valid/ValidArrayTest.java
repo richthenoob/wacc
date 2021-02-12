@@ -21,5 +21,4 @@ public class ValidArrayTest extends AbstractFrontendTest {
   public void validArrayTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }

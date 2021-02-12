@@ -21,5 +21,4 @@ public class ValidIoReadTest extends AbstractFrontendTest {
   public void validIoReadTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }

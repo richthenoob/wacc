@@ -22,5 +22,4 @@ public class InvalidSyntaxArrayTest extends AbstractFrontendTest {
   public void invalidSyntaxArrayTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }
