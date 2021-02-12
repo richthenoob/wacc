@@ -19,6 +19,6 @@ public class ProgNode extends Node {
 
     @Override
     public void check(Visitor visitor, ParserRuleContext ctx) {
-
+        /* No checks needed. */
     }
 }

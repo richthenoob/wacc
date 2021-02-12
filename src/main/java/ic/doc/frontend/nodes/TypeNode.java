@@ -18,6 +18,7 @@ public class TypeNode extends Node {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
+    /* No checks needed. */
   }
 
   public String getInput() {

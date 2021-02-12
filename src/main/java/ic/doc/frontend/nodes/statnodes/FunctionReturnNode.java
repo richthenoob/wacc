@@ -24,7 +24,6 @@ public class FunctionReturnNode extends StatNode {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-
     // can only be present in the body of a non-main function
     if (main) {
       visitor.getSemanticErrorList()

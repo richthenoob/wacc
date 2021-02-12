@@ -39,7 +39,7 @@ public class AssignmentNode extends StatNode {
       if (visitor.getCurrentSymbolTable().lookup(key) != null) {
         visitor
                 .getSemanticErrorList()
-                .addException(ctx, "Variable " + name + " was already defined in this scope.");
+                .addScopeException(ctx, true, "Variable", name);
       } else {
         visitor.getCurrentSymbolTable().add(key, new VariableIdentifier(lhs.getType()));
       }

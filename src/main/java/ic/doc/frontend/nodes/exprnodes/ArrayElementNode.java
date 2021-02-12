@@ -47,15 +47,13 @@ public class ArrayElementNode extends ExprNode {
     if (entry == null) {
       isErrored = true;
       /* Identifier should have already been defined. */
-      visitor.getSemanticErrorList().addException(ctx, "Variable " + identNode.getInput()
-          + " is not defined in this scope.");
+      visitor.getSemanticErrorList().addScopeException(ctx, false,
+          "Variable", identNode.getInput());
     } else if (!(entry.getType() instanceof ArrayType)) {
       isErrored = true;
       /* Identifier should be of type "Array". */
-      visitor.getSemanticErrorList().addException(ctx,
-          "Incompatible type at " + identNode.getInput()
-              + ". Expected type: T[]. Actual type: "
-              + identNode.getType().toString());
+      visitor.getSemanticErrorList().addTypeException(ctx,
+          identNode.getInput(), "T[]", identNode.getType().toString());
     }
 
     /* Go through all exprNodes to check index is of correct type, INT. */

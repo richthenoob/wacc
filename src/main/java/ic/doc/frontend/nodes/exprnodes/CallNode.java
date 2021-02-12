@@ -30,8 +30,8 @@ public class CallNode extends ExprNode {
     Identifier id = visitor.getCurrentSymbolTable().lookupAll(key);
     if (id == null) {
       setType(new ErrorType());
-      visitor.getSemanticErrorList().addException(ctx,
-          "Couldn't find " + functionName + " in symbol table!");
+      visitor.getSemanticErrorList().addScopeException(ctx, false,
+          "Function", functionName);
     } else if (!(id instanceof FunctionIdentifier)) {
       String instance = id instanceof ParamIdentifier ? "Param" : "Variable";
       setType(new ErrorType());

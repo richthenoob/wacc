@@ -20,7 +20,6 @@ public class MemoryFreeNode extends StatNode {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-
     // expression must be of type ‘pair(T1, T2)’ or ‘T[]’ (for some T, T1, T2)
     if (!(exprNode.getType() instanceof PairType || exprNode
         .getType() instanceof ArrayType)) {

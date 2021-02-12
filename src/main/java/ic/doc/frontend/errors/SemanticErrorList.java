@@ -53,6 +53,14 @@ public class SemanticErrorList {
         + ".");
   }
 
+  public void addScopeException(ParserRuleContext ctx, Boolean presentInScope,
+      String object, String input) {
+    String defined = presentInScope ? " was already" : " is not";
+    semanticErrors.add("Semantic error at line " + ctx.getStart().getLine()
+        + ":" + ctx.getStart().getCharPositionInLine() + " - "
+        + object + " " + input + defined + " defined in this scope.");
+  }
+
   public void sortErrors() {
     String[] errors = semanticErrors.toArray(String[]::new);
     Arrays.sort(errors);

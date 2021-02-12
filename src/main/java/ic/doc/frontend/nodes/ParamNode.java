@@ -15,7 +15,7 @@ public class ParamNode extends Node{
 
     @Override
     public void check(Visitor visitor, ParserRuleContext ctx) {
-
+        /* No checks needed. */
     }
 
     public ParamNode(Type type, String input) {
