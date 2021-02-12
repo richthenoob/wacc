@@ -244,6 +244,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return node;
   }
 
+  /* Called when a freeing a pair or array from memory eg. free x
+     Creates a memory free node*/
   @Override
   public Node visitFree(BasicParser.FreeContext ctx) {
     MemoryFreeNode node = new MemoryFreeNode((ExprNode) visit(ctx.expr()));
@@ -251,8 +253,11 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return node;
   }
 
+  /* Called when a reaching an if loop eg. if b then print b else print a fi
+     Creates a new symbol table for both if and else bodies and creates a conditional branch node*/
   @Override
   public Node visitIf(BasicParser.IfContext ctx) {
+
     /* Each if and else body has their own scope/symbol table */
     ExprNode expr = (ExprNode) visit(ctx.expr());
     SymbolTable trueBodySymbolTable = new SymbolTable(currentSymbolTable);
@@ -269,6 +274,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return node;
   }
 
+  /* Called when declaring a new scope  eg. begin STATEMENT end
+   Creates a new symbol table for the new scope and creates a scoping node*/
   @Override
   public Node visitBegin(BasicParser.BeginContext ctx) {
     currentSymbolTable = new SymbolTable(currentSymbolTable);
@@ -279,6 +286,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
   }
 
+  /* Called when returning a value from a non-main function eg. return true
+     Checks if function is non-main and creates a function return node*/
   @Override
   public Node visitReturn(BasicParser.ReturnContext ctx) {
     boolean main = false;
@@ -304,6 +313,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return node;
   }
 
+  /* Called when assigning the target in an assignment  eg. x = EXPRESSION
+     Finds out variable type and creates a variable node*/
   @Override
   public Node visitAssignLhs(BasicParser.AssignLhsContext ctx) {
     // decide which lhs
@@ -318,11 +329,14 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     }
   }
 
+  /* Duplicate visit due to labeling in parsing, calls visit on arrayLiter */
   @Override
   public Node visitArrayLiterDup(BasicParser.ArrayLiterDupContext ctx) {
     return this.visit(ctx.arrayLiter());
   }
 
+  /* Called when assigning value of a pair constructor eg. newpair(x, y)
+     Creates a pair node*/
   @Override
   public Node visitNewPair(BasicParser.NewPairContext ctx) {
     ExprNode lhs = (ExprNode) visit(ctx.expr(0));
@@ -330,6 +344,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return new PairNode(lhs, rhs);
   }
 
+  /* Duplicate visit due to labeling in parsing, calls visit on the pairElem */
   @Override
   public Node visitPairElemDup(BasicParser.PairElemDupContext ctx) {
     return this.visit(ctx.pairElem());
