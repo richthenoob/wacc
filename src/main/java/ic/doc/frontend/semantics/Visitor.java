@@ -77,8 +77,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
             paramList.getType());
         currentSymbolTable.add(key, id);
       } else {
-        semanticErrorList.addException(ctx, "Function '" + funcName
-            + "' already declared in current scope.");
+        semanticErrorList.addScopeException(ctx, true, "Function", "'" + funcName + "'");
       }
     }
   }
