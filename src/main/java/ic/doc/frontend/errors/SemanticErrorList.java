@@ -77,18 +77,16 @@ public class SemanticErrorList {
       String expectedType,
       String actualType,
       String suggestion) {
-    String underlineError = getUnderlineError(ctx, input);
 
+    String underlineError = getUnderlineError(ctx, input);
     String sugg = "";
     if (!suggestion.isEmpty()) {
       sugg = "Suggestion: " + suggestion;
     }
-
     String apostrophe = "'";
     if (actualType.equals("STRING")) {
       apostrophe = "\"";
     }
-
     semanticErrors.add(
         "Semantic error at line "
             + ctx.getStart().getLine()
@@ -125,43 +123,28 @@ public class SemanticErrorList {
     if (!suggestion.isEmpty()) {
       sugg = "Suggestion: " + suggestion;
     }
-
+    String apostrophe = "'";
     if (actualType.equals("STRING")) {
-      semanticErrors.add(
-          "Semantic error at line "
-              + ctx.getStart().getLine()
-              + ":"
-              + ctx.getStart().getCharPositionInLine()
-              + " - Incompatible type at \""
-              + input
-              + "\""
-              + " for "
-              + errorOperation
-              + ".Expected type: "
-              + expectedType
-              + ". Actual type: "
-              + actualType
-              + "."
-              + underlineError
-              + sugg);
-    } else {
-      semanticErrors.add(
-          "Semantic error at line "
-              + ctx.getStart().getLine()
-              + ":"
-              + ctx.getStart().getCharPositionInLine()
-              + " - Incompatible type at '"
-              + input
-              + "' for "
-              + errorOperation
-              + ". Expected type: "
-              + expectedType
-              + ". Actual type: "
-              + actualType
-              + "."
-              + underlineError
-              + sugg);
+      apostrophe = "\"";
     }
+    semanticErrors.add(
+        "Semantic error at line "
+            + ctx.getStart().getLine()
+            + ":"
+            + ctx.getStart().getCharPositionInLine()
+            + " - Incompatible type at "
+            + apostrophe
+            + input
+            + apostrophe
+            + " for "
+            + errorOperation
+            + ". Expected type: "
+            + expectedType
+            + ". Actual type: "
+            + actualType
+            + "."
+            + underlineError
+            + sugg);
   }
 
   /* Adds an error message for invalid character tokens
