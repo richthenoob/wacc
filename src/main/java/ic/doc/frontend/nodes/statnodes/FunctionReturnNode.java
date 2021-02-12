@@ -33,7 +33,7 @@ public class FunctionReturnNode extends StatNode {
       // must match the return type of the function
       visitor.getSemanticErrorList()
           .addTypeException(ctx, exprNode.getInput(),
-              functionType.toString(), exprNode.getType().toString());
+              functionType.toString(), exprNode.getType().toString(), "");
     }
 
   }

@@ -124,7 +124,7 @@ public class BinaryOperatorNode extends ExprNode {
     if (!type1IsValid && type2IsValid) {
       visitor.getSemanticErrorList()
           .addTypeException(ctx, expr1.getInput(),
-              type2.toString(), type1.toString());
+              type2.toString(), type1.toString(), "");
       return false;
     }
 
@@ -132,7 +132,7 @@ public class BinaryOperatorNode extends ExprNode {
     if (type1IsValid && !type2IsValid) {
       visitor.getSemanticErrorList()
           .addTypeException(ctx, expr2.getInput(),
-              type1.toString(), type2.toString());
+              type1.toString(), type2.toString(), "");
       return false;
     }
 
@@ -140,10 +140,10 @@ public class BinaryOperatorNode extends ExprNode {
     if (!type1IsValid && !type2IsValid) {
       visitor.getSemanticErrorList()
           .addTypeException(ctx, expr1.getInput(),
-              stringValidTypes, type1.toString());
+              stringValidTypes, type1.toString(), "");
       visitor.getSemanticErrorList()
           .addTypeException(ctx, expr2.getInput(),
-              stringValidTypes, type2.toString());
+              stringValidTypes, type2.toString(), "");
       return false;
     }
 
@@ -151,7 +151,7 @@ public class BinaryOperatorNode extends ExprNode {
     if (type1IsValid && type2IsValid && !Type.checkTypeCompatibility(type1, type2)) {
       visitor.getSemanticErrorList()
           .addTypeException(ctx, expr2.getInput(),
-              expr1.getType().toString(), type2.toString());
+              expr1.getType().toString(), type2.toString(), "");
       return false;
     }
 

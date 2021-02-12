@@ -52,7 +52,7 @@ public class CallNode extends ExprNode {
                 + ".");
       } else if (!(Type.checkTypeListCompatibility(args.getType(), expectedParamListType))) {
         visitor.getSemanticErrorList().addTypeException(ctx,
-            args.getInput(), functionId.printTypes(), args.printTypes());
+            args.getInput(), functionId.printTypes(), args.printTypes(), "");
       }
     }
   }

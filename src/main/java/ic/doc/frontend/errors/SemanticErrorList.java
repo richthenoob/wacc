@@ -63,9 +63,13 @@ public class SemanticErrorList {
   }
 
   public void addTypeException(ParserRuleContext ctx, String input,
-      String expectedType, String actualType) {
+      String expectedType, String actualType, String suggestion) {
 
     String underlineError = getUnderlineError(ctx, input);
+    String sugg = "";
+    if (!suggestion.isEmpty()) {
+      sugg = "Suggestion: " + suggestion;
+    }
 
     if (actualType.equals("STRING")) {
       semanticErrors.add(
@@ -74,7 +78,7 @@ public class SemanticErrorList {
               + " - Incompatible type at \"" + input
               + "\". Expected type: " + expectedType
               + ". Actual type: " + actualType + "."
-              + underlineError);
+              + underlineError + sugg);
     } else {
       semanticErrors.add(
           "Semantic error at line " + ctx.getStart().getLine()
@@ -82,7 +86,7 @@ public class SemanticErrorList {
               + " - Incompatible type at '" + input
               + "'. Expected type: " + expectedType
               + ". Actual type: " + actualType + "."
-              + underlineError);
+              + underlineError + sugg);
     }
   }
 

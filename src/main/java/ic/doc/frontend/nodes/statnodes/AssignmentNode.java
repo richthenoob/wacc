@@ -49,20 +49,23 @@ public class AssignmentNode extends StatNode {
     if (!(Type.checkTypeCompatibility(lhs.getType(), rhs.getType()))
         && !(lhs.getType() instanceof ErrorType)
         && !(rhs.getType() instanceof ErrorType)) {
-      visitor.getSemanticErrorList()
-          .addTypeException(ctx, rhs.getInput(),
-              lhs.getType().toString(), rhs.getType().toString());
 
       if (rhs.getType() instanceof StringType) {
         if (lhs.getType() instanceof CharType && rhs.getInput().length() == 1) {
           // e.g. char c = "a"
           visitor.getSemanticErrorList()
-              .addSuggestion(ctx,"Did you mean '"
-                  + rhs.getInput() + "' instead of \"" + rhs.getInput() + "\"?");
+              .addTypeException(ctx, rhs.getInput(),
+                  lhs.getType().toString(), rhs.getType().toString(),
+                  "Did you mean '" + rhs.getInput() +
+                      "' instead of \"" + rhs.getInput() + "\"?");
+          return;
         } else {
           visitor.getSemanticErrorList()
-              .addSuggestion(ctx,"Did you mean "
-                  + rhs.getInput() + " instead of \"" + rhs.getInput() + "\"?");
+              .addTypeException(ctx, rhs.getInput(),
+                  lhs.getType().toString(), rhs.getType().toString(),
+                  "Did you mean " + rhs.getInput()
+                      + " instead of \"" + rhs.getInput() + "\"?");
+          return;
         }
       }
 
@@ -70,15 +73,25 @@ public class AssignmentNode extends StatNode {
         if (rhs.getType() instanceof CharType) {
           // e.g. String s = 'a'
           visitor.getSemanticErrorList()
-              .addSuggestion(ctx,"Did you mean \""
-                  + rhs.getInput() + "\" instead of '" + rhs.getInput() + "'?");
+              .addTypeException(ctx, rhs.getInput(),
+                  lhs.getType().toString(), rhs.getType().toString(),
+                  "Did you mean \"" + rhs.getInput()
+                      + "\" instead of '" + rhs.getInput() + "'?");
+          return;
         } else {
           // e.g. String greeting = hey
           visitor.getSemanticErrorList()
-              .addSuggestion(ctx,"Did you mean \""
-                  + rhs.getInput() + "\" instead of " + rhs.getInput() + "?");
+              .addTypeException(ctx,rhs.getInput(),
+                  lhs.getType().toString(), rhs.getType().toString(),
+                  "Did you mean \"" + rhs.getInput()
+                      + "\" instead of " + rhs.getInput() + "?");
+          return;
         }
       }
+
+      visitor.getSemanticErrorList()
+          .addTypeException(ctx, rhs.getInput(),
+              lhs.getType().toString(), rhs.getType().toString(), "");
     }
   }
 

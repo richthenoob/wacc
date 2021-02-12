@@ -46,7 +46,7 @@ public class ArrayLiteralNode extends LiteralNode {
     for (ExprNode mismatchedTypeNode : mismatchedTypeNodes) {
       visitor.getSemanticErrorList().addTypeException(ctx, mismatchedTypeNode.getInput(),
           values.get(0).getType().toString(),
-          mismatchedTypeNode.getType().toString());
+          mismatchedTypeNode.getType().toString(), "");
     }
 
     if (!mismatchedTypeNodes.isEmpty()) {
