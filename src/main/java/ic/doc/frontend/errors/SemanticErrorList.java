@@ -94,6 +94,39 @@ public class SemanticErrorList {
     }
   }
 
+  /* Adds an error message for mismatched types
+   * together with its line and character position.
+   * Appends careted code and suggestion (if not empty)
+   * Appends the operator or statement where the error occurred */
+
+  public void addTypeException(ParserRuleContext ctx, String input,
+                               String expectedType, String actualType, String suggestion, String errorOperation) {
+
+    String underlineError = getUnderlineError(ctx, input);
+    String sugg = "";
+    if (!suggestion.isEmpty()) {
+      sugg = "Suggestion: " + suggestion;
+    }
+
+    if (actualType.equals("STRING")) {
+      semanticErrors.add(
+              "Semantic error at line " + ctx.getStart().getLine()
+                      + ":" + ctx.getStart().getCharPositionInLine()
+                      + " - Incompatible type at \"" + input
+                      + "\"" + " for " + errorOperation + ".Expected type: " + expectedType
+                      + ". Actual type: " + actualType + "."
+                      + underlineError + sugg);
+    } else {
+      semanticErrors.add(
+              "Semantic error at line " + ctx.getStart().getLine()
+                      + ":" + ctx.getStart().getCharPositionInLine()
+                      + " - Incompatible type at '" + input + "' for " + errorOperation
+                      + ". Expected type: " + expectedType
+                      + ". Actual type: " + actualType + "."
+                      + underlineError + sugg);
+    }
+  }
+
   /* Adds an error message for invalid character tokens
    * together with its line and character position.
    * Appends careted code*/
