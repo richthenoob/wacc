@@ -8,7 +8,7 @@ GRADLE	:= ./gradlew
 all: rules
 
 rules:
-	$(GRADLE) build
+	$(GRADLE) build -x test
 
 clean:
 	$(GRADLE) clean

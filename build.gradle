@@ -27,7 +27,6 @@ jar {
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    destinationDir = file(".")
     println('The compiled jar can be found at ' + project.buildDir.toString() + "/" + project.libsDirName)
     println('Example wacc files can be found at ' + project.buildDir.toString() + "/resources/test/wacc_examples/")
 }
@@ -63,7 +62,6 @@ task frontendInvalidSyntaxTest(type: Test) {
 /* Clean-up. Removes generated antlr files and the build directory. */
 clean {
     delete "${rootDir}/src/main/java/ic/doc/antlr/"
-    delete "wacc_22-1.0-SNAPSHOT.jar"
 }
 
 task myRun(type: JavaExec) {
