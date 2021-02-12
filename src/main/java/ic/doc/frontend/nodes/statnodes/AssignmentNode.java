@@ -84,11 +84,18 @@ public class AssignmentNode extends StatNode {
         suggest = true;
       }
 
-      String suggestion = suggest ? ("Did you mean "
-          + firstApostrophe + rhs.getInput() + firstApostrophe
-          + " instead of "
-          + secondApostrophe + rhs.getInput() + secondApostrophe + "?")
-          : "";
+      String suggestion =
+          suggest
+              ? ("Did you mean "
+                  + firstApostrophe
+                  + rhs.getInput()
+                  + firstApostrophe
+                  + " instead of "
+                  + secondApostrophe
+                  + rhs.getInput()
+                  + secondApostrophe
+                  + "?")
+              : "";
 
       /* Prints out error message with suggestions
        * if suggestions are applicable */

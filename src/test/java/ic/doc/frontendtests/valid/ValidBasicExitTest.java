@@ -21,5 +21,4 @@ public class ValidBasicExitTest extends AbstractFrontendTest {
   public void validBasicExitTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }

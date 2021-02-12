@@ -23,5 +23,4 @@ public class InvalidSyntaxVariablesTest extends AbstractFrontendTest {
   public void invalidSyntaxVariablesTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }

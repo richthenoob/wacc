@@ -21,5 +21,4 @@ public class ValidIoTest extends AbstractFrontendTest {
   public void validIoPrintTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }

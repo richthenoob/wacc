@@ -21,5 +21,4 @@ public class ValidBasicSkipTest extends AbstractFrontendTest {
   public void validSkipTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }

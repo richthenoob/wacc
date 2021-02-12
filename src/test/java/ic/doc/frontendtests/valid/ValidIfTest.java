@@ -20,5 +20,4 @@ public class ValidIfTest extends AbstractFrontendTest {
   public void validIfTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }

@@ -21,5 +21,4 @@ public class ValidRuntimeErrNullDereferenceTest extends AbstractFrontendTest {
   public void validNullDereferenceTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }

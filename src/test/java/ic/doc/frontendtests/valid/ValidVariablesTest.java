@@ -21,6 +21,4 @@ public class ValidVariablesTest extends AbstractFrontendTest {
   public void validVariablesTests(String testName) throws Exception {
     testFile(groupTestPath + testName);
   }
-
 }
-
