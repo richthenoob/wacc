@@ -22,16 +22,34 @@ public class SemanticErrorList {
   }
 
   /* Adapted from The Definitive Antlr4 Reference,
-   * Section 9.2 Altering and Redirecting ANTLR Error Messages. */
+   * Section 9.2 Altering and Redirecting ANTLR Error Messages.
+   *
+   * Note that we have to do some special regex escaping of characters here.
+   * Consider the error line: int i = i || i + i
+   *
+   * There are 2 problems:
+   * 1) We want to find the RHS of the '||' operator, 'i + i' but if we just pass
+   * the raw input into the pattern, it will treat '+' as a special character.
+   * So we have to wrap 'i + i' (assigned to variable input below) in
+   * Pattern.quote(input) to escape all special characters in the input.
+   *
+   * 2) We want to find the LHS of the '||' operator, 'i'. Since there are so
+   * many 'i's in the error line, we have to get the start and end charPosition
+   * of the context and only search using regular expressions there.
+   * contextStart and contextEnd helps us get the substring of the correct
+   * part of the line we want, (i || i + i). */
   private String getUnderlineError(ParserRuleContext ctx, String input) {
 
     StringBuilder stringBuilder = new StringBuilder("\n");
+    int contextStart = ctx.getStart().getCharPositionInLine();
+    int contextEnd = ctx.getStop().getCharPositionInLine();
 
     /* Look for string of interest in provided line. */
     int line = ctx.getStart().getLine() - 1;
     String errorLine = programLines[line];
-    Pattern pattern = Pattern.compile(".*(" + input + ").*");
-    Matcher matcher = pattern.matcher(programLines[line]);
+    String substringLine = errorLine.substring(contextStart, contextEnd + 1);
+    Pattern pattern = Pattern.compile(".*(" + Pattern.quote(input) + ").*");
+    Matcher matcher = pattern.matcher(substringLine);
 
     if (!matcher.find()) {
       return "";
@@ -42,8 +60,8 @@ public class SemanticErrorList {
     stringBuilder.append("\n");
 
     /* Print line containing carets. */
-    int start = matcher.start(1);
-    int stop = matcher.end(1) - 1;
+    int start = matcher.start(1) + contextStart;
+    int stop = matcher.end(1) - 1 + contextStart;
     for (int i = 0; i < start; i++) {
       stringBuilder.append(" ");
     }
@@ -100,7 +118,8 @@ public class SemanticErrorList {
    * Appends the operator or statement where the error occurred */
 
   public void addTypeException(ParserRuleContext ctx, String input,
-                               String expectedType, String actualType, String suggestion, String errorOperation) {
+      String expectedType, String actualType, String suggestion,
+      String errorOperation) {
 
     String underlineError = getUnderlineError(ctx, input);
     String sugg = "";
@@ -110,20 +129,21 @@ public class SemanticErrorList {
 
     if (actualType.equals("STRING")) {
       semanticErrors.add(
-              "Semantic error at line " + ctx.getStart().getLine()
-                      + ":" + ctx.getStart().getCharPositionInLine()
-                      + " - Incompatible type at \"" + input
-                      + "\"" + " for " + errorOperation + ".Expected type: " + expectedType
-                      + ". Actual type: " + actualType + "."
-                      + underlineError + sugg);
+          "Semantic error at line " + ctx.getStart().getLine()
+              + ":" + ctx.getStart().getCharPositionInLine()
+              + " - Incompatible type at \"" + input
+              + "\"" + " for " + errorOperation + ".Expected type: "
+              + expectedType
+              + ". Actual type: " + actualType + "."
+              + underlineError + sugg);
     } else {
       semanticErrors.add(
-              "Semantic error at line " + ctx.getStart().getLine()
-                      + ":" + ctx.getStart().getCharPositionInLine()
-                      + " - Incompatible type at '" + input + "' for " + errorOperation
-                      + ". Expected type: " + expectedType
-                      + ". Actual type: " + actualType + "."
-                      + underlineError + sugg);
+          "Semantic error at line " + ctx.getStart().getLine()
+              + ":" + ctx.getStart().getCharPositionInLine()
+              + " - Incompatible type at '" + input + "' for " + errorOperation
+              + ". Expected type: " + expectedType
+              + ". Actual type: " + actualType + "."
+              + underlineError + sugg);
     }
   }
 

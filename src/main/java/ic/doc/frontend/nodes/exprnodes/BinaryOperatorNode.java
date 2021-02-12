@@ -1,15 +1,19 @@
 package ic.doc.frontend.nodes.exprnodes;
 
-import ic.doc.frontend.types.*;
-import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.semantics.Visitor;
-import java.util.stream.Collectors;
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import java.lang.String;
+import ic.doc.frontend.types.ArrayType;
+import ic.doc.frontend.types.BoolType;
+import ic.doc.frontend.types.CharType;
+import ic.doc.frontend.types.ErrorType;
+import ic.doc.frontend.types.IntType;
+import ic.doc.frontend.types.PairType;
+import ic.doc.frontend.types.StringType;
+import ic.doc.frontend.types.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 public class BinaryOperatorNode extends ExprNode {
 
@@ -124,7 +128,8 @@ public class BinaryOperatorNode extends ExprNode {
     if (!type1IsValid && type2IsValid) {
       visitor.getSemanticErrorList()
           .addTypeException(ctx, expr1.getInput(),
-              type2.toString(), type1.toString(), "", "binary operator '" +  binaryOperator + "'");
+              type2.toString(), type1.toString(), "",
+              "binary operator '" + binaryOperator + "'");
       return false;
     }
 
@@ -132,7 +137,8 @@ public class BinaryOperatorNode extends ExprNode {
     if (type1IsValid && !type2IsValid) {
       visitor.getSemanticErrorList()
           .addTypeException(ctx, expr2.getInput(),
-              type1.toString(), type2.toString(), "", "binary operator '" +  binaryOperator + "'");
+              type1.toString(), type2.toString(), "",
+              "binary operator '" + binaryOperator + "'");
       return false;
     }
 
@@ -140,18 +146,22 @@ public class BinaryOperatorNode extends ExprNode {
     if (!type1IsValid && !type2IsValid) {
       visitor.getSemanticErrorList()
           .addTypeException(ctx, expr1.getInput(),
-              stringValidTypes, type1.toString(), "", "binary operator '" +  binaryOperator + "'");
+              stringValidTypes, type1.toString(), "",
+              "binary operator '" + binaryOperator + "'");
       visitor.getSemanticErrorList()
           .addTypeException(ctx, expr2.getInput(),
-              stringValidTypes, type2.toString(), "", "binary operator '" +  binaryOperator + "'");
+              stringValidTypes, type2.toString(), "",
+              "binary operator '" + binaryOperator + "'");
       return false;
     }
 
     /* Both valid types but are different from one another. */
-    if (type1IsValid && type2IsValid && !Type.checkTypeCompatibility(type1, type2)) {
+    if (type1IsValid && type2IsValid && !Type
+        .checkTypeCompatibility(type1, type2)) {
       visitor.getSemanticErrorList()
           .addTypeException(ctx, expr2.getInput(),
-              expr1.getType().toString(), type2.toString(), "", "binary operator '" +  binaryOperator + "'");
+              expr1.getType().toString(), type2.toString(), "",
+              "binary operator '" + binaryOperator + "'");
       return false;
     }
 
