@@ -145,19 +145,12 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       BasicParser.DeclarativeAssignmentContext ctx) {
     Type type = ((TypeNode) visit(ctx.type())).getType();
     String name = ctx.IDENT().toString();
-    SymbolKey key = new SymbolKey(name, false);
-    if (currentSymbolTable.lookup(key) != null) {
-      semanticErrorList.addException(ctx,
-          "Variable " + name + " was already defined in this scope.");
-    }
-
-    ExprNode expr = (ExprNode) visit(ctx.assignRhs());
     VariableNode var = new VariableNode(name);
     var.setType(type);
-    AssignmentNode node = new AssignmentNode(var, expr);
+    ExprNode expr = (ExprNode) visit(ctx.assignRhs());
+    AssignmentNode node = new AssignmentNode(var, expr, true);
 
     node.check(this, ctx);
-    currentSymbolTable.add(key, new VariableIdentifier(type));
 
     return node;
   }
@@ -177,16 +170,9 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
      Looks up variable in symbol table and creates an assignment node*/
   @Override
   public Node visitAssignment(BasicParser.AssignmentContext ctx) {
-    ExprNode lhs;
-    if (ctx.assignLhs().IDENT() != null) {
-      lhs = new VariableNode(ctx.assignLhs().IDENT().getText());
-      lhs.check(this, ctx);
-    } else {
-      lhs = (ExprNode) visit(ctx.assignLhs());
-    }
-
+    ExprNode lhs = (ExprNode) visit(ctx.assignLhs());
     ExprNode rhs = (ExprNode) visit(ctx.assignRhs());
-    AssignmentNode node = new AssignmentNode(lhs, rhs);
+    AssignmentNode node = new AssignmentNode(lhs, rhs, false);
     node.check(this, ctx);
     return node;
   }

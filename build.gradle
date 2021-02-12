@@ -66,6 +66,6 @@ clean {
 
 task myRun(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
-    main = "ic.doc.WaccFrontend"
+    main = "ic.doc.frontend.WaccFrontend"
     args "src/test/resources/refCompilerOutput/test.wacc", "arg2"
 }

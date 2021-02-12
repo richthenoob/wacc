@@ -37,23 +37,13 @@ public class PairElementNode extends ExprNode {
 
     /* Must be identifier with type pair. */
     if (!(expr instanceof VariableNode) || !(expr.getType() instanceof PairType)) {
-      if (pos == PairPosition.FST) {
-        visitor.getSemanticErrorList().addException(
-            ctx,
-            pos.toString()
-                + " has to be called on identifier with type PAIR(TYPE,_). Actual type: "
-                + getExpr().getType().toString());
-        setType(new ErrorType());
-        return;
-      } else {
-        visitor.getSemanticErrorList().addException(
-            ctx,
-            pos.toString()
-                + " has to be called on identifier with type PAIR(T,_). Actual type: "
-                + getExpr().getType().toString());
-        setType(new ErrorType());
-        return;
-      }
+      visitor.getSemanticErrorList().addException(
+          ctx,
+          pos.toString()
+              + " has to be called on identifier with type PAIR(T,_). Actual type: "
+              + getExpr().getType().toString());
+      setType(new ErrorType());
+      return;
     }
 
     /* Get inner type of pair. */

@@ -25,7 +25,7 @@ public class PairNode extends ExprNode {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-
+    /* No checks needed. */
   }
 
   @Override

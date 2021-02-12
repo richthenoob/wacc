@@ -108,7 +108,7 @@ public class BinaryOperatorNode extends ExprNode {
           } catch (Exception e) {
             throw new IllegalStateException(
                 "Something went wrong when parsing class name in"
-                    + "BinaryOpeartorNode.java!");
+                    + "BinaryOperatorNode.java!");
           }
         }).collect(Collectors.toList());
 

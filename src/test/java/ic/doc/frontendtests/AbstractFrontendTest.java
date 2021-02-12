@@ -78,11 +78,13 @@ public abstract class AbstractFrontendTest {
     List<String> files;
 
     try {
+      /* Find resources path in test folder. */
       String testDirPath = AbstractFrontendTest.class
           .getResource(EXAMPLES_DIR + groupTestPath)
           .getPath();
 
-      /* Go through directory and find all .wacc files */
+      /* Go through sub-directory and find all .wacc files, without
+       * recursing in to sub-subdirectories. */
       files = Files.walk(Path.of(testDirPath), 1)
           .filter(name -> name.toString()
               .toLowerCase()

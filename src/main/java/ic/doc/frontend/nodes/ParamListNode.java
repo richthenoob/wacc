@@ -33,7 +33,7 @@ public class ParamListNode extends Node {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-
+    /* No checks needed. */
   }
 
   public String getInput() {
@@ -48,15 +48,4 @@ public class ParamListNode extends Node {
     return input.toString();
   }
 
-  public String printTypes() {
-    StringBuilder typesString = new StringBuilder();
-    for (int i = 0; i < numParas; i++) {
-      typesString.append(params.get(i).getType().toString());
-      typesString.append(", ");
-    }
-    if (numParas > 0) {
-      typesString.delete(typesString.length() - 2, typesString.length() - 1);
-    }
-    return typesString.toString();
-  }
 }

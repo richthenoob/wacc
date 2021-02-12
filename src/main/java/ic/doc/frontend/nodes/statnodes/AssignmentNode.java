@@ -1,6 +1,9 @@
 package ic.doc.frontend.nodes.statnodes;
 
+import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
+import ic.doc.frontend.nodes.exprnodes.VariableNode;
+import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.types.CharType;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.StringType;
@@ -11,10 +14,12 @@ public class AssignmentNode extends StatNode {
 
   private final ExprNode lhs;
   private final ExprNode rhs;
+  private final boolean isDeclaration;
 
-  public AssignmentNode(ExprNode lhs, ExprNode rhs) {
+  public AssignmentNode(ExprNode lhs, ExprNode rhs, boolean isDeclaration) {
     this.lhs = lhs;
     this.rhs = rhs;
+    this.isDeclaration = isDeclaration;
   }
 
   public ExprNode getLhs() {
@@ -27,6 +32,19 @@ public class AssignmentNode extends StatNode {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
+    if(isDeclaration){
+      VariableNode lhsVar = (VariableNode) lhs;
+      String name = lhsVar.getName();
+      SymbolKey key = new SymbolKey(name, false);
+      if (visitor.getCurrentSymbolTable().lookup(key) != null) {
+        visitor
+                .getSemanticErrorList()
+                .addScopeException(ctx, true, "Variable", name);
+      } else {
+        visitor.getCurrentSymbolTable().add(key, new VariableIdentifier(lhs.getType()));
+      }
+    }
+
     if (!lhs.getType().equals(rhs.getType())
         && !(lhs.getType() instanceof ErrorType)
         && !(rhs.getType() instanceof ErrorType)) {
