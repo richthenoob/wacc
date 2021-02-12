@@ -1,7 +1,5 @@
 package ic.doc.frontend.types;
 
-import javafx.util.Pair;
-
 import java.util.List;
 
 public abstract class Type {
