@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class CharType implements Type {
+public class CharType extends Type {
 
   public final static String CLASS_NAME = "CHAR";
 
@@ -20,17 +20,5 @@ public class CharType implements Type {
     return CLASS_NAME;
   }
 
-  @Override
-  public boolean equals(Object obj) {
-    /* AnyType is considered the same type as any other type classes. */
-    if (obj.getClass().equals(AnyType.class)) {
-      return true;
-    }
-    return this.getClass().equals(obj.getClass());
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(this.getClass());
-  }
 }

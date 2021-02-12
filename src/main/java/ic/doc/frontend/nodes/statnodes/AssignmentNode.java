@@ -8,6 +8,7 @@ import ic.doc.frontend.types.CharType;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.StringType;
 import ic.doc.frontend.semantics.Visitor;
+import ic.doc.frontend.types.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class AssignmentNode extends StatNode {
@@ -45,7 +46,7 @@ public class AssignmentNode extends StatNode {
       }
     }
 
-    if (!lhs.getType().equals(rhs.getType())
+    if (!(Type.checkTypeCompatibility(lhs.getType(), rhs.getType()))
         && !(lhs.getType() instanceof ErrorType)
         && !(rhs.getType() instanceof ErrorType)) {
       visitor.getSemanticErrorList()

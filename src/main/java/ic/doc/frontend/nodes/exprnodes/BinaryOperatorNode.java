@@ -148,7 +148,7 @@ public class BinaryOperatorNode extends ExprNode {
     }
 
     /* Both valid types but are different from one another. */
-    if (type1IsValid && type2IsValid && !type1.equals(type2)) {
+    if (type1IsValid && type2IsValid && !Type.checkTypeCompatibility(type1, type2)) {
       visitor.getSemanticErrorList()
           .addTypeException(ctx, expr2.getInput(),
               expr1.getType().toString(), type2.toString());

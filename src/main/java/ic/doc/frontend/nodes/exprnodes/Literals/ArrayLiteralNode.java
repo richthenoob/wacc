@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import ic.doc.frontend.semantics.Visitor;
+import ic.doc.frontend.types.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Can only appear as assignment values. All elements must be of the same type.
@@ -39,7 +40,7 @@ public class ArrayLiteralNode extends LiteralNode {
 
     /* Check that every list element type is the same as the first. */
     List<ExprNode> mismatchedTypeNodes = values.stream()
-        .filter(x -> !(x.getType().equals(values.get(0).getType())))
+        .filter(x -> !(Type.checkTypeCompatibility(x.getType(), values.get(0).getType())))
         .collect(Collectors.toList());
 
     for (ExprNode mismatchedTypeNode : mismatchedTypeNodes) {
