@@ -10,8 +10,8 @@ import ic.doc.antlr.BasicParserBaseVisitor;
 import ic.doc.frontend.nodes.ArgListNode;
 import ic.doc.frontend.nodes.exprnodes.*;
 import ic.doc.frontend.nodes.exprnodes.Literals.*;
-import ic.doc.frontend.nodes.exprnodes.BinaryOperatorNode.binaryOperators;
-import ic.doc.frontend.nodes.exprnodes.UnaryOperatorNode.unaryOperators;
+import ic.doc.frontend.nodes.exprnodes.BinaryOperatorNode.BinaryOperators;
+import ic.doc.frontend.nodes.exprnodes.UnaryOperatorNode.UnaryOperators;
 import ic.doc.frontend.identifiers.*;
 import ic.doc.frontend.nodes.*;
 import ic.doc.frontend.nodes.statnodes.*;
@@ -500,23 +500,23 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   public Node visitUnOpApplication(BasicParser.UnOpApplicationContext ctx) {
 
     /* Determine operator. */
-    unaryOperators operator;
+    UnaryOperators operator;
     TerminalNode typeNode = (TerminalNode) ctx.getChild(0);
     switch (typeNode.getSymbol().getType()) {
       case BasicLexer.NOT:
-        operator = unaryOperators.LOGICAL_NOT;
+        operator = UnaryOperators.LOGICAL_NOT;
         break;
       case BasicLexer.MINUS:
-        operator = unaryOperators.MATH_NEGATION;
+        operator = UnaryOperators.MATH_NEGATION;
         break;
       case BasicLexer.LEN:
-        operator = unaryOperators.LEN;
+        operator = UnaryOperators.LEN;
         break;
       case BasicLexer.ORD:
-        operator = unaryOperators.ORD;
+        operator = UnaryOperators.ORD;
         break;
       case BasicLexer.CHR:
-        operator = unaryOperators.CHR;
+        operator = UnaryOperators.CHR;
         break;
       default:
         throw new IllegalStateException("Invalid operator passed to" + "Unary Operator context!");
@@ -579,17 +579,17 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   @Override
   public Node visitBinOp1Application(BinOp1ApplicationContext ctx) {
     /* Determine operator. */
-    BinaryOperatorNode.binaryOperators operator;
+    BinaryOperators operator;
     TerminalNode typeNode = (TerminalNode) ctx.getChild(1);
     switch (typeNode.getSymbol().getType()) {
       case BasicLexer.MUL:
-        operator = binaryOperators.MUL;
+        operator = BinaryOperators.MUL;
         break;
       case BasicLexer.DIV:
-        operator = binaryOperators.DIV;
+        operator = BinaryOperators.DIV;
         break;
       case BasicLexer.MOD:
-        operator = binaryOperators.MOD;
+        operator = BinaryOperators.MOD;
         break;
       default:
         throw new IllegalStateException("Invalid operator passed to" + "binOp1 context!");
@@ -610,17 +610,17 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   @Override
   public Node visitBinOp2Application(BinOp2ApplicationContext ctx) {
     /* Determine operator. */
-    BinaryOperatorNode.binaryOperators operator;
+    BinaryOperators operator;
     TerminalNode typeNode = (TerminalNode) ctx.getChild(1);
     switch (typeNode.getSymbol().getType()) {
       case BasicLexer.PLUS:
-        operator = binaryOperators.PLUS;
+        operator = BinaryOperators.PLUS;
         break;
       case BasicLexer.MINUS:
-        operator = binaryOperators.MINUS;
+        operator = BinaryOperators.MINUS;
         break;
       case BasicLexer.MOD:
-        operator = binaryOperators.MOD;
+        operator = BinaryOperators.MOD;
         break;
       default:
         throw new IllegalStateException("Invalid operator passed to" + "binOp1 context!");
@@ -641,20 +641,20 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   @Override
   public Node visitBinOp3Application(BinOp3ApplicationContext ctx) {
     /* Determine operator. */
-    BinaryOperatorNode.binaryOperators operator;
+    BinaryOperators operator;
     TerminalNode typeNode = (TerminalNode) ctx.getChild(1);
     switch (typeNode.getSymbol().getType()) {
       case BasicLexer.GT:
-        operator = binaryOperators.GT;
+        operator = BinaryOperators.GT;
         break;
       case BasicLexer.GTE:
-        operator = binaryOperators.GTE;
+        operator = BinaryOperators.GTE;
         break;
       case BasicLexer.LT:
-        operator = binaryOperators.LT;
+        operator = BinaryOperators.LT;
         break;
       case BasicLexer.LTE:
-        operator = binaryOperators.LTE;
+        operator = BinaryOperators.LTE;
         break;
       default:
         throw new IllegalStateException("Invalid operator passed to" + "binOp1 context!");
@@ -675,14 +675,14 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   @Override
   public Node visitBinOp4Application(BinOp4ApplicationContext ctx) {
     /* Determine operator. */
-    BinaryOperatorNode.binaryOperators operator;
+    BinaryOperators operator;
     TerminalNode typeNode = (TerminalNode) ctx.getChild(1);
     switch (typeNode.getSymbol().getType()) {
       case BasicLexer.EQ:
-        operator = binaryOperators.EQ;
+        operator = BinaryOperators.EQ;
         break;
       case BasicLexer.NEQ:
-        operator = binaryOperators.NEQ;
+        operator = BinaryOperators.NEQ;
         break;
       default:
         throw new IllegalStateException("Invalid operator passed to" + "binOp1 context!");
@@ -712,7 +712,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
     BinaryOperatorNode binaryOperatorNode =
-        new BinaryOperatorNode(binaryOperators.AND, leftExpr, rightExpr);
+        new BinaryOperatorNode(BinaryOperators.AND, leftExpr, rightExpr);
 
     binaryOperatorNode.check(this, ctx);
 
@@ -733,7 +733,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
     BinaryOperatorNode binaryOperatorNode =
-        new BinaryOperatorNode(binaryOperators.OR, leftExpr, rightExpr);
+        new BinaryOperatorNode(BinaryOperators.OR, leftExpr, rightExpr);
 
     binaryOperatorNode.check(this, ctx);
 

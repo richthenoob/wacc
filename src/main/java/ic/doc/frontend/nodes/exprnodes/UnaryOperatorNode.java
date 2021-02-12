@@ -1,23 +1,17 @@
 package ic.doc.frontend.nodes.exprnodes;
 
-
-import ic.doc.frontend.types.ArrayType;
-import ic.doc.frontend.types.BoolType;
-import ic.doc.frontend.types.CharType;
-import ic.doc.frontend.types.ErrorType;
-import ic.doc.frontend.types.IntType;
-import ic.doc.frontend.types.Type;
+import ic.doc.frontend.types.*;
 
 import ic.doc.frontend.semantics.Visitor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class UnaryOperatorNode extends ExprNode {
 
-  private final unaryOperators unaryOperator;
+  private final UnaryOperators unaryOperator;
   private final ExprNode expr;
   private Boolean isErrored = false;
 
-  public UnaryOperatorNode(unaryOperators unaryOperator, ExprNode expr) {
+  public UnaryOperatorNode(UnaryOperators unaryOperator, ExprNode expr) {
     this.unaryOperator = unaryOperator;
     this.expr = expr;
   }
@@ -29,40 +23,75 @@ public class UnaryOperatorNode extends ExprNode {
     switch (unaryOperator) {
       case LOGICAL_NOT:
         if (!(exprType instanceof BoolType)) {
-          visitor.getSemanticErrorList()
-              .addTypeException(ctx, expr.getInput(), "BOOL", expr.toString(), "", "binary operator '" +  unaryOperator + "'");
+          visitor
+              .getSemanticErrorList()
+              .addTypeException(
+                  ctx,
+                  expr.getInput(),
+                  "BOOL",
+                  expr.toString(),
+                  "",
+                  "binary operator '" + unaryOperator + "'");
           isErrored = true;
         }
         setType(new BoolType());
         break;
       case MATH_NEGATION:
         if (!(exprType instanceof IntType)) {
-          visitor.getSemanticErrorList()
-              .addTypeException(ctx, expr.getInput(), "INT", expr.toString(), "", "binary operator '" +  unaryOperator + "'");
+          visitor
+              .getSemanticErrorList()
+              .addTypeException(
+                  ctx,
+                  expr.getInput(),
+                  "INT",
+                  expr.toString(),
+                  "",
+                  "binary operator '" + unaryOperator + "'");
           isErrored = true;
         }
         setType(new IntType());
         break;
       case CHR:
         if (!(exprType instanceof IntType)) {
-          visitor.getSemanticErrorList()
-              .addTypeException(ctx, expr.getInput(), "INT", expr.toString(), "", "binary operator '" +  unaryOperator + "'");
+          visitor
+              .getSemanticErrorList()
+              .addTypeException(
+                  ctx,
+                  expr.getInput(),
+                  "INT",
+                  expr.toString(),
+                  "",
+                  "binary operator '" + unaryOperator + "'");
           isErrored = true;
         }
         setType(new CharType());
         break;
       case LEN:
         if (!(exprType instanceof ArrayType)) {
-          visitor.getSemanticErrorList()
-              .addTypeException(ctx, expr.getInput(), "T[]", expr.toString(), "", "binary operator '" +  unaryOperator + "'");
+          visitor
+              .getSemanticErrorList()
+              .addTypeException(
+                  ctx,
+                  expr.getInput(),
+                  "T[]",
+                  expr.toString(),
+                  "",
+                  "binary operator '" + unaryOperator + "'");
           isErrored = true;
         }
         setType(new IntType());
         break;
       case ORD:
         if (!(exprType instanceof CharType)) {
-          visitor.getSemanticErrorList()
-              .addTypeException(ctx, expr.getInput(), "CHAR", expr.toString(), "", "binary operator '" +  unaryOperator + "'");
+          visitor
+              .getSemanticErrorList()
+              .addTypeException(
+                  ctx,
+                  expr.getInput(),
+                  "CHAR",
+                  expr.toString(),
+                  "",
+                  "binary operator '" + unaryOperator + "'");
           isErrored = true;
         }
         setType(new IntType());
@@ -79,7 +108,7 @@ public class UnaryOperatorNode extends ExprNode {
     return expr.getInput();
   }
 
-  public enum unaryOperators {
+  public enum UnaryOperators {
     LOGICAL_NOT,
     MATH_NEGATION,
     LEN,

@@ -1,11 +1,12 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
-
 import ic.doc.frontend.types.CharType;
 import ic.doc.frontend.types.StringType;
 import ic.doc.frontend.semantics.Visitor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
+/* Multiple ASCII character between two " symbols. A '\' can be used to escape the character
+ * immediately following the '\'. */
 public class StringLiteralNode extends LiteralNode {
 
   private final String value;

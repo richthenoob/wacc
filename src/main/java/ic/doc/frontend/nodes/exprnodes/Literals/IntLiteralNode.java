@@ -27,10 +27,14 @@ public class IntLiteralNode extends LiteralNode {
     /* Check that input integer is within valid bounds */
     if (getValue() > IntType.INT_MAX || getValue() < IntType.INT_MIN) {
       throw new SyntaxException(
-          "Integer is of value: " + getValue() +
-              ", but must be between " + IntType.INT_MIN +
-              " and " + IntType.INT_MAX,
-          ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+          "Integer is of value: "
+              + getValue()
+              + ", but must be between "
+              + IntType.INT_MIN
+              + " and "
+              + IntType.INT_MAX,
+          ctx.getStart().getLine(),
+          ctx.getStart().getCharPositionInLine());
     }
   }
 

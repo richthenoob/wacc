@@ -40,9 +40,7 @@ public class AssignmentNode extends StatNode {
       /* If node corresponds to declarative assignment,
       variable must not have been already defined earlier */
       if (visitor.getCurrentSymbolTable().lookup(key) != null) {
-        visitor
-            .getSemanticErrorList()
-            .addScopeException(ctx, true, "Variable", name);
+        visitor.getSemanticErrorList().addScopeException(ctx, true, "Variable", name);
       } else {
         visitor.getCurrentSymbolTable().add(key, new VariableIdentifier(lhs.getType()));
       }
@@ -59,50 +57,70 @@ public class AssignmentNode extends StatNode {
        * that would lead to type mismatches */
       if (rhs.getType() instanceof StringType) {
         if (lhs.getType() instanceof CharType && rhs.getInput().length() == 1) {
-          // e.g. char c = "a"
-          visitor.getSemanticErrorList()
-              .addTypeException(ctx, rhs.getInput(),
-                  lhs.getType().toString(), rhs.getType().toString(),
-                  "Did you mean '" + rhs.getInput() +
-                      "' instead of \"" + rhs.getInput() + "\"?", "assignment");
-          return;
+          /* e.g. char c = "a" */
+          visitor
+              .getSemanticErrorList()
+              .addTypeException(
+                  ctx,
+                  rhs.getInput(),
+                  lhs.getType().toString(),
+                  rhs.getType().toString(),
+                  "Did you mean '" + rhs.getInput() + "' instead of \"" + rhs.getInput() + "\"?",
+                  "assignment");
         } else {
           // e.g. bool c = "true"
-          visitor.getSemanticErrorList()
-              .addTypeException(ctx, rhs.getInput(),
-                  lhs.getType().toString(), rhs.getType().toString(),
-                  "Did you mean " + rhs.getInput()
-                      + " instead of \"" + rhs.getInput() + "\"?", "assignment");
-          return;
+          visitor
+              .getSemanticErrorList()
+              .addTypeException(
+                  ctx,
+                  rhs.getInput(),
+                  lhs.getType().toString(),
+                  rhs.getType().toString(),
+                  "Did you mean " + rhs.getInput() + " instead of \"" + rhs.getInput() + "\"?",
+                  "assignment");
         }
+        return;
       }
 
       if (lhs.getType() instanceof StringType) {
         if (rhs.getType() instanceof CharType) {
           // e.g. String s = 'a'
-          visitor.getSemanticErrorList()
-              .addTypeException(ctx, rhs.getInput(),
-                  lhs.getType().toString(), rhs.getType().toString(),
-                  "Did you mean \"" + rhs.getInput()
-                      + "\" instead of '" + rhs.getInput() + "'?", "assignment");
+          visitor
+              .getSemanticErrorList()
+              .addTypeException(
+                  ctx,
+                  rhs.getInput(),
+                  lhs.getType().toString(),
+                  rhs.getType().toString(),
+                  "Did you mean \"" + rhs.getInput() + "\" instead of '" + rhs.getInput() + "'?",
+                  "assignment");
           return;
         } else {
           // e.g. String greeting = hey
-          visitor.getSemanticErrorList()
-              .addTypeException(ctx, rhs.getInput(),
-                  lhs.getType().toString(), rhs.getType().toString(),
-                  "Did you mean \"" + rhs.getInput()
-                      + "\" instead of " + rhs.getInput() + "?", "assignment");
+          visitor
+              .getSemanticErrorList()
+              .addTypeException(
+                  ctx,
+                  rhs.getInput(),
+                  lhs.getType().toString(),
+                  rhs.getType().toString(),
+                  "Did you mean \"" + rhs.getInput() + "\" instead of " + rhs.getInput() + "?",
+                  "assignment");
           return;
         }
       }
 
       /* Prints out error message without suggestions
        * if no suggestions are applicable */
-      visitor.getSemanticErrorList()
-          .addTypeException(ctx, rhs.getInput(),
-              lhs.getType().toString(), rhs.getType().toString(), "", "assignment");
+      visitor
+          .getSemanticErrorList()
+          .addTypeException(
+              ctx,
+              rhs.getInput(),
+              lhs.getType().toString(),
+              rhs.getType().toString(),
+              "",
+              "assignment");
     }
   }
-
 }

@@ -39,14 +39,20 @@ public class ArrayLiteralNode extends LiteralNode {
     }
 
     /* Check that every list element type is the same as the first. */
-    List<ExprNode> mismatchedTypeNodes = values.stream()
-        .filter(x -> !(Type.checkTypeCompatibility(x.getType(), values.get(0).getType())))
-        .collect(Collectors.toList());
+    List<ExprNode> mismatchedTypeNodes =
+        values.stream()
+            .filter(x -> !(Type.checkTypeCompatibility(x.getType(), values.get(0).getType())))
+            .collect(Collectors.toList());
 
     for (ExprNode mismatchedTypeNode : mismatchedTypeNodes) {
-      visitor.getSemanticErrorList().addTypeException(ctx, mismatchedTypeNode.getInput(),
-          values.get(0).getType().toString(),
-          mismatchedTypeNode.getType().toString(), "");
+      visitor
+          .getSemanticErrorList()
+          .addTypeException(
+              ctx,
+              mismatchedTypeNode.getInput(),
+              values.get(0).getType().toString(),
+              mismatchedTypeNode.getType().toString(),
+              "");
     }
 
     if (!mismatchedTypeNodes.isEmpty()) {

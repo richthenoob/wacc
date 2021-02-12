@@ -30,12 +30,10 @@ public class VariableNode extends ExprNode {
     Identifier id = visitor.getCurrentSymbolTable().lookupAll(key);
     if (id == null) {
       setType(new ErrorType());
-      visitor.getSemanticErrorList()
-          .addScopeException(ctx, false, "Variable", getName());
+      visitor.getSemanticErrorList().addScopeException(ctx, false, "Variable", getName());
       return;
     }
 
     setType(id.getType());
   }
-
 }

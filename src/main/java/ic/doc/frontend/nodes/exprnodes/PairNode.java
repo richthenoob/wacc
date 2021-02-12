@@ -19,7 +19,7 @@ public class PairNode extends ExprNode {
     return fst;
   }
 
-  public ExprNode getSnd(){
+  public ExprNode getSnd() {
     return snd;
   }
 

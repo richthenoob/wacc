@@ -17,7 +17,6 @@ public abstract class ExprNode extends Node {
   }
 
   /* Returns string representation of left-most expression.
-     For use in printing semantic error messages. */
+  For use in printing semantic error messages. */
   public abstract String getInput();
 }
-
