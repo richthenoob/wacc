@@ -32,7 +32,7 @@ public class ReadNode extends StatNode {
     if (!(type instanceof CharType || type instanceof IntType)) {
       /* Type of expression should be Char or Int */
       visitor.getSemanticErrorList()
-          .addTypeException(ctx, expr.getInput(), "CHAR or INT", type.toString(), "");
+          .addTypeException(ctx, expr.getInput(), "CHAR or INT", type.toString(), "", "'read' statement");
     }
   }
 }

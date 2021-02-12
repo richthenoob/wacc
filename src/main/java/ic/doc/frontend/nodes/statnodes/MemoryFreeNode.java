@@ -25,7 +25,7 @@ public class MemoryFreeNode extends StatNode {
         .getType() instanceof ArrayType)) {
       visitor.getSemanticErrorList()
           .addTypeException(ctx, exprNode.getInput(),
-              "PAIR or ARRAY", exprNode.getType().toString(), "");
+              "PAIR or ARRAY", exprNode.getType().toString(), "", " 'free' statement");
     }
 
   }

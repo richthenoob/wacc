@@ -48,7 +48,7 @@ public class ConditionalBranchNode extends StatNode {
     /* Expr must be a bool */
     if (!(cond.getType() instanceof BoolType)) {
       visitor.getSemanticErrorList()
-          .addTypeException(ctx, cond.getInput(), "BOOL", cond.getType().toString(), "");
+          .addTypeException(ctx, cond.getInput(), "BOOL", cond.getType().toString(), "", "'if' condition");
     }
   }
 }

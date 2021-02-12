@@ -22,7 +22,7 @@ public class ExitNode extends StatNode {
     /* The type of the expression given to the exit statement must be an integer. */
     if (!(exprNode.getType() instanceof IntType)) {
       visitor.getSemanticErrorList()
-          .addTypeException(ctx, exprNode.getInput(), "INT", exprNode.getType().toString(), "");
+          .addTypeException(ctx, exprNode.getInput(), "INT", exprNode.getType().toString(), "", "exit statement");
     }
   }
 

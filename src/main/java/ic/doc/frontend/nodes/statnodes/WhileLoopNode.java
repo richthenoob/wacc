@@ -33,7 +33,7 @@ public class WhileLoopNode extends StatNode {
     if (!(cond.getType() instanceof BoolType
         || cond.getType() instanceof ErrorType)) {
       visitor.getSemanticErrorList()
-          .addTypeException(ctx, cond.getInput(), "BOOL", cond.getType().toString(), "");
+          .addTypeException(ctx, cond.getInput(), "BOOL", cond.getType().toString(), "", "'while' condition");
     }
   }
 
