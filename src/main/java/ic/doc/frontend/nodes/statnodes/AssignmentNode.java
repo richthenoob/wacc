@@ -53,65 +53,45 @@ public class AssignmentNode extends StatNode {
     if (!(Type.checkTypeCompatibility(lhs.getType(), rhs.getType()))
         && !(lhs.getType() instanceof ErrorType)
         && !(rhs.getType() instanceof ErrorType)) {
+
+      String firstApostrophe = "";
+      String secondApostrophe = "";
+      boolean suggest = false;
+
       /* Suggesting fixes to frequently occurring mistakes
        * that would lead to type mismatches */
       if (rhs.getType() instanceof StringType) {
+        /* String wrongly provided */
+        secondApostrophe = "\"";
         if (lhs.getType() instanceof CharType && rhs.getInput().length() == 1) {
           /* e.g. char c = "a" */
-          visitor
-              .getSemanticErrorList()
-              .addTypeException(
-                  ctx,
-                  rhs.getInput(),
-                  lhs.getType().toString(),
-                  rhs.getType().toString(),
-                  "Did you mean '" + rhs.getInput() + "' instead of \"" + rhs.getInput() + "\"?",
-                  "assignment");
+          firstApostrophe = "'";
         } else {
-          // e.g. bool c = "true"
-          visitor
-              .getSemanticErrorList()
-              .addTypeException(
-                  ctx,
-                  rhs.getInput(),
-                  lhs.getType().toString(),
-                  rhs.getType().toString(),
-                  "Did you mean " + rhs.getInput() + " instead of \"" + rhs.getInput() + "\"?",
-                  "assignment");
+          /* e.g. bool c = "true" */
+          firstApostrophe = "";
         }
-        return;
-      }
-
-      if (lhs.getType() instanceof StringType) {
+        suggest = true;
+      } else if (lhs.getType() instanceof StringType) {
+        /* String expected */
+        firstApostrophe = "\"";
         if (rhs.getType() instanceof CharType) {
-          // e.g. String s = 'a'
-          visitor
-              .getSemanticErrorList()
-              .addTypeException(
-                  ctx,
-                  rhs.getInput(),
-                  lhs.getType().toString(),
-                  rhs.getType().toString(),
-                  "Did you mean \"" + rhs.getInput() + "\" instead of '" + rhs.getInput() + "'?",
-                  "assignment");
-          return;
+          /* e.g. String s = 'a' */
+          secondApostrophe = "'";
         } else {
-          // e.g. String greeting = hey
-          visitor
-              .getSemanticErrorList()
-              .addTypeException(
-                  ctx,
-                  rhs.getInput(),
-                  lhs.getType().toString(),
-                  rhs.getType().toString(),
-                  "Did you mean \"" + rhs.getInput() + "\" instead of " + rhs.getInput() + "?",
-                  "assignment");
-          return;
+          /* e.g. String greeting = hey */
+          secondApostrophe = "'";
         }
+        suggest = true;
       }
 
-      /* Prints out error message without suggestions
-       * if no suggestions are applicable */
+      String suggestion = suggest ? ("Did you mean "
+          + firstApostrophe + rhs.getInput() + firstApostrophe
+          + " instead of "
+          + secondApostrophe + rhs.getInput() + secondApostrophe + "?")
+          : "";
+
+      /* Prints out error message with suggestions
+       * if suggestions are applicable */
       visitor
           .getSemanticErrorList()
           .addTypeException(
@@ -119,7 +99,7 @@ public class AssignmentNode extends StatNode {
               rhs.getInput(),
               lhs.getType().toString(),
               rhs.getType().toString(),
-              "",
+              suggestion,
               "assignment");
     }
   }
