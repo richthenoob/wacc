@@ -22,34 +22,16 @@ public class SemanticErrorList {
   }
 
   /* Adapted from The Definitive Antlr4 Reference,
-   * Section 9.2 Altering and Redirecting ANTLR Error Messages.
-   *
-   * Note that we have to do some special regex escaping of characters here.
-   * Consider the error line: int i = i || i + i
-   *
-   * There are 2 problems:
-   * 1) We want to find the RHS of the '||' operator, 'i + i' but if we just pass
-   * the raw input into the pattern, it will treat '+' as a special character.
-   * So we have to wrap 'i + i' (assigned to variable input below) in
-   * Pattern.quote(input) to escape all special characters in the input.
-   *
-   * 2) We want to find the LHS of the '||' operator, 'i'. Since there are so
-   * many 'i's in the error line, we have to get the start and end charPosition
-   * of the context and only search using regular expressions there.
-   * contextStart and contextEnd helps us get the substring of the correct
-   * part of the line we want, (i || i + i). */
+   * Section 9.2 Altering and Redirecting ANTLR Error Messages. */
   private String getUnderlineError(ParserRuleContext ctx, String input) {
 
     StringBuilder stringBuilder = new StringBuilder("\n");
-    int contextStart = ctx.getStart().getCharPositionInLine();
-    int contextEnd = ctx.getStop().getCharPositionInLine();
 
     /* Look for string of interest in provided line. */
     int line = ctx.getStart().getLine() - 1;
     String errorLine = programLines[line];
-    String substringLine = errorLine.substring(contextStart, contextEnd + 1);
     Pattern pattern = Pattern.compile(".*(" + Pattern.quote(input) + ").*");
-    Matcher matcher = pattern.matcher(substringLine);
+    Matcher matcher = pattern.matcher(errorLine);
 
     if (!matcher.find()) {
       return "";
@@ -60,8 +42,8 @@ public class SemanticErrorList {
     stringBuilder.append("\n");
 
     /* Print line containing carets. */
-    int start = matcher.start(1) + contextStart;
-    int stop = matcher.end(1) - 1 + contextStart;
+    int start = matcher.start(1);
+    int stop = matcher.end(1) - 1;
     for (int i = 0; i < start; i++) {
       stringBuilder.append(" ");
     }
