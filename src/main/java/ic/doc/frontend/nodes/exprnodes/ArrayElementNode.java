@@ -1,5 +1,6 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.types.ArrayType;
@@ -89,6 +90,11 @@ public class ArrayElementNode extends ExprNode {
       }
       setType(type);
     }
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 
   @Override

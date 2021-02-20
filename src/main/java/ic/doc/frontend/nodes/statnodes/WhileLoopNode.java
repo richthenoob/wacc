@@ -1,9 +1,11 @@
 package ic.doc.frontend.nodes.statnodes;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.types.BoolType;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.semantics.Visitor;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class WhileLoopNode extends StatNode {
@@ -36,5 +38,10 @@ public class WhileLoopNode extends StatNode {
           .addTypeException(
               ctx, cond.getInput(), "BOOL", cond.getType().toString(), "", "'while' condition");
     }
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 }

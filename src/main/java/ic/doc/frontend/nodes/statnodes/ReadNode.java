@@ -1,8 +1,10 @@
 package ic.doc.frontend.nodes.statnodes;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.types.*;
 import ic.doc.frontend.semantics.Visitor;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ReadNode extends StatNode {
@@ -32,5 +34,10 @@ public class ReadNode extends StatNode {
           .addTypeException(
               ctx, expr.getInput(), "CHAR or INT", type.toString(), "", "'read' statement");
     }
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 }

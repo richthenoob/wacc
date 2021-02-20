@@ -1,9 +1,11 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.semantics.Visitor;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class VariableNode extends ExprNode {
@@ -35,5 +37,10 @@ public class VariableNode extends ExprNode {
     }
 
     setType(id.getType());
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 }

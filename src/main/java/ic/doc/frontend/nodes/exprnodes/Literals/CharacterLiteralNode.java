@@ -1,8 +1,10 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.types.CharType;
 import ic.doc.frontend.semantics.Visitor;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Single ASCII character between two ' symbols. A '\' can be used to escape the character
@@ -26,6 +28,11 @@ public class CharacterLiteralNode extends LiteralNode {
     if (!CharType.isValidChar(getValue())) {
       visitor.getSemanticErrorList().addException(ctx, "Invalid character token at " + value);
     }
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 
   @Override

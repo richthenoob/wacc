@@ -1,5 +1,6 @@
 package ic.doc.frontend.nodes;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.errors.SyntaxException;
@@ -65,6 +66,11 @@ public class FunctionNode extends Node {
           ctx.getStart().getLine(),
           ctx.getStart().getCharPositionInLine());
     }
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 
   private boolean endsWithReturnOrExit(StatNode stat) {

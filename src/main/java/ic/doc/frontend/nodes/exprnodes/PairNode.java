@@ -1,7 +1,9 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.types.PairType;
 import ic.doc.frontend.semantics.Visitor;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class PairNode extends ExprNode {
@@ -26,6 +28,11 @@ public class PairNode extends ExprNode {
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     /* No checks needed. */
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 
   @Override

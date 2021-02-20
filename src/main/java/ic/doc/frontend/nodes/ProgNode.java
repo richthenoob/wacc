@@ -1,5 +1,6 @@
 package ic.doc.frontend.nodes;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.nodes.statnodes.StatNode;
 import java.util.List;
@@ -18,5 +19,10 @@ public class ProgNode extends Node {
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     /* No checks needed. */
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 }
