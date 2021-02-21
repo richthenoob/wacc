@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Check only one argument is passed in
+if [ $# -ne 1 ]
+then
+    echo "Usage: ./emulate [execName]"
+    exit 1
+fi
+
+cmd="qemu-arm -L /usr/arm-linux-gnueabi/ "
+cmd+=$1 # exec filename
+
+docker run -it --rm -v $(pwd):/src --entrypoint bash jqpoon/arm_compile_emulate:working -c "$cmd"
