@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class InvalidSemanticIoTest extends AbstractFrontendTest {
 
-  private static final String groupTestPath = "/invalid/semanticErr/io/";
+  private static final String groupTestPath = "/invalid/semanticErr/IO/";
 
   private static Collection<String> getTestNames() {
     return getAllTestNames(groupTestPath);
