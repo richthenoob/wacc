@@ -76,7 +76,8 @@ public class WaccFrontend {
       InputStream inputStream = new FileInputStream(file);
       try {
         ProgNode rootNode = parse(inputStream);
-        generateCode(rootNode);
+        String output = generateCode(rootNode);
+        System.out.println(output); // TODO: remove after tests are set up
       } catch (SyntaxException e) {
         System.err.println(e.toString());
         System.exit(SYNTAX_EXIT_CODE);

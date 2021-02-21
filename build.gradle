@@ -64,8 +64,8 @@ clean {
     delete "${rootDir}/src/main/java/ic/doc/antlr/"
 }
 
-task myRun(type: JavaExec) {
+task runExample(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
     main = "ic.doc.frontend.WaccFrontend"
-    args "src/test/resources/frontendReference/test.wacc", "arg2"
+    args "src/test/resources/backendReference/test.wacc"
 }

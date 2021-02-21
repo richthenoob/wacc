@@ -2,6 +2,7 @@ package ic.doc.frontend.nodes;
 
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.Stack;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.statnodes.StatNode;
 import ic.doc.frontend.semantics.Visitor;
@@ -27,5 +28,10 @@ public class ProgNode extends Node {
   public void translate(
       List<Label<Instruction>> instructionLabels,
       List<Label<Data>> dataLabels) {
+    // SAMPLE INSTRUCTIONS ONLY. Remove when implemented
+    Stack stack = new Stack(true, 0);
+    Label<Instruction> inst = new Label<>("main");
+    inst.addToBody(stack);
+    instructionLabels.add(inst);
   }
 }
