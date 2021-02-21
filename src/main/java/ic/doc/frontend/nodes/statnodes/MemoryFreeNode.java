@@ -1,9 +1,11 @@
 package ic.doc.frontend.nodes.statnodes;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.types.PairType;
 import ic.doc.frontend.types.ArrayType;
 import ic.doc.frontend.semantics.Visitor;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class MemoryFreeNode extends StatNode {
@@ -32,5 +34,10 @@ public class MemoryFreeNode extends StatNode {
               "",
               " 'free' statement");
     }
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 }

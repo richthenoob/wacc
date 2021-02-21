@@ -1,9 +1,11 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.nodes.exprnodes.Literals.PairLiteralNode;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.PairType;
 import ic.doc.frontend.semantics.Visitor;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class PairElementNode extends ExprNode {
@@ -61,5 +63,10 @@ public class PairElementNode extends ExprNode {
     } else {
       setType(type.getType2());
     }
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 }

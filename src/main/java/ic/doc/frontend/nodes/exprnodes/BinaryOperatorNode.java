@@ -1,5 +1,6 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.*;
 import java.util.Arrays;
@@ -90,6 +91,11 @@ public class BinaryOperatorNode extends ExprNode {
     } else {
       setType(type);
     }
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 
   /* Given two expression nodes and a list of valid types,

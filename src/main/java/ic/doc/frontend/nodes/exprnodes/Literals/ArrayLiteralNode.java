@@ -1,5 +1,6 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.types.AnyType;
 import ic.doc.frontend.types.ArrayType;
@@ -62,6 +63,11 @@ public class ArrayLiteralNode extends LiteralNode {
        * now set the type of this array. */
       setType(new ArrayType(values.get(0).getType()));
     }
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 
   @Override

@@ -1,5 +1,6 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.identifiers.FunctionIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.ParamIdentifier;
@@ -71,6 +72,11 @@ public class CallNode extends ExprNode {
             .addTypeException(ctx, args.getInput(), functionId.printTypes(), args.printTypes(), "");
       }
     }
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 
   @Override

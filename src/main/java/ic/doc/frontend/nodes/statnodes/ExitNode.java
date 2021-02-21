@@ -1,8 +1,10 @@
 package ic.doc.frontend.nodes.statnodes;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.types.IntType;
 import ic.doc.frontend.semantics.Visitor;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ExitNode extends StatNode {
@@ -26,5 +28,10 @@ public class ExitNode extends StatNode {
           .addTypeException(
               ctx, exprNode.getInput(), "INT", exprNode.getType().toString(), "", "exit statement");
     }
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 }

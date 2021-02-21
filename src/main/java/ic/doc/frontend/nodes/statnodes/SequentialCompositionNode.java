@@ -1,5 +1,6 @@
 package ic.doc.frontend.nodes.statnodes;
 
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.frontend.semantics.Visitor;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,5 +25,10 @@ public class SequentialCompositionNode extends StatNode {
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     /* No checks needed. */
+  }
+
+  @Override
+  public List<Instruction> translate() {
+    return null;
   }
 }
