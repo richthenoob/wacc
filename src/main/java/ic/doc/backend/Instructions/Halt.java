@@ -1,4 +1,4 @@
-package ic.doc.backend.Instructions;
-
-public class Halt extends Instruction{
-}
+//package ic.doc.backend.Instructions;
+//
+//public class Halt extends Instruction{
+//}

@@ -1,4 +1,12 @@
 package ic.doc.backend.Data;
 
-public abstract class Data {
+public class Data {
+    private int numChar;
+    private String content;
+
+    public String toAssembly(){
+        return "    .word "+ numChar + "\n    .ascii  +" + content;
+    }
+
+
 }
