@@ -1,5 +1,7 @@
 package ic.doc.backend.Instructions.Function;
 
-public class Call {
+import ic.doc.backend.Instructions.Instruction;
+
+public class Call extends Instruction {
 
 }
