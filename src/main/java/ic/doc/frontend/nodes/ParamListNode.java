@@ -40,8 +40,8 @@ public class ParamListNode extends Node {
 
   @Override
   public void translate(
-      Label<Instruction> instructionLabels,
-      Label<Data> dataLabels) {
+      List<Label<Instruction>> instructionLabels,
+      List<Label<Data>> dataLabels) {
   }
 
   public String getInput() {

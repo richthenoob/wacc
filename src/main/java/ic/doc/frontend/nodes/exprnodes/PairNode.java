@@ -5,6 +5,7 @@ import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.PairType;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class PairNode extends ExprNode {
@@ -33,8 +34,8 @@ public class PairNode extends ExprNode {
 
   @Override
   public void translate(
-      Label<Instruction> instructionLabels,
-      Label<Data> dataLabels) {
+      List<Label<Instruction>> instructionLabels,
+      List<Label<Data>> dataLabels) {
   }
 
   @Override

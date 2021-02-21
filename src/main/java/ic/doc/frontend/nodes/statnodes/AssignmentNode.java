@@ -12,6 +12,7 @@ import ic.doc.frontend.types.CharType;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.StringType;
 import ic.doc.frontend.types.Type;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class AssignmentNode extends StatNode {
@@ -116,7 +117,7 @@ public class AssignmentNode extends StatNode {
 
   @Override
   public void translate(
-      Label<Instruction> instructionLabels,
-      Label<Data> dataLabels) {
+      List<Label<Instruction>> instructionLabels,
+      List<Label<Data>> dataLabels) {
   }
 }

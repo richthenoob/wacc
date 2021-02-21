@@ -7,6 +7,7 @@ import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.BoolType;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ConditionalBranchNode extends StatNode {
@@ -63,7 +64,7 @@ public class ConditionalBranchNode extends StatNode {
 
   @Override
   public void translate(
-      Label<Instruction> instructionLabels,
-      Label<Data> dataLabels) {
+      List<Label<Instruction>> instructionLabels,
+      List<Label<Data>> dataLabels) {
   }
 }

@@ -7,6 +7,7 @@ import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ErrorType;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class VariableNode extends ExprNode {
@@ -42,7 +43,7 @@ public class VariableNode extends ExprNode {
 
   @Override
   public void translate(
-      Label<Instruction> instructionLabels,
-      Label<Data> dataLabels) {
+      List<Label<Instruction>> instructionLabels,
+      List<Label<Data>> dataLabels) {
   }
 }

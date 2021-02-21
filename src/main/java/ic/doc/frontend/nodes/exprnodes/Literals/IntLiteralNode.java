@@ -6,6 +6,7 @@ import ic.doc.backend.Label;
 import ic.doc.frontend.errors.SyntaxException;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.IntType;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Consists of a sequence of decimal digits, optionally preceded
@@ -43,8 +44,8 @@ public class IntLiteralNode extends LiteralNode {
 
   @Override
   public void translate(
-      Label<Instruction> instructionLabels,
-      Label<Data> dataLabels) {
+      List<Label<Instruction>> instructionLabels,
+      List<Label<Data>> dataLabels) {
   }
 
   @Override

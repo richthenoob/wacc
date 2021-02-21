@@ -75,8 +75,8 @@ public class FunctionNode extends Node {
 
   @Override
   public void translate(
-      Label<Instruction> instructionLabels,
-      Label<Data> dataLabels) {
+      List<Label<Instruction>> instructionLabels,
+      List<Label<Data>> dataLabels) {
   }
 
   private boolean endsWithReturnOrExit(StatNode stat) {

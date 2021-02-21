@@ -7,6 +7,7 @@ import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ArrayType;
 import ic.doc.frontend.types.PairType;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class MemoryFreeNode extends StatNode {
@@ -39,7 +40,7 @@ public class MemoryFreeNode extends StatNode {
 
   @Override
   public void translate(
-      Label<Instruction> instructionLabels,
-      Label<Data> dataLabels) {
+      List<Label<Instruction>> instructionLabels,
+      List<Label<Data>> dataLabels) {
   }
 }

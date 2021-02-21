@@ -6,6 +6,7 @@ import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.CharType;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Single ASCII character between two ' symbols. A '\' can be used to escape the character
@@ -33,8 +34,8 @@ public class CharacterLiteralNode extends LiteralNode {
 
   @Override
   public void translate(
-      Label<Instruction> instructionLabels,
-      Label<Data> dataLabels) {
+      List<Label<Instruction>> instructionLabels,
+      List<Label<Data>> dataLabels) {
   }
 
   @Override

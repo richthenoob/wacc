@@ -104,8 +104,8 @@ public class BinaryOperatorNode extends ExprNode {
 
   @Override
   public void translate(
-      Label<Instruction> instructionLabels,
-      Label<Data> dataLabels) {
+      List<Label<Instruction>> instructionLabels,
+      List<Label<Data>> dataLabels) {
   }
 
   /* Given two expression nodes and a list of valid types,

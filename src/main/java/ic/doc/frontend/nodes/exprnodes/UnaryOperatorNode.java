@@ -10,6 +10,7 @@ import ic.doc.frontend.types.CharType;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.IntType;
 import ic.doc.frontend.types.Type;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class UnaryOperatorNode extends ExprNode {
@@ -112,8 +113,8 @@ public class UnaryOperatorNode extends ExprNode {
 
   @Override
   public void translate(
-      Label<Instruction> instructionLabels,
-      Label<Data> dataLabels) {
+      List<Label<Instruction>> instructionLabels,
+      List<Label<Data>> dataLabels) {
   }
 
   @Override
