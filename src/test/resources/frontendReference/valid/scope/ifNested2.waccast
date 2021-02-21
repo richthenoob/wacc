@@ -1,0 +1,62 @@
+-- Compiling...
+-- Printing AST...
+ifNested2.ast contents are:
+===========================================================
+0	Program
+1	  - int main()
+2	    - DECLARE
+3	      - TYPE
+4	        - int
+5	      - LHS
+6	        - a
+7	      - RHS
+8	        - 13
+9	    - IF
+10	      - CONDITION
+11	        - ==
+12	          - a
+13	          - 13
+14	      - THEN
+15	        - IF
+16	          - CONDITION
+17	            - >
+18	              - a
+19	              - 5
+20	          - THEN
+21	            - IF
+22	              - CONDITION
+23	                - <
+24	                  - a
+25	                  - 10
+26	              - THEN
+27	                - PRINTLN
+28	                  - "incorrect"
+29	              - ELSE
+30	                - IF
+31	                  - CONDITION
+32	                    - >
+33	                      - a
+34	                      - 12
+35	                  - THEN
+36	                    - IF
+37	                      - CONDITION
+38	                        - >
+39	                          - a
+40	                          - 13
+41	                      - THEN
+42	                        - PRINTLN
+43	                          - "incorrect"
+44	                      - ELSE
+45	                        - PRINTLN
+46	                          - "correct"
+47	                  - ELSE
+48	                    - PRINTLN
+49	                      - "incorrect"
+50	          - ELSE
+51	            - PRINTLN
+52	              - "incorrect"
+53	      - ELSE
+54	        - PRINTLN
+55	          - "incorrect"
+===========================================================
+-- Finished

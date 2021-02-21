@@ -1,0 +1,67 @@
+-- Compiling...
+-- Printing AST...
+multipleStringsAssignment.ast contents are:
+===========================================================
+0	Program
+1	  - int main()
+2	    - DECLARE
+3	      - TYPE
+4	        - string
+5	      - LHS
+6	        - s1
+7	      - RHS
+8	        - "Hi"
+9	    - DECLARE
+10	      - TYPE
+11	        - string
+12	      - LHS
+13	        - s2
+14	      - RHS
+15	        - "Hello"
+16	    - PRINT
+17	      - "s1 is "
+18	    - PRINTLN
+19	      - s1
+20	    - PRINT
+21	      - "s2 is "
+22	    - PRINTLN
+23	      - s2
+24	    - IF
+25	      - CONDITION
+26	        - ==
+27	          - s1
+28	          - s2
+29	      - THEN
+30	        - PRINTLN
+31	          - "They are the same string."
+32	      - ELSE
+33	        - PRINTLN
+34	          - "They are not the same string."
+35	    - PRINTLN
+36	      - "Now make s1 = s2"
+37	    - ASSIGNMENT
+38	      - LHS
+39	        - s1
+40	      - RHS
+41	        - s2
+42	    - PRINT
+43	      - "s1 is "
+44	    - PRINTLN
+45	      - s1
+46	    - PRINT
+47	      - "s2 is "
+48	    - PRINTLN
+49	      - s2
+50	    - IF
+51	      - CONDITION
+52	        - ==
+53	          - s1
+54	          - s2
+55	      - THEN
+56	        - PRINTLN
+57	          - "They are the same string."
+58	      - ELSE
+59	        - PRINTLN
+60	          - "They are not the same string."
+===========================================================
+-- Finished
