@@ -3,9 +3,9 @@ package ic.doc.frontendtests;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import ic.doc.frontend.WaccFrontend;
 import ic.doc.frontend.errors.SemanticException;
 import ic.doc.frontend.errors.SyntaxException;
-import ic.doc.frontend.WaccFrontend;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -25,7 +25,7 @@ public abstract class AbstractFrontendTest {
 
   private static final String WACC_FILE_EXTENSION = ".wacc";
   private static final String EXAMPLES_DIR = "/wacc_examples";
-  private static final String REFERENCE_DIR = "/refCompilerOutput";
+  private static final String REFERENCE_DIR = "/frontendReference";
 
   private static final Integer SYNTAX_EXIT_CODE = WaccFrontend.SYNTAX_EXIT_CODE;
   private static final Integer SEMANTIC_EXIT_CODE = WaccFrontend.SEMANTIC_EXIT_CODE;

@@ -52,7 +52,7 @@ task frontendValidTest(type: Test) {
 
 task frontendInvalidSyntaxTest(type: Test) {
     useJUnitPlatform {
-        includeTags 'syntax'
+        includeTags 'invalid'
     }
     testLogging {
         events "PASSED", "SKIPPED", "FAILED"
@@ -67,5 +67,5 @@ clean {
 task myRun(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
     main = "ic.doc.frontend.WaccFrontend"
-    args "src/test/resources/refCompilerOutput/test.wacc", "arg2"
+    args "src/test/resources/frontendReference/test.wacc", "arg2"
 }
