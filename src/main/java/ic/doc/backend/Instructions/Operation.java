@@ -1,6 +1,7 @@
 package ic.doc.backend.Instructions;
 
 public enum Operation {
+    ADDS,
     ADD,
     SUB,
     MUL,
@@ -8,4 +9,6 @@ public enum Operation {
     TST,
     CMP,
     MOV,
+    MOVEQ,
+    MOVNE
 }
