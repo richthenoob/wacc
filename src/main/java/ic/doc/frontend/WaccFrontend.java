@@ -1,7 +1,6 @@
 package ic.doc.frontend;
 
-import static ic.doc.backend.WaccBackend.generateCode;
-
+import ic.doc.backend.WaccBackend;
 import ic.doc.antlr.BasicLexer;
 import ic.doc.antlr.BasicParser;
 import ic.doc.frontend.errors.ErrorListener;
@@ -71,13 +70,16 @@ public class WaccFrontend {
     }
 
     /* Check file exists before passing filestream to our lexer and parser */
-    File file = new File(args[0]);
+    String filename = args[0];
+    File file = new File(filename);
     if (file.exists()) {
       InputStream inputStream = new FileInputStream(file);
       try {
         ProgNode rootNode = parse(inputStream);
-        String output = generateCode(rootNode);
-        System.out.println(output); // TODO: remove after tests are set up
+        String output = WaccBackend.generateCode(rootNode);
+        /* Strips .wacc file extension and adds .s before writing to file. */
+        WaccBackend.writeToFile(filename.substring(0, filename.lastIndexOf('.')) + ".s", output);
+        System.out.println(output);
       } catch (SyntaxException e) {
         System.err.println(e.toString());
         System.exit(SYNTAX_EXIT_CODE);

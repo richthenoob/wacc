@@ -7,7 +7,14 @@ then
     exit 1
 fi
 
+# Print newline
+echo
+
 cmd="qemu-arm -L /usr/arm-linux-gnueabi/ "
 cmd+=$1 # exec filename
+cmd+=" || true"
 
 docker run -it --rm -v $(pwd):/src --entrypoint bash jqpoon/arm_compile_emulate:working -c "$cmd"
+
+# Print newline
+echo

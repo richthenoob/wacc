@@ -31,7 +31,8 @@ public class WaccBackend {
     }
 
     /* Build .text section. */
-    outputString.append("\n.text\n\n");
+    outputString.append("\n.text\n");
+    outputString.append(".global main\n");
     for (Label<Instruction> instructionLabel: instructionLabels) {
       outputString.append(instructionLabel.toString());
       outputString.append(":\n");
