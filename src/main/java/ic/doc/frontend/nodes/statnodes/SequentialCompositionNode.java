@@ -1,6 +1,8 @@
 package ic.doc.frontend.nodes.statnodes;
 
+import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +30,8 @@ public class SequentialCompositionNode extends StatNode {
   }
 
   @Override
-  public List<Instruction> translate() {
-    return null;
+  public void translate(
+      List<Label<Instruction>> instructionLabels,
+      List<Label<Data>> dataLabels) {
   }
 }

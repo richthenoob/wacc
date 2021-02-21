@@ -1,9 +1,11 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
+import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Label;
+import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.AnyType;
 import ic.doc.frontend.types.PairType;
-import ic.doc.frontend.semantics.Visitor;
 import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -20,8 +22,9 @@ public class PairLiteralNode extends LiteralNode {
   }
 
   @Override
-  public List<Instruction> translate() {
-    return null;
+  public void translate(
+      List<Label<Instruction>> instructionLabels,
+      List<Label<Data>> dataLabels) {
   }
 
   @Override

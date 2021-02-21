@@ -101,8 +101,7 @@ public abstract class AbstractFrontendTest {
     InputStream inputStream = this.getClass().getResourceAsStream(EXAMPLES_DIR + testFilepath);
 
     try {
-      String compilerResult = WaccFrontend.parse(inputStream);
-      // Do something with compilerResult
+      WaccFrontend.parse(inputStream);
     } catch (SyntaxException e) {
       frontendExitCode = SYNTAX_EXIT_CODE;
     } catch (SemanticException e) {
