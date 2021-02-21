@@ -67,5 +67,5 @@ clean {
 task runExample(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
     main = "ic.doc.frontend.WaccFrontend"
-    args "src/test/resources/backendReference/test.wacc"
+    args "src/test/resources/quickTest/test.wacc"
 }
