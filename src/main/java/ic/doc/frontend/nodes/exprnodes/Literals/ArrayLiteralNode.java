@@ -1,15 +1,16 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
+import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
+import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.AnyType;
 import ic.doc.frontend.types.ArrayType;
 import ic.doc.frontend.types.ErrorType;
+import ic.doc.frontend.types.Type;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import ic.doc.frontend.semantics.Visitor;
-import ic.doc.frontend.types.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Can only appear as assignment values. All elements must be of the same type.
@@ -66,8 +67,9 @@ public class ArrayLiteralNode extends LiteralNode {
   }
 
   @Override
-  public List<Instruction> translate() {
-    return null;
+  public void translate(
+      Label<Instruction> instructionLabels,
+      Label<Data> dataLabels) {
   }
 
   @Override

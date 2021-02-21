@@ -1,8 +1,10 @@
 package ic.doc.frontend.nodes;
 
+import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
-import ic.doc.frontend.semantics.Visitor;
+import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.statnodes.StatNode;
+import ic.doc.frontend.semantics.Visitor;
 import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -22,7 +24,8 @@ public class ProgNode extends Node {
   }
 
   @Override
-  public List<Instruction> translate() {
-    return null;
+  public void translate(
+      Label<Instruction> instructionLabels,
+      Label<Data> dataLabels) {
   }
 }

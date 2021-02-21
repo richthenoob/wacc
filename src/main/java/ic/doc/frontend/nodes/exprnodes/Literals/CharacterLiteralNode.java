@@ -1,10 +1,11 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
 
+import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
-import ic.doc.frontend.types.CharType;
+import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
-import java.util.List;
+import ic.doc.frontend.types.CharType;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Single ASCII character between two ' symbols. A '\' can be used to escape the character
@@ -31,8 +32,9 @@ public class CharacterLiteralNode extends LiteralNode {
   }
 
   @Override
-  public List<Instruction> translate() {
-    return null;
+  public void translate(
+      Label<Instruction> instructionLabels,
+      Label<Data> dataLabels) {
   }
 
   @Override

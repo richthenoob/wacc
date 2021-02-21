@@ -1,14 +1,19 @@
 package ic.doc.frontend.nodes;
 
+import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Label;
+import ic.doc.frontend.errors.SyntaxException;
+import ic.doc.frontend.nodes.statnodes.ConditionalBranchNode;
+import ic.doc.frontend.nodes.statnodes.ExitNode;
+import ic.doc.frontend.nodes.statnodes.FunctionReturnNode;
+import ic.doc.frontend.nodes.statnodes.SequentialCompositionNode;
+import ic.doc.frontend.nodes.statnodes.StatNode;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
-import ic.doc.frontend.errors.SyntaxException;
-import ic.doc.frontend.nodes.statnodes.*;
 import ic.doc.frontend.types.Type;
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import java.util.List;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 public class FunctionNode extends Node {
 
@@ -69,8 +74,9 @@ public class FunctionNode extends Node {
   }
 
   @Override
-  public List<Instruction> translate() {
-    return null;
+  public void translate(
+      Label<Instruction> instructionLabels,
+      Label<Data> dataLabels) {
   }
 
   private boolean endsWithReturnOrExit(StatNode stat) {

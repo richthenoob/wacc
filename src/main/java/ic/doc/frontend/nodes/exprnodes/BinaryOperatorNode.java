@@ -1,8 +1,17 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
-import ic.doc.frontend.types.*;
+import ic.doc.frontend.types.ArrayType;
+import ic.doc.frontend.types.BoolType;
+import ic.doc.frontend.types.CharType;
+import ic.doc.frontend.types.ErrorType;
+import ic.doc.frontend.types.IntType;
+import ic.doc.frontend.types.PairType;
+import ic.doc.frontend.types.StringType;
+import ic.doc.frontend.types.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -94,8 +103,9 @@ public class BinaryOperatorNode extends ExprNode {
   }
 
   @Override
-  public List<Instruction> translate() {
-    return null;
+  public void translate(
+      Label<Instruction> instructionLabels,
+      Label<Data> dataLabels) {
   }
 
   /* Given two expression nodes and a list of valid types,

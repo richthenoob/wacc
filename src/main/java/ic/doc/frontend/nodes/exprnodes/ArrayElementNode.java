@@ -1,17 +1,18 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Label;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ArrayType;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.IntType;
 import ic.doc.frontend.types.Type;
-import ic.doc.frontend.semantics.Visitor;
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Parser definition: arrayElem: IDENT (OPEN_BRACKETS expr CLOSE_BRACKETS)+
  * IDENT MUST be of type T[], expr MUST be of type INT
@@ -93,8 +94,9 @@ public class ArrayElementNode extends ExprNode {
   }
 
   @Override
-  public List<Instruction> translate() {
-    return null;
+  public void translate(
+      Label<Instruction> instructionLabels,
+      Label<Data> dataLabels) {
   }
 
   @Override

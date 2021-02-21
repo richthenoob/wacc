@@ -1,9 +1,10 @@
 package ic.doc.frontend.nodes.statnodes;
 
+import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.Visitor;
-import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class PrintNode extends StatNode {
@@ -26,7 +27,8 @@ public class PrintNode extends StatNode {
   }
 
   @Override
-  public List<Instruction> translate() {
-    return null;
+  public void translate(
+      Label<Instruction> instructionLabels,
+      Label<Data> dataLabels) {
   }
 }

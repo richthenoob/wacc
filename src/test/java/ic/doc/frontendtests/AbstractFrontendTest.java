@@ -3,9 +3,9 @@ package ic.doc.frontendtests;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import ic.doc.frontend.WaccFrontend;
 import ic.doc.frontend.errors.SemanticException;
 import ic.doc.frontend.errors.SyntaxException;
-import ic.doc.frontend.WaccFrontend;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -101,8 +101,7 @@ public abstract class AbstractFrontendTest {
     InputStream inputStream = this.getClass().getResourceAsStream(EXAMPLES_DIR + testFilepath);
 
     try {
-      String compilerResult = WaccFrontend.parse(inputStream);
-      // Do something with compilerResult
+      WaccFrontend.parse(inputStream);
     } catch (SyntaxException e) {
       frontendExitCode = SYNTAX_EXIT_CODE;
     } catch (SemanticException e) {

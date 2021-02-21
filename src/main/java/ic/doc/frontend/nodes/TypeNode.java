@@ -1,9 +1,10 @@
 package ic.doc.frontend.nodes;
 
+import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
-import ic.doc.frontend.types.Type;
+import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
-import java.util.List;
+import ic.doc.frontend.types.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class TypeNode extends Node {
@@ -24,8 +25,9 @@ public class TypeNode extends Node {
   }
 
   @Override
-  public List<Instruction> translate() {
-    return null;
+  public void translate(
+      Label<Instruction> instructionLabels,
+      Label<Data> dataLabels) {
   }
 
   public String getInput() {

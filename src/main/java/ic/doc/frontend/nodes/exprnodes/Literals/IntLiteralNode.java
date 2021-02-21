@@ -1,10 +1,11 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
+import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Label;
 import ic.doc.frontend.errors.SyntaxException;
-import ic.doc.frontend.types.IntType;
 import ic.doc.frontend.semantics.Visitor;
-import java.util.List;
+import ic.doc.frontend.types.IntType;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Consists of a sequence of decimal digits, optionally preceded
@@ -41,8 +42,9 @@ public class IntLiteralNode extends LiteralNode {
   }
 
   @Override
-  public List<Instruction> translate() {
-    return null;
+  public void translate(
+      Label<Instruction> instructionLabels,
+      Label<Data> dataLabels) {
   }
 
   @Override
