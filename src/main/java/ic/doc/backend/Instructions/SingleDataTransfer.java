@@ -9,6 +9,11 @@ public class SingleDataTransfer extends Instruction {
     private Operand dst;
     private Operand expr;
 
+    public SingleDataTransfer(boolean loadFlag, Operand dst, Operand expr) {
+        this.loadFlag = loadFlag;
+        this.dst = dst;
+        this.expr = expr;
+    }
 
     @Override
     public String toAssembly() {

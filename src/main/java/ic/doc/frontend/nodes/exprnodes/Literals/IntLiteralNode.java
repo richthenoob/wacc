@@ -2,6 +2,9 @@ package ic.doc.frontend.nodes.exprnodes.Literals;
 
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.Operand;
+import ic.doc.backend.Instructions.OperandType;
+import ic.doc.backend.Instructions.SingleDataTransfer;
 import ic.doc.backend.Label;
 import ic.doc.frontend.errors.SyntaxException;
 import ic.doc.frontend.semantics.Visitor;
@@ -46,6 +49,11 @@ public class IntLiteralNode extends LiteralNode {
   public void translate(
       List<Label<Instruction>> instructionLabels,
       List<Label<Data>> dataLabels) {
+    Operand operand = new Operand(OperandType.CONST,value.intValue());
+    Operand register = new Operand(OperandType.REG,2);
+    instructionLabels
+            .get(instructionLabels.size() - 1)
+            .addToBody(new SingleDataTransfer(true, register, operand));
   }
 
   @Override
