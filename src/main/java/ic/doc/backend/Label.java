@@ -12,6 +12,10 @@ public class Label<E> {
     this.body = new ArrayList<>();
   }
 
+  public String getFunctionLabel() {
+    return functionLabel;
+  }
+
   public void addToBody(E item) {
     body.add(item);
   }
