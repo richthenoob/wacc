@@ -4,6 +4,11 @@ public class Operand {
     private OperandType operandType;
     private int value; //for register number or constant value
 
+    public Operand(OperandType operandType, int value) {
+        this.operandType = operandType;
+        this.value = value;
+    }
+
     @Override
     public String toString() {
         switch (operandType){

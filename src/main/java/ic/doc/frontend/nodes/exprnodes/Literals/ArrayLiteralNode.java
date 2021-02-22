@@ -70,6 +70,7 @@ public class ArrayLiteralNode extends LiteralNode {
   public void translate(
       List<Label<Instruction>> instructionLabels,
       List<Label<Data>> dataLabels) {
+
   }
 
   @Override
