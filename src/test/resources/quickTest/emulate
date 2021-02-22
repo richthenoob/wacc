@@ -8,13 +8,15 @@ then
 fi
 
 # Print newline
-echo
+echo "\n"Executing...
 
 cmd="qemu-arm -L /usr/arm-linux-gnueabi/ "
 cmd+=$1 # exec filename
-cmd+=" || true"
+cmd+=" && true"
 
 docker run -it --rm -v $(pwd):/src --entrypoint bash jqpoon/arm_compile_emulate:working -c "$cmd"
+
+echo "The exit code is "$?"."
 
 # Print newline
 echo

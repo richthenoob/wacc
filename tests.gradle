@@ -1,0 +1,43 @@
+/* Supporting docker tasks for backend tests */
+dockerRun {
+    name='testname'
+    image='jqpoon/arm_compile_emulate:working'
+    arguments '-t'
+}
+
+task dockerStopAndRemove(type: Exec) {
+    commandLine 'docker', 'stop', '-t', '1', 'testname'
+    finalizedBy(dockerRemoveContainer)
+}
+
+/* Frontend tests */
+test {
+    useJUnitPlatform()
+}
+
+task frontendValidTest(type: Test) {
+    useJUnitPlatform {
+        includeTags 'valid'
+    }
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+}
+
+task frontendInvalidSyntaxTest(type: Test) {
+    useJUnitPlatform {
+        includeTags 'invalid'
+    }
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+}
+
+/* Backend tests */
+task backendTest(type: Test) {
+    useJUnitPlatform {
+        includeTags 'valid'
+    }
+    dependsOn(tasks.dockerRun)
+    finalizedBy(dockerStopAndRemove)
+}
