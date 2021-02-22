@@ -2,6 +2,9 @@ package ic.doc.frontend.nodes.exprnodes.Literals;
 
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.Operand;
+import ic.doc.backend.Instructions.OperandType;
+import ic.doc.backend.Instructions.SingleDataTransfer;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.CharType;
@@ -35,9 +38,19 @@ public class StringLiteralNode extends LiteralNode {
   }
 
   @Override
-  public void translate(
-      List<Label<Instruction>> instructionLabels,
-      List<Label<Data>> dataLabels) {
+  public void translate(List<Label<Instruction>> instructionLabels, List<Label<Data>> dataLabels) {
+    int newIndex = dataLabels.size();
+    Label<Data> newLabel = new Label<>("msg_" + newIndex);
+    dataLabels.add(newIndex, newLabel);
+    newLabel.addToBody(new Data(value.length(), value));
+
+    Operand register = new Operand(OperandType.REG, 2);
+    Operand operand = new Operand(OperandType.MEM, 0); // dummy value for value
+
+    operand.setVarName(dataLabels.get(dataLabels.size() - 1).getFunctionLabel());
+    instructionLabels
+        .get(instructionLabels.size() - 1)
+        .addToBody(new SingleDataTransfer(true, register, operand));
   }
 
   @Override

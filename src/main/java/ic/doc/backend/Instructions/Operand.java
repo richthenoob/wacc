@@ -3,11 +3,17 @@ package ic.doc.backend.Instructions;
 public class Operand {
     private OperandType operandType;
     private int value; //for register number or constant value
+    private String varName;
 
     public Operand(OperandType operandType, int value) {
         this.operandType = operandType;
         this.value = value;
     }
+
+    public void setVarName(String varName) {
+        this.varName = varName;
+    }
+
 
     @Override
     public String toString() {
@@ -27,7 +33,7 @@ public class Operand {
                 }
 
             case MEM:
-                return "mem"; //Not sure what to do here or if this situation occurs
+                return "=" + varName; //Not sure what to do here or if this situation occurs
             default:
                 return "#" + value;
         }
