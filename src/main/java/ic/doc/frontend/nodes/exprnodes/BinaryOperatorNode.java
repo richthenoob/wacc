@@ -108,14 +108,21 @@ public class BinaryOperatorNode extends ExprNode {
         .get(instructionLabels.size() - 1);
     switch (binaryOperator) {
       /* Arithmetic operators. */
-      //TODO: DEAL WITH OVERFLOW?
       case MUL:
+        // SMULL
+        curr.addToBody(new DataProcessing(lReg, rReg, lReg, rReg));
+        // TODO: CMP which involves shifting?????
+        curr.addToBody(new DataProcessing(rReg, null));
+        curr.addToBody(new Branch(Condition.BLNE, new Label("p_throw_overflow_error")));
       case DIV:
+        //TODO
       case MOD:
+        //TODO
       case PLUS:
-        curr.addToBody(new DataProcessing(lReg, lReg, rReg, Operation.ADD));
       case MINUS:
-        curr.addToBody(new DataProcessing(lReg, lReg, rReg, Operation.SUB));
+        Operation op = binaryOperator == BinaryOperators.PLUS ? Operation.ADD : Operation.SUB;
+        curr.addToBody(new DataProcessing(lReg, lReg, rReg, op));
+        curr.addToBody(new Branch(Condition.BLVS, new Label("p_throw_overflow_error")));
 
       /* Comparison operators. */
       case GT:
