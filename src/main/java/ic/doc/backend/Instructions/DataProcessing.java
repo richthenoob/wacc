@@ -10,30 +10,12 @@ public class DataProcessing extends Instruction {
   public String toAssembly() {
     switch (operation) {
       case ADDS:
-        return "ADDS "
-            + operand1.toString()
-            + ", "
-            + operand2.toString()
-            + ", "
-            + operand3.toString();
       case ADD:
-        return "ADD "
-            + operand1.toString()
-            + ", "
-            + operand2.toString()
-            + ", "
-            + operand3.toString();
       case SUB:
-        return "SUB "
-            + operand1.toString()
-            + ", "
-            + operand2.toString()
-            + ", "
-            + operand3.toString();
       case MUL:
-        return "MUL "
+        return operation.toString()
             + operand1.toString()
-            + ", "
+            + " , "
             + operand2.toString()
             + ", "
             + operand3.toString();
