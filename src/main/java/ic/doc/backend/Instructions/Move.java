@@ -2,27 +2,34 @@ package ic.doc.backend.Instructions;
 
 public class Move extends Instruction{
 
-    private Operand operand1;
-    private Operand operand2;
+    private Operand dst;
+    private Operand src;
     private Condition condition;
+
+    public Move(Operand dst, Operand src, Condition condition) {
+        this.dst = dst;
+        this.src = src;
+        this.condition = condition;
+    }
+
 
     @Override
     public String toAssembly() {
         switch(condition){
             case BEQ:
-                return "MOVEQ "+ operand1.toString() + ", " + operand2.toString();
+                return "MOVEQ "+ dst.toString() + ", " + src.toString();
             case BNE:
-                return "MOVNE "+ operand1.toString() + ", " + operand2.toString();
+                return "MOVNE "+ dst.toString() + ", " + src.toString();
             case  BGE:
-                return "MOVGE "+ operand1.toString() + ", " + operand2.toString();
+                return "MOVGE "+ dst.toString() + ", " + src.toString();
             case BLT:
-                return "MOVLT "+ operand1.toString() + ", " + operand2.toString();
+                return "MOVLT "+ dst.toString() + ", " + src.toString();
             case BGT:
-                return "MOVGT "+ operand1.toString() + ", " + operand2.toString();
+                return "MOVGT "+ dst.toString() + ", " + src.toString();
             case BLE:
-                return "MOVLE "+ operand1.toString() + ", " + operand2.toString();
+                return "MOVLE "+ dst.toString() + ", " + src.toString();
             default:
-                return "MOV" + operand1.toString() + ", " + operand2.toString();
+                return "MOV" + dst.toString() + ", " + src.toString();
         }
     }
 }

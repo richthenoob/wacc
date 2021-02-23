@@ -1,17 +1,10 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
-import ic.doc.frontend.types.ArrayType;
-import ic.doc.frontend.types.BoolType;
-import ic.doc.frontend.types.CharType;
-import ic.doc.frontend.types.ErrorType;
-import ic.doc.frontend.types.IntType;
-import ic.doc.frontend.types.PairType;
-import ic.doc.frontend.types.StringType;
-import ic.doc.frontend.types.Type;
+import ic.doc.frontend.types.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -106,6 +99,69 @@ public class BinaryOperatorNode extends ExprNode {
   public void translate(
       List<Label<Instruction>> instructionLabels,
       List<Label<Data>> dataLabels) {
+    leftExpr.translate(instructionLabels, dataLabels);
+    rightExpr.translate(instructionLabels, dataLabels);
+    Operand lReg = null;
+    Operand rReg = null;
+
+    Label curr = instructionLabels
+        .get(instructionLabels.size() - 1);
+    switch (binaryOperator) {
+      /* Arithmetic operators. */
+      //TODO: DEAL WITH OVERFLOW?
+      case MUL:
+      case DIV:
+      case MOD:
+      case PLUS:
+        curr.addToBody(new DataProcessing(lReg, lReg, rReg, Operation.ADD));
+      case MINUS:
+        curr.addToBody(new DataProcessing(lReg, lReg, rReg, Operation.SUB));
+
+      /* Comparison operators. */
+      case GT:
+        addComparisonAssembly(curr, lReg, rReg, Condition.BGT, Condition.BLE);
+        break;
+      case GTE:
+        addComparisonAssembly(curr, lReg, rReg, Condition.BGE, Condition.BLT);
+        break;
+      case LT:
+        addComparisonAssembly(curr, lReg, rReg, Condition.BLT, Condition.BGE);
+        break;
+      case LTE:
+        addComparisonAssembly(curr, lReg, rReg, Condition.BLE, Condition.BGT);
+        break;
+
+      /* Equality operators. */
+      case EQ:
+        addComparisonAssembly(curr, lReg, rReg, Condition.BEQ, Condition.BNE);
+        break;
+      case NEQ:
+        addComparisonAssembly(curr, lReg, rReg, Condition.BNE, Condition.BEQ);
+        break;
+
+      /* Boolean operators. */
+      case AND:
+        curr.addToBody(new DataProcessing(lReg, lReg, rReg, Operation.AND));
+        break;
+      case OR:
+        curr.addToBody(new DataProcessing(lReg, lReg, rReg, Operation.OR));
+        break;
+    }
+
+
+  }
+
+  private void addComparisonAssembly(Label curr, Operand lReg, Operand rReg,
+      Condition lCond, Condition rCond) {
+    // CMP
+    curr.addToBody(new DataProcessing(lReg, rReg));
+    // left expr
+    curr.addToBody(new Move(lReg,
+        new Operand(OperandType.CONST, 1), lCond));
+    // right expr
+    curr.addToBody(new Move(rReg,
+        new Operand(OperandType.CONST, 0), rCond));
+
   }
 
   /* Given two expression nodes and a list of valid types,
