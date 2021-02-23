@@ -1,19 +1,26 @@
-/* Supporting docker tasks for backend tests */
+/* Supporting tasks for backend tests */
 String containerName = "backendContainer"
+String tempDirPath = "${rootDir}/src/test/resources/tmp"
 
 dockerRun {
-    name=containerName
+    name = containerName
     image 'jqpoon/arm_compile_emulate:working'
-    arguments '-t', '-v', '/Users/JiaQi/Desktop/:/compile/src:ro'
+    arguments '-t', '-v', tempDirPath + ':/compile/src:ro'
+}
+
+tasks.dockerRun.doFirst {
+    mkdir tempDirPath
 }
 
 task dockerStopAndRemove(type: Exec) {
     commandLine 'docker', 'stop', '-t', '1', containerName
+    delete tempDirPath
     finalizedBy(dockerRemoveContainer)
 }
 
 /* Frontend tests */
 test {
+    systemProperties = [tempDirPath: tempDirPath, containerName: containerName]
     useJUnitPlatform()
 }
 
@@ -37,6 +44,7 @@ task frontendInvalidSyntaxTest(type: Test) {
 
 /* Backend tests */
 task backendTest(type: Test) {
+    systemProperties = [tempDirPath: tempDirPath, containerName: containerName]
     useJUnitPlatform {
         includeTags 'backend'
     }

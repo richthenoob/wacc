@@ -1,5 +1,6 @@
 package ic.doc.frontendtests.invalid.syntaxErr;
 
+import ic.doc.TestUtils;
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.util.Collection;
 import org.junit.jupiter.api.Tag;
@@ -11,7 +12,7 @@ public class InvalidSyntaxArrayTest extends AbstractFrontendTest {
   private static final String groupTestPath = "/invalid/syntaxErr/array/";
 
   private static Collection<String> getTestNames() {
-    return getAllTestNames(groupTestPath);
+    return TestUtils.getAllTestNames(groupTestPath);
   }
 
   @Tag("invalid")
@@ -20,6 +21,6 @@ public class InvalidSyntaxArrayTest extends AbstractFrontendTest {
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void invalidSyntaxArrayTests(String testName) throws Exception {
-    testFile(groupTestPath + testName);
+    frontendTestFile(groupTestPath + testName);
   }
 }

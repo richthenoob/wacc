@@ -1,5 +1,6 @@
 package ic.doc.frontendtests.valid;
 
+import ic.doc.TestUtils;
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.util.Collection;
 import org.junit.jupiter.api.Tag;
@@ -10,7 +11,7 @@ public class ValidScopeTest extends AbstractFrontendTest {
   private static final String groupTestPath = "/valid/scope/";
 
   private static Collection<String> getTestNames() {
-    return getAllTestNames(groupTestPath);
+    return TestUtils.getAllTestNames(groupTestPath);
   }
 
   @Tag("valid")
@@ -18,6 +19,6 @@ public class ValidScopeTest extends AbstractFrontendTest {
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void validScopeTests(String testName) throws Exception {
-    testFile(groupTestPath + testName);
+    frontendTestFile(groupTestPath + testName);
   }
 }

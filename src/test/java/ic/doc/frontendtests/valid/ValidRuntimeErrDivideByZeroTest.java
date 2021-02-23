@@ -1,5 +1,6 @@
 package ic.doc.frontendtests.valid;
 
+import ic.doc.TestUtils;
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.util.Collection;
 import org.junit.jupiter.api.Tag;
@@ -10,7 +11,7 @@ public class ValidRuntimeErrDivideByZeroTest extends AbstractFrontendTest {
   private static final String groupTestPath = "/valid/runtimeErr/divideByZero/";
 
   private static Collection<String> getTestNames() {
-    return getAllTestNames(groupTestPath);
+    return TestUtils.getAllTestNames(groupTestPath);
   }
 
   @Tag("valid")
@@ -19,6 +20,6 @@ public class ValidRuntimeErrDivideByZeroTest extends AbstractFrontendTest {
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void validDivideByZeroTests(String testName) throws Exception {
-    testFile(groupTestPath + testName);
+    frontendTestFile(groupTestPath + testName);
   }
 }

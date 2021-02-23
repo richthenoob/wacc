@@ -1,8 +1,10 @@
 package ic.doc.frontendtests;
 
+import static ic.doc.TestUtils.readFileIntoString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import ic.doc.TestUtils;
 import ic.doc.frontend.WaccFrontend;
 import ic.doc.frontend.errors.SemanticException;
 import ic.doc.frontend.errors.SyntaxException;
@@ -11,41 +13,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public abstract class AbstractFrontendTest {
 
-  private static final Integer SUCCESS_EXIT_CODE = 0;
+  private static final String REFERENCE_DIR = "/frontendReference";
+
   private static final Pattern exitCodePattern = Pattern.compile("Exit code (\\d+) returned.");
   private static final Pattern semanticErrorMessagePattern = Pattern.compile("Semantic Error at");
   private static final Pattern syntacticErrorMessagePattern = Pattern.compile("Syntactic Error at");
 
-  private static final String WACC_FILE_EXTENSION = ".wacc";
-  private static final String EXAMPLES_DIR = "/wacc_examples";
-  private static final String REFERENCE_DIR = "/frontendReference";
-
+  private static final Integer SUCCESS_EXIT_CODE = 0;
   private static final Integer SYNTAX_EXIT_CODE = WaccFrontend.SYNTAX_EXIT_CODE;
   private static final Integer SEMANTIC_EXIT_CODE = WaccFrontend.SEMANTIC_EXIT_CODE;
 
-  private String readFileIntoString(String filepath) {
-    /* Read file into string */
-    String content;
-    Path path = Path.of(this.getClass().getResource(filepath).getPath());
-    try {
-      content = new String(Files.readAllBytes(path));
-    } catch (IOException e) {
-      throw new IllegalStateException("An error occurred while parsing"
-          + "error message from file in frontend test!");
-    }
-
-    return content;
-  }
-
-  private int getExitCodeFromFile(String content) {
+  private static int getExitCodeFromFile(String content) {
     /* Look for exit code in string */
     Matcher matcher = exitCodePattern.matcher(content);
     if (!matcher.find()) {
@@ -59,7 +42,7 @@ public abstract class AbstractFrontendTest {
     }
   }
 
-  private void getErrorMessagesFromFile(String content) {
+  private static void getErrorMessagesFromFile(String content) {
     /* Look for exit code in string for semantic errors*/
     Matcher semanticMatcher = semanticErrorMessagePattern.matcher(content);
 
@@ -77,37 +60,14 @@ public abstract class AbstractFrontendTest {
     }
   }
 
-  protected static Collection<String> getAllTestNames(String groupTestPath) {
-    List<String> files;
-
-    try {
-      /* Find resources path in test folder. */
-      String testDirPath =
-          AbstractFrontendTest.class.getResource(EXAMPLES_DIR + groupTestPath).getPath();
-
-      /* Go through sub-directory and find all .wacc files, without
-       * recursing in to sub-subdirectories. */
-      files =
-          Files.walk(Path.of(testDirPath), 1)
-              .filter(name -> name.toString().toLowerCase().endsWith(WACC_FILE_EXTENSION))
-              .map(Path::getFileName)
-              .map(Path::toString)
-              .collect(Collectors.toList());
-    } catch (IOException e) {
-      System.out.println(e.toString());
-      files = null;
-    }
-
-    return files;
-  }
-
-  public ProgNode testFile(String testFilepath) {
+  public ProgNode frontendTestFile(String testFilepath) {
     System.out.println(testFilepath);
     ProgNode rootNode;
 
     /* Run sample program through frontend */
     int frontendExitCode = SUCCESS_EXIT_CODE;
-    InputStream inputStream = this.getClass().getResourceAsStream(EXAMPLES_DIR + testFilepath);
+    InputStream inputStream = this.getClass().getResourceAsStream(
+        TestUtils.EXAMPLES_DIR + testFilepath);
 
     try {
       rootNode = WaccFrontend.parse(inputStream);
@@ -117,9 +77,9 @@ public abstract class AbstractFrontendTest {
     } catch (SemanticException e) {
       rootNode = null;
       frontendExitCode = SEMANTIC_EXIT_CODE;
-    } catch (IOException e) {
+    } catch (IOException | NullPointerException e) {
       throw new IllegalStateException("An error occurred while parsing input"
-          + "stream in frontend test!");
+          + " stream in frontend test for filepath: " + testFilepath);
     }
 
     /* Get reference compiler's exit code and error messages. */

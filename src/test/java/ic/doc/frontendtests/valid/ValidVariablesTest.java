@@ -1,5 +1,6 @@
 package ic.doc.frontendtests.valid;
 
+import ic.doc.TestUtils;
 import java.util.Collection;
 import ic.doc.frontendtests.AbstractFrontendTest;
 import org.junit.jupiter.api.Tag;
@@ -11,7 +12,7 @@ public class ValidVariablesTest extends AbstractFrontendTest {
   private static final String groupTestPath = "/valid/variables/";
 
   private static Collection<String> getTestNames() {
-    return getAllTestNames(groupTestPath);
+    return TestUtils.getAllTestNames(groupTestPath);
   }
 
   @Tag("valid")
@@ -19,6 +20,6 @@ public class ValidVariablesTest extends AbstractFrontendTest {
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void validVariablesTests(String testName) throws Exception {
-    testFile(groupTestPath + testName);
+    frontendTestFile(groupTestPath + testName);
   }
 }
