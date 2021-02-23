@@ -18,7 +18,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.4.2'
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.4.2"
     antlr "org.antlr:antlr4:4.9.1"
-    testRuntimeOnly group: 'com.github.docker-java', name: 'docker-java', version: '3.2.7'
+    testImplementation group: 'com.github.docker-java', name: 'docker-java', version: '3.2.7'
 }
 
 /* Compile */

@@ -1,12 +1,14 @@
 /* Supporting docker tasks for backend tests */
+String containerName = "backendContainer"
+
 dockerRun {
-    name='testname'
-    image='jqpoon/arm_compile_emulate:working'
-    arguments '-t'
+    name=containerName
+    image 'jqpoon/arm_compile_emulate:working'
+    arguments '-t', '-v', '/Users/JiaQi/Desktop/:/compile/src:ro'
 }
 
 task dockerStopAndRemove(type: Exec) {
-    commandLine 'docker', 'stop', '-t', '1', 'testname'
+    commandLine 'docker', 'stop', '-t', '1', containerName
     finalizedBy(dockerRemoveContainer)
 }
 
@@ -36,7 +38,7 @@ task frontendInvalidSyntaxTest(type: Test) {
 /* Backend tests */
 task backendTest(type: Test) {
     useJUnitPlatform {
-        includeTags 'valid'
+        includeTags 'backend'
     }
     dependsOn(tasks.dockerRun)
     finalizedBy(dockerStopAndRemove)
