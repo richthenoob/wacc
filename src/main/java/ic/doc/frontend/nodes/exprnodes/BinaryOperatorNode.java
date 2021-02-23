@@ -101,8 +101,8 @@ public class BinaryOperatorNode extends ExprNode {
       List<Label<Data>> dataLabels) {
     leftExpr.translate(instructionLabels, dataLabels);
     rightExpr.translate(instructionLabels, dataLabels);
-    Operand lReg = null;
-    Operand rReg = null;
+    Operand lReg = null; //TODO
+    Operand rReg = null; //TODO
 
     Label curr = instructionLabels
         .get(instructionLabels.size() - 1);
@@ -114,15 +114,26 @@ public class BinaryOperatorNode extends ExprNode {
         // TODO: CMP which involves shifting?????
         curr.addToBody(new DataProcessing(rReg, null));
         curr.addToBody(new Branch(Condition.BLNE, new Label("p_throw_overflow_error")));
+        break;
       case DIV:
-        //TODO
       case MOD:
-        //TODO
+        //TODO: NOT SURE IF B IS THE RIGHT CONDITION TO USE?
+        curr.addToBody(new Move(new Operand(OperandType.REG, 0), lReg, Condition.B));
+        curr.addToBody(new Move(new Operand(OperandType.REG, 1), rReg, Condition.B));
+        curr.addToBody(new Branch(Condition.BL, new Label("p_check_divide_by_zero")));
+        String divLabel = binaryOperator == BinaryOperators.DIV ?
+            "__aeabi_idiv" : "__aeabi_idivmod";
+        curr.addToBody(new Branch(Condition.BL, new Label(divLabel)));
+        int result = binaryOperator == BinaryOperators.DIV ? 0 : 1;
+        curr.addToBody(new Move(new Operand(OperandType.REG, result), lReg, Condition.B));
+        break;
       case PLUS:
       case MINUS:
-        Operation op = binaryOperator == BinaryOperators.PLUS ? Operation.ADD : Operation.SUB;
+        Operation op = binaryOperator == BinaryOperators.PLUS ?
+            Operation.ADD : Operation.SUB;
         curr.addToBody(new DataProcessing(lReg, lReg, rReg, op));
         curr.addToBody(new Branch(Condition.BLVS, new Label("p_throw_overflow_error")));
+        break;
 
       /* Comparison operators. */
       case GT:
@@ -154,8 +165,6 @@ public class BinaryOperatorNode extends ExprNode {
         curr.addToBody(new DataProcessing(lReg, lReg, rReg, Operation.OR));
         break;
     }
-
-
   }
 
   private void addComparisonAssembly(Label curr, Operand lReg, Operand rReg,
