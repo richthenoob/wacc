@@ -19,7 +19,7 @@ public class ValidVariablesTest extends AbstractBackendTest {
   @Tag("variables")
   @ParameterizedTest
   @ValueSource(strings = "intDeclaration.wacc")
-  public void validVariablesTests(String testName) throws Exception {
+  public void validVariablesTests(String testName) {
     backendTestFile(groupTestPath + testName);
   }
 }

@@ -23,7 +23,8 @@ task dockerStopAndRemove(type: Exec) {
 test {
     systemProperties = [tempDirPath: tempDirPath,
                         containerName: containerName,
-                        imageName: imageName]
+                        imageName: imageName,
+                        "org.slf4j.simpleLogger.defaultLogLevel": "error"] // Shut logger up
     useJUnitPlatform()
 }
 
@@ -49,7 +50,8 @@ task frontendInvalidSyntaxTest(type: Test) {
 task backendTest(type: Test) {
     systemProperties = [tempDirPath: tempDirPath,
                         containerName: containerName,
-                        imageName: imageName]
+                        imageName: imageName,
+                        "org.slf4j.simpleLogger.defaultLogLevel": "error"] // Shut logger up
     useJUnitPlatform {
         includeTags 'backend'
     }
