@@ -12,6 +12,7 @@ public class TestUtils {
 
   public static final String WACC_FILE_EXTENSION = ".wacc";
   public static final String EXAMPLES_DIR = "/wacc_examples";
+  public static final Integer SUCCESS_EXIT_CODE = 0;
 
   public static Collection<String> getAllTestNames(String groupTestPath) {
     List<String> files;
@@ -40,12 +41,14 @@ public class TestUtils {
   public static String readFileIntoString(String filepath) {
     /* Read file into string */
     String content;
-    Path path = Path.of(TestUtils.class.getResource(filepath).getPath());
+    Path path;
     try {
+      path = Path.of(TestUtils.class.getResource(filepath).getPath());
       content = new String(Files.readAllBytes(path));
-    } catch (IOException e) {
+    } catch (IOException | NullPointerException e) {
       throw new IllegalStateException("An error occurred while parsing"
-          + "error message from file in frontend test!");
+          + " file contents of file: " + filepath + ". Paths passed to "
+          + "this function should be relative to the resources path.");
     }
 
     return content;

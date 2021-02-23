@@ -11,8 +11,6 @@ import ic.doc.frontend.errors.SyntaxException;
 import ic.doc.frontend.nodes.ProgNode;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,11 +22,10 @@ public abstract class AbstractFrontendTest {
   private static final Pattern semanticErrorMessagePattern = Pattern.compile("Semantic Error at");
   private static final Pattern syntacticErrorMessagePattern = Pattern.compile("Syntactic Error at");
 
-  private static final Integer SUCCESS_EXIT_CODE = 0;
   private static final Integer SYNTAX_EXIT_CODE = WaccFrontend.SYNTAX_EXIT_CODE;
   private static final Integer SEMANTIC_EXIT_CODE = WaccFrontend.SEMANTIC_EXIT_CODE;
 
-  private static int getExitCodeFromFile(String content) {
+  private static int getExitCodeFromContent(String content) {
     /* Look for exit code in string */
     Matcher matcher = exitCodePattern.matcher(content);
     if (!matcher.find()) {
@@ -42,7 +39,7 @@ public abstract class AbstractFrontendTest {
     }
   }
 
-  private static void getErrorMessagesFromFile(String content) {
+  private static void getErrorMessagesFromContent(String content) {
     /* Look for exit code in string for semantic errors*/
     Matcher semanticMatcher = semanticErrorMessagePattern.matcher(content);
 
@@ -65,7 +62,7 @@ public abstract class AbstractFrontendTest {
     ProgNode rootNode;
 
     /* Run sample program through frontend */
-    int frontendExitCode = SUCCESS_EXIT_CODE;
+    int frontendExitCode = TestUtils.SUCCESS_EXIT_CODE;
     InputStream inputStream = this.getClass().getResourceAsStream(
         TestUtils.EXAMPLES_DIR + testFilepath);
 
@@ -86,8 +83,8 @@ public abstract class AbstractFrontendTest {
     String filepath = REFERENCE_DIR + testFilepath + "ast";
     String fileContent = readFileIntoString(filepath);
 
-    int referenceExitCode = getExitCodeFromFile(fileContent);
-    getErrorMessagesFromFile(fileContent);
+    int referenceExitCode = getExitCodeFromContent(fileContent);
+    getErrorMessagesFromContent(fileContent);
     assertThat("Different error code", frontendExitCode, equalTo(referenceExitCode));
 
     return rootNode;
