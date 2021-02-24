@@ -1,5 +1,6 @@
 package ic.doc.backend.Instructions;
 
+import ic.doc.backend.Instructions.operands.Operand;
 import ic.doc.frontend.types.*;
 
 public class SingleDataTransfer extends Instruction {
