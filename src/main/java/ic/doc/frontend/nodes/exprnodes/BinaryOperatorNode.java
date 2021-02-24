@@ -98,17 +98,18 @@ public class BinaryOperatorNode extends ExprNode {
 
   @Override
   public void translate(Context context) {
-    leftExpr.translate(instructionLabels, dataLabels);
-    rightExpr.translate(instructionLabels, dataLabels);
+    leftExpr.translate(context);
+    rightExpr.translate(context);
+
+    Operand lReg = leftExpr.getRegister();
+    Operand rReg = rightExpr.getRegister();
+
     // if expression was previously declared, value in its register should be preserved.
     // Otherwise, it is safe to overwrite it with the result of this operation.
-    Operand lReg = leftExpr instanceof VariableNode ?
-        context.getFreeReg() : leftExpr.getRegister();
-    Operand rReg = rightExpr instanceof VariableNode ?
-        context.getFreeReg() : rightExpr.getRegister();
+    Operand dstReg = leftExpr instanceof VariableNode ?
+        new Operand(OperandType.REG, context.getFreeRegister()) : leftExpr.getRegister();
 
-    Label curr = instructionLabels
-        .get(instructionLabels.size() - 1);
+    Label curr = context.getCurrentLabel();
 
     switch (binaryOperator) {
         /* Arithmetic operators. */
@@ -168,6 +169,8 @@ public class BinaryOperatorNode extends ExprNode {
         curr.addToBody(new DataProcessing(lReg, lReg, rReg, Operation.OR));
         break;
     }
+
+    setRegister(dstReg);
   }
 
   private void addComparisonAssembly(

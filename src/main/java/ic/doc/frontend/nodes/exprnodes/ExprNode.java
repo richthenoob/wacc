@@ -1,14 +1,19 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import ic.doc.backend.Instructions.Operand;
 import ic.doc.frontend.nodes.Node;
 import ic.doc.frontend.types.Type;
 
 public abstract class ExprNode extends Node {
 
   private Type type;
-  private int register;
+  private Operand register;
 
-  public int getRegister() {
+  public void setRegister(Operand register) {
+    this.register = register;
+  }
+
+  public Operand getRegister() {
     return register;
   }
 
