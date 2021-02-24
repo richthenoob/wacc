@@ -11,5 +11,7 @@ public enum Operation {
     CMP,
     MOV,
     MOVEQ,
-    MOVNE
+    MOVNE,
+    RSBS,
+    EOR
 }

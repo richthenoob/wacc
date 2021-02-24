@@ -33,5 +33,8 @@ public class SequentialCompositionNode extends StatNode {
   public void translate(
       List<Label<Instruction>> instructionLabels,
       List<Label<Data>> dataLabels) {
+    for(StatNode stat : statements){
+      stat.translate(instructionLabels, dataLabels);
+    }
   }
 }
