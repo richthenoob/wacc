@@ -20,10 +20,10 @@ public class DataProcessing extends Instruction {
   private DataProcessing(Operand rdLo, Operand rdHi,
       Operand rm, Operand rs) {
     operands = new ArrayList<>();
-    operands.add(rdLo);
-    operands.add(rdHi);
-    operands.add(rm);
-    operands.add(rs);
+    operands.add(rdLo); // least significant bits
+    operands.add(rdHi); // most significant bits
+    operands.add(rm); // operand 1 to be multiplied
+    operands.add(rs); // operand 2 to be multiplied
   }
 
   // All other operations

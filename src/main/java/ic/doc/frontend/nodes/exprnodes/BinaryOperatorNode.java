@@ -121,9 +121,9 @@ public class BinaryOperatorNode extends ExprNode {
     switch (binaryOperator) {
         /* Arithmetic operators. */
       case MUL:
-        curr.addToBody(SMULL(lReg, rReg, lReg, rReg));
+        curr.addToBody(SMULL(dstReg, REG(12), lReg, rReg));
         // TODO: CMP which involves shifting?????
-        curr.addToBody(CMP(rReg, null));
+        curr.addToBody(CMP(REG(12), null));
         curr.addToBody(BLNE("p_throw_overflow_error"));
         break;
       case DIV:
@@ -134,45 +134,45 @@ public class BinaryOperatorNode extends ExprNode {
         String divLabel = binaryOperator == BinaryOperators.DIV ?
             "__aeabi_idiv" : "__aeabi_idivmod";
         curr.addToBody(BL(divLabel));
-        int result = binaryOperator == BinaryOperators.DIV ? 0 : 1;
-        curr.addToBody(MOV(REG(result), lReg));
+        Operand res = binaryOperator == BinaryOperators.DIV ? REG(0) : REG(1);
+        curr.addToBody(MOV(dstReg, res));
         break;
       case PLUS:
       case MINUS:
         DataProcessing op = binaryOperator == BinaryOperators.PLUS ?
-            ADD(lReg, lReg, rReg) : SUB(lReg, lReg, rReg);
+            ADD(dstReg, lReg, rReg) : SUB(dstReg, lReg, rReg);
         curr.addToBody(op);
         curr.addToBody(BLVS("p_throw_overflow_error"));
         break;
 
         /* Comparison operators. */
       case GT:
-        addComparisonAssembly(curr, lReg, rReg, Condition.BGT, Condition.BLE);
+        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BGT, Condition.BLE);
         break;
       case GTE:
-        addComparisonAssembly(curr, lReg, rReg, Condition.BGE, Condition.BLT);
+        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BGE, Condition.BLT);
         break;
       case LT:
-        addComparisonAssembly(curr, lReg, rReg, Condition.BLT, Condition.BGE);
+        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BLT, Condition.BGE);
         break;
       case LTE:
-        addComparisonAssembly(curr, lReg, rReg, Condition.BLE, Condition.BGT);
+        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BLE, Condition.BGT);
         break;
 
         /* Equality operators. */
       case EQ:
-        addComparisonAssembly(curr, lReg, rReg, Condition.BEQ, Condition.BNE);
+        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BEQ, Condition.BNE);
         break;
       case NEQ:
-        addComparisonAssembly(curr, lReg, rReg, Condition.BNE, Condition.BEQ);
+        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BNE, Condition.BEQ);
         break;
 
         /* Boolean operators. */
       case AND:
-        curr.addToBody(AND(lReg, lReg, rReg));
+        curr.addToBody(AND(dstReg, lReg, rReg));
         break;
       case OR:
-        curr.addToBody(ORR(lReg, lReg, rReg));
+        curr.addToBody(ORR(dstReg, lReg, rReg));
         break;
     }
 
@@ -180,13 +180,14 @@ public class BinaryOperatorNode extends ExprNode {
   }
 
   private void addComparisonAssembly(
-      Label curr, Operand lReg, Operand rReg, Condition lCond, Condition rCond) {
+      Label curr, Operand lReg, Operand rReg, Operand dstReg,
+      Condition lCond, Condition rCond) {
     // CMP
     curr.addToBody(CMP(lReg, rReg));
     // left expr
-    curr.addToBody(new Move(lReg, IMM(1), lCond));
+    curr.addToBody(new Move(dstReg, IMM(1), lCond));
     // right expr
-    curr.addToBody(new Move(rReg, IMM(0), rCond));
+    curr.addToBody(new Move(dstReg, IMM(0), rCond));
   }
 
   /* Given two expression nodes and a list of valid types,
