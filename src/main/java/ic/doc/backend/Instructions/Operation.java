@@ -6,7 +6,7 @@ public enum Operation {
     SUB,
     SMULL,
     AND,
-    OR,
+    ORR,
     TST,
     CMP,
     MOV,
