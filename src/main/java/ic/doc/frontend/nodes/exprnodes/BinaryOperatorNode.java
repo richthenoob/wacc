@@ -135,8 +135,9 @@ public class BinaryOperatorNode extends ExprNode {
         break;
       case PLUS:
       case MINUS:
-        Operation op = binaryOperator == BinaryOperators.PLUS ? Operation.ADD : Operation.SUB;
-        curr.addToBody(new DataProcessing(lReg, lReg, rReg, op));
+        DataProcessing op = binaryOperator == BinaryOperators.PLUS ?
+            ADD(lReg, lReg, rReg) : SUB(lReg, lReg, rReg);
+        curr.addToBody(op);
         curr.addToBody(new Branch(Condition.BLVS, new Label("p_throw_overflow_error")));
         break;
 
@@ -164,10 +165,10 @@ public class BinaryOperatorNode extends ExprNode {
 
         /* Boolean operators. */
       case AND:
-        curr.addToBody(new DataProcessing(lReg, lReg, rReg, Operation.AND));
+        curr.addToBody(AND(lReg, lReg, rReg));
         break;
       case OR:
-        curr.addToBody(new DataProcessing(lReg, lReg, rReg, Operation.OR));
+        curr.addToBody(ORR(lReg, lReg, rReg));
         break;
     }
 
@@ -177,7 +178,7 @@ public class BinaryOperatorNode extends ExprNode {
   private void addComparisonAssembly(
       Label curr, Operand lReg, Operand rReg, Condition lCond, Condition rCond) {
     // CMP
-    curr.addToBody(new DataProcessing(lReg, rReg));
+    curr.addToBody(CMP(lReg, rReg));
     // left expr
     curr.addToBody(new Move(lReg, new Operand(OperandType.CONST, 1), lCond));
     // right expr
