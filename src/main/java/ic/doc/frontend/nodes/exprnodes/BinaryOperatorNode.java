@@ -101,8 +101,12 @@ public class BinaryOperatorNode extends ExprNode {
       List<Label<Data>> dataLabels) {
     leftExpr.translate(instructionLabels, dataLabels);
     rightExpr.translate(instructionLabels, dataLabels);
-    Operand lReg = null; //TODO
-    Operand rReg = null; //TODO
+    // if expression was previously declared, value in its register should be preserved.
+    // Otherwise, it is safe to overwrite it with the result of this operation.
+    Operand lReg = leftExpr instanceof VariableNode ?
+        context.getFreeReg() : leftExpr.getRegister();
+    Operand rReg = rightExpr instanceof VariableNode ?
+        context.getFreeReg() : rightExpr.getRegister();
 
     Label curr = instructionLabels
         .get(instructionLabels.size() - 1);
