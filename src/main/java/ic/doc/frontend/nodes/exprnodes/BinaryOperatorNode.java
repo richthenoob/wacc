@@ -98,13 +98,18 @@ public class BinaryOperatorNode extends ExprNode {
 
   @Override
   public void translate(Context context) {
-    List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
-    leftExpr.translate(context);
-    rightExpr.translate(context);
-    Operand lReg = null; // TODO
-    Operand rReg = null; // TODO
+    leftExpr.translate(instructionLabels, dataLabels);
+    rightExpr.translate(instructionLabels, dataLabels);
+    // if expression was previously declared, value in its register should be preserved.
+    // Otherwise, it is safe to overwrite it with the result of this operation.
+    Operand lReg = leftExpr instanceof VariableNode ?
+        context.getFreeReg() : leftExpr.getRegister();
+    Operand rReg = rightExpr instanceof VariableNode ?
+        context.getFreeReg() : rightExpr.getRegister();
 
-    Label curr = instructionLabels.get(instructionLabels.size() - 1);
+    Label curr = instructionLabels
+        .get(instructionLabels.size() - 1);
+
     switch (binaryOperator) {
         /* Arithmetic operators. */
       case MUL:
