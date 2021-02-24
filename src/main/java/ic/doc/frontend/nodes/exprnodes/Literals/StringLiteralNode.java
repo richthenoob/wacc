@@ -1,5 +1,6 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
+import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Instructions.Operand;
@@ -38,7 +39,9 @@ public class StringLiteralNode extends LiteralNode {
   }
 
   @Override
-  public void translate(List<Label<Instruction>> instructionLabels, List<Label<Data>> dataLabels) {
+  public void translate(Context context) {
+    List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
+    List<Label<Data>> dataLabels = context.getDataLabels();
     int newIndex = dataLabels.size();
     Label<Data> newLabel = new Label<>("msg_" + newIndex);
     dataLabels.add(newIndex, newLabel);
