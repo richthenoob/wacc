@@ -1,3 +1,14 @@
+# addition expressions should not be whitespace sensitive
+
+# Output:
+# 3
+
+# Program:
+
+begin
+  println 1+2
+end
+
 -- Compiling...
 -- Printing Assembly...
 plusNoWhitespaceExpr.s contents are:

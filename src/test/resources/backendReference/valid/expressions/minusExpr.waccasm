@@ -1,3 +1,16 @@
+# evaluating subtraction
+
+# Output:
+# 5
+
+# Program:
+
+begin
+  int x = 15 ;
+  int y = 20 ;
+  println y - x
+end
+
 -- Compiling...
 -- Printing Assembly...
 minusExpr.s contents are:

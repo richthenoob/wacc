@@ -1,3 +1,17 @@
+# a simple function is declared, but not called
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  int f() is
+    return 0 
+  end
+  skip
+end
+
 -- Compiling...
 -- Printing Assembly...
 functionDeclaration.s contents are:

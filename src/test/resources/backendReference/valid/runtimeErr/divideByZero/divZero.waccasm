@@ -1,3 +1,18 @@
+# division by zero
+
+# Output:
+# #runtime_error#
+
+# Exit:
+# 255
+
+# Program:
+
+begin
+  int x = 10 / 0 ;
+  println "should not reach here"
+end
+
 -- Compiling...
 -- Printing Assembly...
 divZero.s contents are:

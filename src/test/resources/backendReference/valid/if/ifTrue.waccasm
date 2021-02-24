@@ -1,3 +1,20 @@
+# simple true if statement
+
+# Output:
+# here
+
+# Program:
+
+begin
+  if true
+  then
+    println "here"
+  else
+    println "not here"
+  fi
+end
+
+
 -- Compiling...
 -- Printing Assembly...
 ifTrue.s contents are:

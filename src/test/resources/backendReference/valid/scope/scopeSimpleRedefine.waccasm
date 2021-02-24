@@ -1,3 +1,21 @@
+# variable scoping test that redefines a variable
+
+# Output:
+# true
+# 12
+
+# Program:
+
+begin
+  int x = 12 ;
+  begin
+    bool x = true ;
+    println x
+  end ;
+  println x 
+end
+
+
 -- Compiling...
 -- Printing Assembly...
 scopeSimpleRedefine.s contents are:

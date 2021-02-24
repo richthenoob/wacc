@@ -1,3 +1,20 @@
+# while loop flips bool to terminate
+
+# Output:
+# flip b!
+# end of loop
+
+# Program:
+
+begin
+  bool b = true ;
+  while b do
+    println "flip b!" ;
+    b = !b 
+  done ;
+  println "end of loop"
+end
+
 -- Compiling...
 -- Printing Assembly...
 whileBoolFlip.s contents are:

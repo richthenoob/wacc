@@ -1,3 +1,14 @@
+# simple true boolean variable declaration
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  bool b = true
+end
+
 -- Compiling...
 -- Printing Assembly...
 boolDeclaration2.s contents are:

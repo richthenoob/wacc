@@ -1,3 +1,16 @@
+# Whitespace only important between keyword and variable tokens
+
+# Output:
+# 1
+
+# Program:
+
+begin
+	int a=13;	
+  if a==13then a=1else a=0fi;
+  println a
+end
+
 -- Compiling...
 -- Printing Assembly...
 whitespace.s contents are:

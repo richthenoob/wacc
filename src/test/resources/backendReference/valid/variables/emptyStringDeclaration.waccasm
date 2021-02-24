@@ -1,3 +1,14 @@
+# simple empty string variable declaration
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  string s = ""
+end
+
 -- Compiling...
 -- Printing Assembly...
 emptyStringDeclaration.s contents are:

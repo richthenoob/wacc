@@ -1,3 +1,14 @@
+# create a pair (int, char)
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  pair(int, char) p = newpair(10, 'a')
+end
+
 -- Compiling...
 -- Printing Assembly...
 createPair03.s contents are:

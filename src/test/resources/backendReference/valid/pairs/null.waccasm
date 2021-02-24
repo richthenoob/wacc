@@ -1,3 +1,20 @@
+# null pair assignment
+
+# Output:
+# (nil)
+# (nil)
+
+# Program:
+
+begin
+  pair(pair, pair) p = null ;
+  println p ;
+  p = null ;
+  println p
+end
+
+
+
 -- Compiling...
 -- Printing Assembly...
 null.s contents are:

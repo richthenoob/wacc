@@ -1,3 +1,15 @@
+# empty array declaration (seems to error currently)
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  int[] a = []
+end
+
+
 -- Compiling...
 -- Printing Assembly...
 arrayEmpty.s contents are:

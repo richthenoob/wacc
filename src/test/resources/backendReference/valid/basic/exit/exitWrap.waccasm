@@ -1,3 +1,17 @@
+# exit with wrapped int 
+
+# Output:
+# #empty#
+
+# Exit:
+# 0
+
+# Program:
+
+begin
+  exit 256
+end
+
 -- Compiling...
 -- Printing Assembly...
 exitWrap.s contents are:

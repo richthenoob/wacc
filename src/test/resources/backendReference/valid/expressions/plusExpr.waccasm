@@ -1,3 +1,16 @@
+# evaluating addition
+
+# Output:
+# 35
+
+# Program:
+
+begin
+  int x = 15 ;
+  int y = 20 ;
+  println x + y
+end
+
 -- Compiling...
 -- Printing Assembly...
 plusExpr.s contents are:

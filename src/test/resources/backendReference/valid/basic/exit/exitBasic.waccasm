@@ -1,3 +1,17 @@
+# basic exit statement
+
+# Output:
+# #empty#
+
+# Exit:
+# 7
+
+# Program:
+
+begin
+  exit 7
+end
+
 -- Compiling...
 -- Printing Assembly...
 exitBasic.s contents are:

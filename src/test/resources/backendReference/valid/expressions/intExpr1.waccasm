@@ -1,3 +1,19 @@
+# evaluating a moderately complex integer expression
+
+# Output:
+# Correct
+
+# Program:
+
+begin
+  int a = ( 10 * 1 + 2 * 15 );
+  if a == 40 then
+    println "Correct"
+  else
+    println "Wrong"
+  fi
+end
+
 -- Compiling...
 -- Printing Assembly...
 intExpr1.s contents are:

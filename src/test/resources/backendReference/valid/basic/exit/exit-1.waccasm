@@ -1,3 +1,17 @@
+# common error exit statement
+
+# Output:
+# #empty#
+
+# Exit:
+# 255
+
+# Program:
+
+begin
+  exit -1
+end
+
 -- Compiling...
 -- Printing Assembly...
 exit-1.s contents are:

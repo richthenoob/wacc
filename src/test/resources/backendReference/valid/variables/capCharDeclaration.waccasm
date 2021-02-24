@@ -1,3 +1,14 @@
+# simple capital character variable declaration
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  char c = 'M'
+end
+
 -- Compiling...
 -- Printing Assembly...
 capCharDeclaration.s contents are:

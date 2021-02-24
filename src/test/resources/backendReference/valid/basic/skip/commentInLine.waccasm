@@ -1,3 +1,14 @@
+# simple skip program with in-line comment
+
+# Output:
+# #empty#
+
+# Program:
+
+begin 
+  skip # I can write comments in-line 
+end
+
 -- Compiling...
 -- Printing Assembly...
 commentInLine.s contents are:
