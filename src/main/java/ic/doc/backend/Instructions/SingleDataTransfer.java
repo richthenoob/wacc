@@ -16,11 +16,11 @@ public class SingleDataTransfer extends Instruction {
         this.expr = expr;
     }
 
-    public SingleDataTransfer LDR(Operand dst, Operand expr){
+    public static SingleDataTransfer LDR(Operand dst, Operand expr){
         return new SingleDataTransfer(true, dst, expr);
     }
 
-    public SingleDataTransfer STR(Operand dst, Operand expr){
+    public static SingleDataTransfer STR(Operand dst, Operand expr){
         return new SingleDataTransfer(false, dst, expr);
     }
 
