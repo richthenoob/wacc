@@ -1,54 +1,57 @@
 package ic.doc.backend.Instructions;
 
-import ic.doc.backend.Label;
-
 public class Branch extends Instruction {
-  private Condition condition;
-  private Label label;
 
-  private Branch(Condition condition, Label label) {
+  private final Condition condition;
+  private final String destinationLabel;
+
+  private Branch(Condition condition, String label) {
     this.condition = condition;
-    this.label = label;
+    this.destinationLabel = label;
   }
 
-  public static Branch BNE(Label label){
+  public static Branch BNE(String label) {
     return new Branch(Condition.BNE, label);
   }
 
-  public static Branch BEQ(Label label){
+  public static Branch BEQ(String label) {
     return new Branch(Condition.BEQ, label);
   }
 
-  public static Branch BGE(Label label){
+  public static Branch BGE(String label) {
     return new Branch(Condition.BGE, label);
   }
 
-  public static Branch BLT(Label label){
+  public static Branch BLT(String label) {
     return new Branch(Condition.BLT, label);
   }
 
-  public static Branch BGT(Label label){
+  public static Branch BGT(String label) {
     return new Branch(Condition.BGT, label);
   }
 
-  public static Branch BLE(Label label){
+  public static Branch BLE(String label) {
     return new Branch(Condition.BLE, label);
   }
 
-  public static Branch B(Label label){
+  public static Branch B(String label) {
     return new Branch(Condition.B, label);
   }
 
-  public static Branch BLNE(Label label){
+  public static Branch BLNE(String label) {
     return new Branch(Condition.BLNE, label);
   }
 
-  public static Branch BLVS(Label label){
+  public static Branch BLVS(String label) {
     return new Branch(Condition.BLVS, label);
+  }
+
+  public static Branch BL(String label) {
+    return new Branch(Condition.BL, label);
   }
 
   @Override
   public String toAssembly() {
-    return condition.toString() + " " + label.toString();
+    return condition.toString() + " " + destinationLabel;
   }
 }

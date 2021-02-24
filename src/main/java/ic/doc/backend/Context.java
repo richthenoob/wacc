@@ -12,17 +12,20 @@ public class Context {
 
   public static final int ERROR = 16;
   public static final int OFFSET = 2;
-  private Label<Instruction> currentLabel;
+
   private final boolean[] registers = new boolean[11]; // registers 2-12 initialised by default to false
+  private int labelCounter = 0; // Used for anonymous label names
+
+  private Label<Instruction> currentLabel;
   private final List<Label<Instruction>> instructionLabels = new ArrayList<>();
   private final List<Label<Data>> dataLabels = new ArrayList<>();
   private final Set<Label<Instruction>> pfunctions = new HashSet<>();
 
   public boolean freeRegister(int register_num) {
-    if (register_num < 2 || register_num > 12) {
+    if (register_num < OFFSET || register_num > 12) {
       return false;
     }
-    int index = register_num - 2;
+    int index = register_num - OFFSET;
     if (!registers[index]) {
       return true;
     }
@@ -51,12 +54,16 @@ public class Context {
     return currentLabel;
   }
 
-  public void setCurrentLabel(
-      Label<Instruction> currentLabel) {
+  public void setCurrentLabel(Label<Instruction> currentLabel) {
     this.currentLabel = currentLabel;
   }
 
   public Set<Label<Instruction>> getPfunctions() {
     return pfunctions;
+  }
+
+  public String getNextAnonymousLabel() {
+    labelCounter += 1;
+    return "L" + labelCounter;
   }
 }
