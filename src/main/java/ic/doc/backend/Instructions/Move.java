@@ -59,7 +59,7 @@ public class Move extends Instruction {
       case BLE:
         return "MOVLE " + dst.toString() + ", " + src.toString();
       default:
-        return "MOV" + dst.toString() + ", " + src.toString();
+        return "MOV " + dst.toString() + ", " + src.toString();
     }
   }
 }
