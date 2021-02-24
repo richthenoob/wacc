@@ -6,6 +6,11 @@ import ic.doc.frontend.types.Type;
 public abstract class ExprNode extends Node {
 
   private Type type;
+  private int register;
+
+  public int getRegister() {
+    return register;
+  }
 
   public void setType(Type type) {
     this.type = type;

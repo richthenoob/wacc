@@ -1,5 +1,6 @@
 package ic.doc.frontendtests.valid;
 
+import ic.doc.TestUtils;
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.util.Collection;
 import org.junit.jupiter.api.Tag;
@@ -10,14 +11,14 @@ public class ValidWhileTest extends AbstractFrontendTest {
   private static final String groupTestPath = "/valid/while/";
 
   private static Collection<String> getTestNames() {
-    return getAllTestNames(groupTestPath);
+    return TestUtils.getAllTestNames(groupTestPath);
   }
 
   @Tag("valid")
   @Tag("while")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void validWhileTests(String testName) throws Exception {
-    testFile(groupTestPath + testName);
+  public void validWhileTests(String testName) {
+    frontendTestFile(groupTestPath + testName);
   }
 }

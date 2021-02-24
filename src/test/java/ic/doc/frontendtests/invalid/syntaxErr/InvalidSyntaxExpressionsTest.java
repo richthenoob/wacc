@@ -1,5 +1,6 @@
 package ic.doc.frontendtests.invalid.syntaxErr;
 
+import ic.doc.TestUtils;
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.util.Collection;
 import org.junit.jupiter.api.Tag;
@@ -10,7 +11,7 @@ public class InvalidSyntaxExpressionsTest extends AbstractFrontendTest {
   private static final String groupTestPath = "/invalid/syntaxErr/expressions/";
 
   private static Collection<String> getTestNames() {
-    return getAllTestNames(groupTestPath);
+    return TestUtils.getAllTestNames(groupTestPath);
   }
 
   @Tag("invalid")
@@ -18,7 +19,7 @@ public class InvalidSyntaxExpressionsTest extends AbstractFrontendTest {
   @Tag("expressions")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSyntaxExpressionTests(String testName) throws Exception {
-    testFile(groupTestPath + testName);
+  public void invalidSyntaxExpressionTests(String testName) {
+    frontendTestFile(groupTestPath + testName);
   }
 }

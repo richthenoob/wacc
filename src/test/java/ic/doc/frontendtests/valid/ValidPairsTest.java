@@ -1,5 +1,6 @@
 package ic.doc.frontendtests.valid;
 
+import ic.doc.TestUtils;
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.util.Collection;
 import org.junit.jupiter.api.Tag;
@@ -10,14 +11,14 @@ public class ValidPairsTest extends AbstractFrontendTest {
   private static final String groupTestPath = "/valid/pairs/";
 
   private static Collection<String> getTestNames() {
-    return getAllTestNames(groupTestPath);
+    return TestUtils.getAllTestNames(groupTestPath);
   }
 
   @Tag("valid")
   @Tag("pairs")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void validPairTests(String testName) throws Exception {
-    testFile(groupTestPath + testName);
+  public void validPairTests(String testName) {
+    frontendTestFile(groupTestPath + testName);
   }
 }
