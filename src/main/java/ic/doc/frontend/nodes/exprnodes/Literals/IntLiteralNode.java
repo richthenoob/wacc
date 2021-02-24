@@ -1,11 +1,10 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Instructions.Operand;
-import ic.doc.backend.Instructions.OperandType;
 import ic.doc.backend.Instructions.SingleDataTransfer;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.errors.SyntaxException;
 import ic.doc.frontend.semantics.Visitor;
@@ -49,11 +48,11 @@ public class IntLiteralNode extends LiteralNode {
   @Override
   public void translate(Context context) {
     List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
-    Operand operand = new Operand(OperandType.CONST, value.intValue());
-    Operand register = new Operand(OperandType.REG, 2);
+    ImmediateOperand operand = new ImmediateOperand(value.intValue());
+    RegisterOperand register = new RegisterOperand(context.getFreeRegister());
     instructionLabels
-        .get(instructionLabels.size() - 1)
-        .addToBody(new SingleDataTransfer(true, register, operand));
+            .get(instructionLabels.size() - 1)
+            .addToBody(SingleDataTransfer.LDR(register, operand));
   }
 
   @Override
