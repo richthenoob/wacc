@@ -1,5 +1,6 @@
 package ic.doc.frontendtests.invalid.syntaxErr;
 
+import ic.doc.TestUtils;
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.util.Collection;
 import org.junit.jupiter.api.Tag;
@@ -10,7 +11,7 @@ public class InvalidSyntaxPairsTest extends AbstractFrontendTest {
   private static final String groupTestPath = "/invalid/syntaxErr/pairs/";
 
   private static Collection<String> getTestNames() {
-    return getAllTestNames(groupTestPath);
+    return TestUtils.getAllTestNames(groupTestPath);
   }
 
   @Tag("invalid")
@@ -18,7 +19,7 @@ public class InvalidSyntaxPairsTest extends AbstractFrontendTest {
   @Tag("pairs")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSyntaxPairTests(String testName) throws Exception {
-    testFile(groupTestPath + testName);
+  public void invalidSyntaxPairTests(String testName) {
+    frontendTestFile(groupTestPath + testName);
   }
 }

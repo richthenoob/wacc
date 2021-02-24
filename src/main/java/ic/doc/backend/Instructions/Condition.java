@@ -7,5 +7,8 @@ public enum Condition {
     BLT,
     BGT,
     BLE,
-    B
+    B,
+    BLNE,
+    BLVS,
+    BL
 }
