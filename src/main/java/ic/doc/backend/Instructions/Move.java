@@ -1,5 +1,7 @@
 package ic.doc.backend.Instructions;
 
+import ic.doc.backend.Instructions.operands.Operand;
+
 public class Move extends Instruction {
 
   private final Operand dst;

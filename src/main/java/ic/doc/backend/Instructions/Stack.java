@@ -1,5 +1,7 @@
 package ic.doc.backend.Instructions;
 
+import ic.doc.backend.Instructions.operands.Operand;
+
 public class Stack extends Instruction{
   private final boolean pushFlag;
   private final Operand value;

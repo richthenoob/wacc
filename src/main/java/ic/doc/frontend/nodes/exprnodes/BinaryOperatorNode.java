@@ -3,11 +3,12 @@ package ic.doc.frontend.nodes.exprnodes;
 import static ic.doc.backend.Instructions.Branch.*;
 import static ic.doc.backend.Instructions.DataProcessing.*;
 import static ic.doc.backend.Instructions.Move.*;
-import static ic.doc.backend.Instructions.Operand.*;
+import static ic.doc.backend.Instructions.operands.Operand.*;
 import static ic.doc.backend.Instructions.Stack.*;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Instructions.*;
+import ic.doc.backend.Instructions.operands.Operand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.*;
