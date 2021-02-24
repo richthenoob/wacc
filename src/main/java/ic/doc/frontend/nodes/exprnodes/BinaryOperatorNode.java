@@ -1,5 +1,7 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import static ic.doc.backend.Instructions.DataProcessing.*;
+
 import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.*;
@@ -104,20 +106,19 @@ public class BinaryOperatorNode extends ExprNode {
     Operand lReg = leftExpr.getRegister();
     Operand rReg = rightExpr.getRegister();
 
-    // if expression was previously declared, value in its register should be preserved.
-    // Otherwise, it is safe to overwrite it with the result of this operation.
-    Operand dstReg = leftExpr instanceof VariableNode ?
-        new Operand(OperandType.REG, context.getFreeRegister()) : leftExpr.getRegister();
+//    // if expression was previously declared, value in its register should be preserved.
+//    // Otherwise, it is safe to overwrite it with the result of this operation.
+//    Operand dstReg = leftExpr instanceof VariableNode ?
+//        new Operand(OperandType.REG, context.getFreeRegister()) : leftExpr.getRegister();
 
     Label curr = context.getCurrentLabel();
 
     switch (binaryOperator) {
         /* Arithmetic operators. */
       case MUL:
-        // SMULL
-        curr.addToBody(new DataProcessing(lReg, rReg, lReg, rReg));
+        curr.addToBody(SMULL(lReg, rReg, lReg, rReg));
         // TODO: CMP which involves shifting?????
-        curr.addToBody(new DataProcessing(rReg, null));
+        curr.addToBody(CMP(rReg, null));
         curr.addToBody(new Branch(Condition.BLNE, new Label("p_throw_overflow_error")));
         break;
       case DIV:
@@ -170,7 +171,7 @@ public class BinaryOperatorNode extends ExprNode {
         break;
     }
 
-    setRegister(dstReg);
+    setRegister(lReg);
   }
 
   private void addComparisonAssembly(

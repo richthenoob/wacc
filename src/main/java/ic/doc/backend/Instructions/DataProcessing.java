@@ -8,7 +8,26 @@ public class DataProcessing extends Instruction {
   private List<Operand> operands;
   private Operation operation;
 
-  public DataProcessing(Operand dst, Operand lhs,
+  // CMP
+  private DataProcessing(Operand operand1, Operand operand2) {
+    operands = new ArrayList<>();
+    operands.add(operand1);
+    operands.add(operand2);
+    this.operation = Operation.CMP;
+  }
+
+  // SMULL
+  private DataProcessing(Operand rdLo, Operand rdHi,
+      Operand rm, Operand rs) {
+    operands = new ArrayList<>();
+    operands.add(rdLo);
+    operands.add(rdHi);
+    operands.add(rm);
+    operands.add(rs);
+  }
+
+  // All other operations
+  private DataProcessing(Operand dst, Operand lhs,
       Operand rhs, Operation operation) {
     operands = new ArrayList<>();
     operands.add(dst);
@@ -17,21 +36,33 @@ public class DataProcessing extends Instruction {
     this.operation = operation;
   }
 
-  public DataProcessing(Operand operand1, Operand operand2) {
-    operands = new ArrayList<>();
-    operands.add(operand1);
-    operands.add(operand2);
-    this.operation = Operation.CMP;
+  public static DataProcessing CMP(Operand operand1, Operand operand2) {
+    return new DataProcessing(operand1, operand2);
   }
 
-  public DataProcessing(Operand rdLo, Operand rdHi,
+  public static DataProcessing SMULL(Operand rdLo, Operand rdHi,
       Operand rm, Operand rs) {
-    operands = new ArrayList<>();
-    operands.add(rdLo);
-    operands.add(rdHi);
-    operands.add(rm);
-    operands.add(rs);
-    this.operation = Operation.SMULL;
+    return new DataProcessing(rdLo, rdHi, rm, rs);
+  }
+
+  public static DataProcessing ADD(Operand dst, Operand lhs,
+      Operand rhs) {
+    return new DataProcessing(dst, lhs, rhs, Operation.ADD);
+  }
+
+  public static DataProcessing SUB(Operand dst, Operand lhs,
+      Operand rhs) {
+    return new DataProcessing(dst, lhs, rhs, Operation.SUB);
+  }
+
+  public static DataProcessing AND(Operand dst, Operand lhs,
+      Operand rhs) {
+    return new DataProcessing(dst, lhs, rhs, Operation.AND);
+  }
+
+  public static DataProcessing ORR(Operand dst, Operand lhs,
+      Operand rhs) {
+    return new DataProcessing(dst, lhs, rhs, Operation.ORR);
   }
 
   @Override
