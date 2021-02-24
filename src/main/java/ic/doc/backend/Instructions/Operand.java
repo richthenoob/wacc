@@ -32,6 +32,10 @@ public class Operand {
         this.varName = varName;
     }
 
+    public int getValue() {
+        return value;
+    }
+
 
     @Override
     public String toString() {
