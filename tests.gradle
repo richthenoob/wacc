@@ -39,7 +39,16 @@ task frontendValidTest(type: Test) {
 
 task frontendInvalidSyntaxTest(type: Test) {
     useJUnitPlatform {
-        includeTags 'invalid'
+        includeTags 'syntax'
+    }
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+}
+
+task frontendInvalidSemanticTest(type: Test) {
+    useJUnitPlatform {
+        includeTags 'semantic'
     }
     testLogging {
         events "PASSED", "SKIPPED", "FAILED"
@@ -54,6 +63,9 @@ task backendTest(type: Test) {
                         "org.slf4j.simpleLogger.defaultLogLevel": "error"] // Shut logger up
     useJUnitPlatform {
         includeTags 'backend'
+    }
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
     }
     dependsOn(tasks.dockerRun)
     finalizedBy(dockerStopAndRemove)
