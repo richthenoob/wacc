@@ -1,3 +1,16 @@
+# evaluating multiplication
+
+# Output:
+# 15
+
+# Program:
+
+begin
+  int x = 5 ;
+  int y = 3 ;
+  println x * y
+end
+
 -- Compiling...
 -- Printing Assembly...
 multExpr.s contents are:

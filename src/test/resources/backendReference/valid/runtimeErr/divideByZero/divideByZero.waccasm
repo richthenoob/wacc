@@ -1,3 +1,19 @@
+# attempt divide by zero
+
+# Output:
+# #runtime_error#
+
+# Exit:
+# 255
+
+# Program:
+
+begin
+	int x = 10 ;
+	int y = 0 ;
+	print x / y
+end
+
 -- Compiling...
 -- Printing Assembly...
 divideByZero.s contents are:

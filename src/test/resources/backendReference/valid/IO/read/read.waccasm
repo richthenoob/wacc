@@ -1,3 +1,17 @@
+# simple read statement
+
+# Output:
+# input an integer to continue...
+# #input#
+
+# Program:
+
+begin
+	int x = 10;
+  println "input an integer to continue..." ;
+	read x
+end
+
 -- Compiling...
 -- Printing Assembly...
 read.s contents are:

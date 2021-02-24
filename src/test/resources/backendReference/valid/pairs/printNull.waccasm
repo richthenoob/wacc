@@ -1,3 +1,14 @@
+# print the null reference
+
+# Output:
+# (nil)
+
+# Program:
+
+begin
+  println null
+end
+
 -- Compiling...
 -- Printing Assembly...
 printNull.s contents are:

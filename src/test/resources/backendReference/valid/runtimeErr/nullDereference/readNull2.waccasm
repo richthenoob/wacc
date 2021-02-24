@@ -1,3 +1,18 @@
+# attempt dereference of a null pair by reading into an element of it
+
+# Output:
+# #runtime_error#
+
+# Exit:
+# 255
+
+# Program:
+
+begin
+	pair(int, int) p = null ;
+	read snd p
+end
+
 -- Compiling...
 -- Printing Assembly...
 readNull2.s contents are:

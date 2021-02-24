@@ -1,3 +1,16 @@
+# simple while loop
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  while false do
+    skip
+  done
+end
+
 -- Compiling...
 -- Printing Assembly...
 whileBasic.s contents are:

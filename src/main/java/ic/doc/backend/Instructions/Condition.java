@@ -9,5 +9,6 @@ public enum Condition {
     BLE,
     B,
     BLNE,
-    BLVS
+    BLVS,
+    BL
 }

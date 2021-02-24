@@ -10,6 +10,7 @@ data = {"options[]": ["-a", "-x"]}
 # Iterate through all files in folder
 for filepath in glob.glob("../wacc_examples/valid/**/*.wacc", recursive=True):
     savepath = os.path.join(*(filepath.split(os.path.sep)[2:])) + "asm"
+    file_contents = open(filepath, "r").read()
 
     # Only POST to refCompiler if file doesn't exist
     if not os.path.isfile(savepath):
@@ -24,4 +25,4 @@ for filepath in glob.glob("../wacc_examples/valid/**/*.wacc", recursive=True):
             compiler_out = r.json()["compiler_out"]
 
             with open(savepath, "w") as output_file:
-                output_file.write(compiler_out)
+                output_file.write(file_contents + "\n" + compiler_out)

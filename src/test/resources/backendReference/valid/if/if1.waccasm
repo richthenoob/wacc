@@ -1,3 +1,20 @@
+# Simple conditional statement with int comparison test
+
+# Output:
+# correct
+
+# Program:
+
+begin
+  int a = 13;	
+  if a == 13 
+  then 
+    println "correct"
+  else 
+    println "incorrect"
+  fi
+end
+
 -- Compiling...
 -- Printing Assembly...
 if1.s contents are:

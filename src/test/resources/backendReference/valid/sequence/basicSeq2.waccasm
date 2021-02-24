@@ -1,3 +1,16 @@
+# basic sequential composition
+
+# Output:
+# #empty#
+
+# Program:
+
+begin 
+  skip;
+  skip;
+  skip 
+end
+
 -- Compiling...
 -- Printing Assembly...
 basicSeq2.s contents are:

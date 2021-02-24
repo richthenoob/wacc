@@ -1,5 +1,6 @@
 package ic.doc.frontend.nodes.statnodes;
 
+import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Label;
@@ -15,8 +16,5 @@ public class SkipNode extends StatNode {
   }
 
   @Override
-  public void translate(
-      List<Label<Instruction>> instructionLabels,
-      List<Label<Data>> dataLabels) {
-  }
+  public void translate(Context context) {}
 }

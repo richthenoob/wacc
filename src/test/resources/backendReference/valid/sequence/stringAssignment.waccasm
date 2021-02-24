@@ -1,3 +1,15 @@
+# simple string variable declaration and assignment
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  string s = "foo" ;
+  s = "bar"
+end
+
 -- Compiling...
 -- Printing Assembly...
 stringAssignment.s contents are:

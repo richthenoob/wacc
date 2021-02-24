@@ -1,3 +1,18 @@
+# variable can have _ in their names
+
+# Output:
+# #empty#
+
+# Exit:
+# 19
+
+# Program:
+
+begin
+  int an_underscore = 19 ;
+  exit an_underscore
+end
+
 -- Compiling...
 -- Printing Assembly...
 _VarNames.s contents are:

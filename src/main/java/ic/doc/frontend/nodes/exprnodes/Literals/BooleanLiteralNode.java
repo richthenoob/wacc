@@ -1,5 +1,6 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
+import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Instructions.Operand;
@@ -31,7 +32,8 @@ public class BooleanLiteralNode extends LiteralNode {
   }
 
   @Override
-  public void translate(List<Label<Instruction>> instructionLabels, List<Label<Data>> dataLabels) {
+  public void translate(Context context) {
+    List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
     int bool = value ? 1 : 0;
     Operand operand = new Operand(OperandType.CONST, bool);
     Operand register = new Operand(OperandType.REG,2);

@@ -1,3 +1,17 @@
+# basic exit statement
+
+# Output:
+# #empty#
+
+# Exit:
+# 42
+
+# Program:
+
+begin
+  exit 42
+end
+
 -- Compiling...
 -- Printing Assembly...
 exitBasic2.s contents are:

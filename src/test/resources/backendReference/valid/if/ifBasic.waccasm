@@ -1,3 +1,20 @@
+# simple if statement
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  if true 
+  then
+    skip
+  else
+    skip
+  fi
+end
+
+
 -- Compiling...
 -- Printing Assembly...
 ifBasic.s contents are:

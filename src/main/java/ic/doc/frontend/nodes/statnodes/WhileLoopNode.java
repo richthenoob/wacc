@@ -1,5 +1,6 @@
 package ic.doc.frontend.nodes.statnodes;
 
+import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Label;
@@ -43,13 +44,11 @@ public class WhileLoopNode extends StatNode {
   }
 
   @Override
-  public void translate(
-      List<Label<Instruction>> instructionLabels,
-      List<Label<Data>> dataLabels) {
-    Label curr = instructionLabels.get(instructionLabels.size() - 1);
-
-    // Need some kind of labelCount in the context
-    String whileBodyLabel = Integer.toString(instructionLabels.size());
+  public void translate(Context context) {
+//    Label curr = instructionLabels.get(instructionLabels.size() - 1);
+//
+//    // Need some kind of labelCount in the context
+//    String whileBodyLabel = Integer.toString(instructionLabels.size());
 
 
 //    String whileBodyLabel = labelCount.toString();

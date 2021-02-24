@@ -1,3 +1,18 @@
+# consistent indentation is for readability purposes only
+
+# Output:
+# #empty#
+
+# Program:
+
+           begin
+ while 
+false 
+         do
+    skip
+done
+                    end
+
 -- Compiling...
 -- Printing Assembly...
 indentationNotImportant.s contents are:

@@ -1,5 +1,6 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
+import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Instructions.Operand;
@@ -46,14 +47,13 @@ public class IntLiteralNode extends LiteralNode {
   }
 
   @Override
-  public void translate(
-      List<Label<Instruction>> instructionLabels,
-      List<Label<Data>> dataLabels) {
-    Operand operand = new Operand(OperandType.CONST,value.intValue());
-    Operand register = new Operand(OperandType.REG,2);
+  public void translate(Context context) {
+    List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
+    Operand operand = new Operand(OperandType.CONST, value.intValue());
+    Operand register = new Operand(OperandType.REG, 2);
     instructionLabels
-            .get(instructionLabels.size() - 1)
-            .addToBody(new SingleDataTransfer(true, register, operand));
+        .get(instructionLabels.size() - 1)
+        .addToBody(new SingleDataTransfer(true, register, operand));
   }
 
   @Override

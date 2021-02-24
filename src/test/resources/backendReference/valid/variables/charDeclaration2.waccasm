@@ -1,3 +1,14 @@
+# simple character variable declaration
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  char c = 'z'
+end
+
 -- Compiling...
 -- Printing Assembly...
 charDeclaration2.s contents are:

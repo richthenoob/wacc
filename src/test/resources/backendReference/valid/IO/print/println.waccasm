@@ -1,3 +1,14 @@
+# simple println statement
+
+# Output:
+# Hello World!
+
+# Program:
+
+begin
+  println "Hello World!"
+end
+
 -- Compiling...
 -- Printing Assembly...
 println.s contents are:

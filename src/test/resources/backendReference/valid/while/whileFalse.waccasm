@@ -1,3 +1,17 @@
+# simple unentered while loop
+
+# Output:
+# end of loop
+
+# Program:
+
+begin
+  while false do
+    println "looping..."
+  done ;
+  println "end of loop"
+end
+
 -- Compiling...
 -- Printing Assembly...
 whileFalse.s contents are:

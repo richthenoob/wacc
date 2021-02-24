@@ -1,3 +1,14 @@
+# simple string variable declaration
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  string s = "Hello World!"
+end
+
 -- Compiling...
 -- Printing Assembly...
 stringDeclaration.s contents are:
