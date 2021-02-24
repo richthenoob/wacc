@@ -1,6 +1,6 @@
 package ic.doc.backend.Instructions.operands;
 
-/* Adapter from the ARM specification.
+/* Adapted from the ARM specification.
  * [Rn]                       offset of zero
  * [Rn, <#expression>]        offset of <expression> bytes
  * [Rn,{+/-}Rm {,<shift>}]    offset of +/- contents of index register,
