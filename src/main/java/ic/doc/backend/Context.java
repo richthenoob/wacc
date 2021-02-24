@@ -9,19 +9,21 @@ import java.util.List;
 import java.util.Set;
 
 public class Context {
+
   public static final int ERROR = 16;
   public static final int OFFSET = 2;
-  private boolean[] registers = new boolean[11]; // registers 2-12 initialised by default to false
-  private List<Label<Instruction>> instructionLabels = new ArrayList<>();
-  private List<Label<Data>> dataLabels = new ArrayList<>();
-  private Set<Label> pfunctions = new HashSet<>();
+  private Label<Instruction> currentLabel;
+  private final boolean[] registers = new boolean[11]; // registers 2-12 initialised by default to false
+  private final List<Label<Instruction>> instructionLabels = new ArrayList<>();
+  private final List<Label<Data>> dataLabels = new ArrayList<>();
+  private final Set<Label<Instruction>> pfunctions = new HashSet<>();
 
   public boolean freeRegister(int register_num) {
     if (register_num < 2 || register_num > 12) {
       return false;
     }
     int index = register_num - 2;
-    if(!registers[index]){
+    if (!registers[index]) {
       return true;
     }
     registers[index] = false;
@@ -31,7 +33,7 @@ public class Context {
   public int getFreeRegister() {
     for (int i = 0; i < 11; i++) {
       if (!registers[i]) {
-        return i+ OFFSET;  //since register 2 corresponds to array index 0
+        return i + OFFSET;  //since register 2 corresponds to array index 0
       }
     }
     return ERROR; //Error
@@ -45,7 +47,16 @@ public class Context {
     return dataLabels;
   }
 
-  public Set<Label> getPfunctions() {
+  public Label<Instruction> getCurrentLabel() {
+    return currentLabel;
+  }
+
+  public void setCurrentLabel(
+      Label<Instruction> currentLabel) {
+    this.currentLabel = currentLabel;
+  }
+
+  public Set<Label<Instruction>> getPfunctions() {
     return pfunctions;
   }
 }

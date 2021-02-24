@@ -11,13 +11,13 @@ import java.util.List;
 public class WaccBackend {
 
   public static String generateCode(ProgNode rootNode) {
-    Context context = new Context();
-    List<Label<Data>> dataLabels = context.getDataLabels();
-    List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
-
     /* Recursively walk tree to generate code. */
+    Context context = new Context();
     rootNode.translate(context);
     StringBuilder outputString = new StringBuilder();
+
+    List<Label<Data>> dataLabels = context.getDataLabels();
+    List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
 
     /* Build .data section. */
     outputString.append(".data\n");
