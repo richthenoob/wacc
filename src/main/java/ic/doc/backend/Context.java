@@ -2,10 +2,9 @@ package ic.doc.backend;
 
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Instructions.Operand;
-import ic.doc.backend.Instructions.SingleDataTransfer;
 import ic.doc.backend.Instructions.Stack;
 
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +44,7 @@ public class Context {
     }
     instructionLabels
         .get(instructionLabels.size() - 1)
-        .addToBody(Stack.PUSH(Operand.REG(MAXINDEX + OFFSET))); // Push to stack and return r10
+        .addToBody(Stack.PUSH(new RegisterOperand(MAXINDEX + OFFSET))); // Push to stack and return r10
     return MAXINDEX + OFFSET;
   }
 

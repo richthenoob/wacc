@@ -16,7 +16,6 @@ public class ValidBasicExitTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
   @Tag("backend")
   @Tag("basic")
   @Tag("exit")

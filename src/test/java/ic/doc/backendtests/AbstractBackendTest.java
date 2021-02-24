@@ -199,6 +199,16 @@ public abstract class AbstractBackendTest {
     String referenceOutputMessage = getStdoutFromContent(fileContent);
     int referenceExitCode = getExitCodeFromContent(fileContent);
 
+    /* Print expected vs actual message output. */
+    System.out.println("EXPECTED OUTPUT");
+    System.out.println("===========================================================");
+    System.out.println(referenceOutputMessage);
+    System.out.println("===========================================================");
+    System.out.println("ACTUAL OUTPUT");
+    System.out.println("===========================================================");
+    System.out.println(emulateOutputMessage);
+    System.out.println("===========================================================");
+
     assertThat("Emulated exit code different from reference.",
         emulateExitCode,
         equalTo(referenceExitCode));

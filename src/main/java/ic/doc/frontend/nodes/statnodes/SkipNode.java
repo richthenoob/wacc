@@ -1,8 +1,10 @@
 package ic.doc.frontend.nodes.statnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.SingleDataTransfer;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import java.util.List;
@@ -16,5 +18,13 @@ public class SkipNode extends StatNode {
   }
 
   @Override
-  public void translate(Context context) {}
+  public void translate(Context context) {
+
+    SingleDataTransfer loadZero = SingleDataTransfer.LDR(RegisterOperand.R0,
+        new ImmediateOperand(0));
+
+    List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
+    instructionLabels.get(instructionLabels.size() - 1)
+        .addToBody(loadZero);
+  }
 }

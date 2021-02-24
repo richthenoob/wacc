@@ -16,7 +16,6 @@ public class ValidBasicSkipTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
   @Tag("backend")
   @Tag("basic")
   @Tag("skip")
