@@ -20,7 +20,7 @@ public class InvalidSemanticIfTest extends AbstractFrontendTest {
   @Tag("if")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSemanticIfTests(String testName) throws Exception {
+  public void invalidSemanticIfTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

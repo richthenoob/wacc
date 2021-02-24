@@ -19,7 +19,7 @@ public class InvalidSyntaxSequenceTest extends AbstractFrontendTest {
   @Tag("sequence")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSyntaxSequenceTests(String testName) throws Exception {
+  public void invalidSyntaxSequenceTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

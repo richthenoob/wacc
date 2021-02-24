@@ -1,26 +1,27 @@
-package ic.doc.frontendtests.invalid.semanticErr;
+package ic.doc.backendtests.valid;
 
 import ic.doc.TestUtils;
-import ic.doc.frontendtests.AbstractFrontendTest;
+import ic.doc.backendtests.AbstractBackendTest;
 import java.util.Collection;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class InvalidSemanticIoTest extends AbstractFrontendTest {
+public class ValidIoTest extends AbstractBackendTest {
 
-  private static final String groupTestPath = "/invalid/semanticErr/IO/";
+  private static final String groupTestPath = "/valid/IO/";
 
   private static Collection<String> getTestNames() {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Tag("invalid")
-  @Tag("semantic")
+  @Disabled
+  @Tag("backend")
   @Tag("io")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSemanticIoTests(String testName) {
-    frontendTestFile(groupTestPath + testName);
+  public void validIoPrintTests(String testName) {
+    backendTestFile(groupTestPath + testName);
   }
 }

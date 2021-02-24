@@ -19,7 +19,7 @@ public class ValidBasicExitTest extends AbstractFrontendTest {
   @Tag("exit")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void validBasicExitTests(String testName) throws Exception {
+  public void validBasicExitTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

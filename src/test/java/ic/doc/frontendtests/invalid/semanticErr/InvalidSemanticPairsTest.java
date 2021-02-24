@@ -20,7 +20,7 @@ public class InvalidSemanticPairsTest extends AbstractFrontendTest {
   @Tag("pairs")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSemanticPairTests(String testName) throws Exception {
+  public void invalidSemanticPairTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

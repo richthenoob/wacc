@@ -20,7 +20,7 @@ public class InvalidSemanticPrintTest extends AbstractFrontendTest {
   @Tag("print")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSemanticPrintTests(String testName) throws Exception {
+  public void invalidSemanticPrintTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

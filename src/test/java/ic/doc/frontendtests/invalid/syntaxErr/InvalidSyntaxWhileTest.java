@@ -19,7 +19,7 @@ public class InvalidSyntaxWhileTest extends AbstractFrontendTest {
   @Tag("while")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSyntaxWhileTests(String testName) throws Exception {
+  public void invalidSyntaxWhileTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

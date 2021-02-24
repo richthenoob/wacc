@@ -20,7 +20,7 @@ public class InvalidSemanticScopeTest extends AbstractFrontendTest {
   @Tag("scope")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSemanticScopeTests(String testName) throws Exception {
+  public void invalidSemanticScopeTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

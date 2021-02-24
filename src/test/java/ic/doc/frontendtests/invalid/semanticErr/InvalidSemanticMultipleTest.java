@@ -20,7 +20,7 @@ public class InvalidSemanticMultipleTest extends AbstractFrontendTest {
   @Tag("multiple")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSemanticMultipleTests(String testName) throws Exception {
+  public void invalidSemanticMultipleTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

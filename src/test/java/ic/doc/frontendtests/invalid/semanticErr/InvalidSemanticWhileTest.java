@@ -20,7 +20,7 @@ public class InvalidSemanticWhileTest extends AbstractFrontendTest {
   @Tag("while")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSemanticWhileTests(String testName) throws Exception {
+  public void invalidSemanticWhileTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

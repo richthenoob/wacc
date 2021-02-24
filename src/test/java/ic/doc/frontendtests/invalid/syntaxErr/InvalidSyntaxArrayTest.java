@@ -20,7 +20,7 @@ public class InvalidSyntaxArrayTest extends AbstractFrontendTest {
   @Tag("array")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSyntaxArrayTests(String testName) throws Exception {
+  public void invalidSyntaxArrayTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

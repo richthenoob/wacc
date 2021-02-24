@@ -20,7 +20,7 @@ public class InvalidSemanticExitTest extends AbstractFrontendTest {
   @Tag("exit")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSemanticExitTests(String testName) throws Exception {
+  public void invalidSemanticExitTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

@@ -20,7 +20,7 @@ public class InvalidSemanticReadTest extends AbstractFrontendTest {
   @Tag("read")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSemanticReadTests(String testName) throws Exception {
+  public void invalidSemanticReadTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

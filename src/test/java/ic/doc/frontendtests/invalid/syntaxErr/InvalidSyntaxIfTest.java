@@ -19,7 +19,7 @@ public class InvalidSyntaxIfTest extends AbstractFrontendTest {
   @Tag("if")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSyntaxIfTests(String testName) throws Exception {
+  public void invalidSyntaxIfTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

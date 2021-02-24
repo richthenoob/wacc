@@ -19,7 +19,7 @@ public class InvalidSyntaxPrintTest extends AbstractFrontendTest {
   @Tag("print")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSyntaxPrintTests(String testName) throws Exception {
+  public void invalidSyntaxPrintTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

@@ -5,29 +5,27 @@ import static ic.doc.TestUtils.readFileIntoString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import ic.doc.backend.WaccBackend;
-import ic.doc.frontend.nodes.ProgNode;
-import ic.doc.frontendtests.AbstractFrontendTest;
-
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.async.ResultCallback.Adapter;
+import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.api.model.AccessMode;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Volume;
-import com.github.dockerjava.api.async.ResultCallback.Adapter;
-import com.github.dockerjava.api.command.CreateContainerResponse;
-import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.core.DockerClientBuilder;
-
+import ic.doc.backend.WaccBackend;
+import ic.doc.frontend.nodes.ProgNode;
+import ic.doc.frontendtests.AbstractFrontendTest;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AbstractBackendTest {
+public abstract class AbstractBackendTest {
 
   private DockerClient dockerClient;
   private static final String CONTAINER_NAME = System
@@ -226,6 +224,7 @@ public class AbstractBackendTest {
 
     /* Generate code and write to temporary file. */
     String code = WaccBackend.generateCode(rootNode);
+    System.out.println(code);
     WaccBackend.writeToFile(TEMP_DIR_PATH + TEMP_ASSEMBLY_FILENAME, code);
 
     /* Cross compilation. */

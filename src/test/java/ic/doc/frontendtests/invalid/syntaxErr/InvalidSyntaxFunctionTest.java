@@ -19,7 +19,7 @@ public class InvalidSyntaxFunctionTest extends AbstractFrontendTest {
   @Tag("function")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSyntaxFunctionTests(String testName) throws Exception {
+  public void invalidSyntaxFunctionTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

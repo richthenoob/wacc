@@ -19,7 +19,7 @@ public class InvalidSyntaxPairsTest extends AbstractFrontendTest {
   @Tag("pairs")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSyntaxPairTests(String testName) throws Exception {
+  public void invalidSyntaxPairTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

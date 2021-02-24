@@ -20,7 +20,7 @@ public class InvalidSemanticVariablesTest extends AbstractFrontendTest {
   @Tag("variables")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSemanticVariablesTests(String testName) throws Exception {
+  public void invalidSemanticVariablesTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

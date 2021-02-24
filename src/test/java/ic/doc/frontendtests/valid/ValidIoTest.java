@@ -19,7 +19,7 @@ public class ValidIoTest extends AbstractFrontendTest {
   @Tag("io")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void validIoPrintTests(String testName) throws Exception {
+  public void validIoPrintTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

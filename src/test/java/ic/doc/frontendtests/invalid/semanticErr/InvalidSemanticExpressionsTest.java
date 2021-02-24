@@ -20,7 +20,7 @@ public class InvalidSemanticExpressionsTest extends AbstractFrontendTest {
   @Tag("expressions")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSemanticExpressionTests(String testName) throws Exception {
+  public void invalidSemanticExpressionTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

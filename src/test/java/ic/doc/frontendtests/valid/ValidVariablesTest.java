@@ -1,8 +1,8 @@
 package ic.doc.frontendtests.valid;
 
 import ic.doc.TestUtils;
-import java.util.Collection;
 import ic.doc.frontendtests.AbstractFrontendTest;
+import java.util.Collection;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -19,7 +19,7 @@ public class ValidVariablesTest extends AbstractFrontendTest {
   @Tag("variables")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void validVariablesTests(String testName) throws Exception {
+  public void validVariablesTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }
