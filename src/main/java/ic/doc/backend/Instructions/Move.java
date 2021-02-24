@@ -6,12 +6,40 @@ public class Move extends Instruction{
     private Operand src;
     private Condition condition;
 
-    public Move(Operand dst, Operand src, Condition condition) {
+    private Move(Operand dst, Operand src, Condition condition) {
         this.dst = dst;
         this.src = src;
         this.condition = condition;
     }
 
+    public static Move MOVEQ(Operand dst, Operand src, Condition condition) {
+        return new Move(dst, src, Condition.BEQ);
+    }
+
+    public static Move MOVNE(Operand dst, Operand src, Condition condition) {
+        return new Move(dst, src, Condition.BNE);
+    }
+
+    public static Move MOVGE(Operand dst, Operand src, Condition condition) {
+        return new Move(dst, src, Condition.BGE);
+    }
+
+    public static Move MOVLT(Operand dst, Operand src, Condition condition) {
+        return new Move(dst, src, Condition.BLT);
+    }
+
+    public static Move MOVGT(Operand dst, Operand src, Condition condition) {
+        return new Move(dst, src, Condition.BGT);
+    }
+
+    public static Move MOVLE(Operand dst, Operand src, Condition condition) {
+        return new Move(dst, src, Condition.BLE);
+    }
+
+    public static Move MOV(Operand dst, Operand src, Condition condition) {
+        /* Doesn't matter what condition it is, as long as its not the others. "Default" case */
+        return new Move(dst, src, Condition.B);
+    }
 
     @Override
     public String toAssembly() {

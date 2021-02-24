@@ -9,10 +9,18 @@ public class SingleDataTransfer extends Instruction {
     private Operand dst;
     private Operand expr;
 
-    public SingleDataTransfer(boolean loadFlag, Operand dst, Operand expr) {
+    private SingleDataTransfer(boolean loadFlag, Operand dst, Operand expr) {
         this.loadFlag = loadFlag;
         this.dst = dst;
         this.expr = expr;
+    }
+
+    public SingleDataTransfer LDR(Operand dst, Operand expr){
+        return new SingleDataTransfer(true, dst, expr);
+    }
+
+    public SingleDataTransfer STR(Operand dst, Operand expr){
+        return new SingleDataTransfer(false, dst, expr);
     }
 
     @Override
