@@ -6,16 +6,20 @@ import ic.doc.backend.Instructions.Stack;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.statnodes.StatNode;
+import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ProgNode extends Node {
 
+  private final SymbolTable symbolTable;
   private final List<FunctionNode> functions;
   private final StatNode stat;
 
-  public ProgNode(List<FunctionNode> functions, StatNode stat) {
+  public ProgNode(SymbolTable symbolTable,
+      List<FunctionNode> functions, StatNode stat) {
+    this.symbolTable = symbolTable;
     this.functions = functions;
     this.stat = stat;
   }
@@ -28,17 +32,22 @@ public class ProgNode extends Node {
   @Override
   public void translate(Context context) {
 
+    /* Add all function labels first. */
     for (FunctionNode node : functions) {
       node.translate(context);
     }
 
+    /* Create main label, the entry point of the program. */
     Label<Instruction> inst = new Label<>("main");
     inst.addToBody(Stack.PUSH(RegisterOperand.LR));
     context.getInstructionLabels().add(inst);
     context.setCurrentLabel(inst);
+    context.setCurrentSymbolTable(symbolTable);
 
+    /* Translate rest of program. */
     stat.translate(context);
 
-    inst.addToBody(Stack.POP(RegisterOperand.PC));
+    /* Pass control back to kernel code that called it. */
+    context.getCurrentLabel().addToBody(Stack.POP(RegisterOperand.PC));
   }
 }

@@ -1,14 +1,16 @@
 package ic.doc.frontend.nodes.statnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
+import ic.doc.backend.Instructions.Branch;
+import ic.doc.backend.Instructions.DataProcessing;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.BoolType;
-import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ConditionalBranchNode extends StatNode {
@@ -64,5 +66,33 @@ public class ConditionalBranchNode extends StatNode {
   }
 
   @Override
-  public void translate(Context context) {}
+  public void translate(Context context) {
+    String falseBodyName = context.getNextAnonymousLabel();
+    String nextBodyName = context.getNextAnonymousLabel();
+    Label<Instruction> falseBodyLabel = new Label<>(falseBodyName);
+    Label<Instruction> nextBodyLabel = new Label<>(nextBodyName);
+
+    /* Evaluate boolean condition. */
+    cond.translate(context);
+    RegisterOperand register = cond.getRegister();
+
+    /* Test boolean condition. */
+    Label<Instruction> currentLabel = context.getCurrentLabel();
+    currentLabel
+        .addToBody(DataProcessing.CMP(register, new ImmediateOperand(0)));
+    currentLabel.addToBody(Branch.BEQ(falseBodyName));
+
+    /* Evaluate true body. */
+    trueBody.translate(context);
+    currentLabel.addToBody(Branch.B(nextBodyName));
+
+    /* Evaluate false body. */
+    context.setCurrentLabel(falseBodyLabel);
+    context.getInstructionLabels().add(falseBodyLabel);
+    falseBody.translate(context);
+
+    /* Set up next body label. */
+    context.setCurrentLabel(nextBodyLabel);
+    context.getInstructionLabels().add(nextBodyLabel);
+  }
 }
