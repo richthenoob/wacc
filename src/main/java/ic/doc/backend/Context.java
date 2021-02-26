@@ -2,10 +2,9 @@ package ic.doc.backend;
 
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Instructions.SingleDataTransfer;
 import ic.doc.backend.Instructions.Stack;
-
 import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.frontend.semantics.SymbolTable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +22,8 @@ public class Context {
   private Label<Instruction> currentLabel;
   private final List<Label<Instruction>> instructionLabels = new ArrayList<>();
   private final List<Label<Data>> dataLabels = new ArrayList<>();
-  private Set<Label<Instruction>> pfunctions = new HashSet<>();
+  private final Set<Label<Instruction>> pfunctions = new HashSet<>();
+  private SymbolTable currentSymbolTable;
 
   public void addToLastInstructionLabel(Instruction instruction) {
     instructionLabels.get(instructionLabels.size() - 1).addToBody(instruction);
@@ -50,7 +50,8 @@ public class Context {
     instructionLabels
         .get(instructionLabels.size() - 1)
         .addToBody(
-            Stack.PUSH(new RegisterOperand(MAXINDEX + OFFSET))); // Push to stack and return r10
+            Stack.PUSH(new RegisterOperand(
+                MAXINDEX + OFFSET))); // Push to stack and return r10
     return MAXINDEX + OFFSET;
   }
 
@@ -70,12 +71,22 @@ public class Context {
     this.currentLabel = currentLabel;
   }
 
+  public SymbolTable getCurrentSymbolTable() {
+    return currentSymbolTable;
+  }
+
+  public void setCurrentSymbolTable(
+      SymbolTable currentSymbolTable) {
+    this.currentSymbolTable = currentSymbolTable;
+  }
+
   public Set<Label<Instruction>> getPfunctions() {
     return pfunctions;
   }
 
   public String getNextAnonymousLabel() {
-    labelCounter += 1;
-    return "L" + labelCounter;
+    int counterToReturn = labelCounter;
+    labelCounter++;
+    return "L" + counterToReturn;
   }
 }

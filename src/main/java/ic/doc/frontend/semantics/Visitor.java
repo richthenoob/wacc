@@ -57,7 +57,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     StatNode statNode = (StatNode) visit(ctx.stat());
 
-    return new ProgNode(functionNodes, statNode);
+    return new ProgNode(currentSymbolTable, functionNodes, statNode);
   }
 
   /* Helper function to called to declare functions, adds to symbol table if function name is not already defined */
