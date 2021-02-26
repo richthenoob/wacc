@@ -47,11 +47,10 @@ public class Context {
         return i + OFFSET; // since register 2 corresponds to array index 0
       }
     }
-    instructionLabels
-        .get(instructionLabels.size() - 1)
-        .addToBody(
-            Stack.PUSH(new RegisterOperand(
-                MAXINDEX + OFFSET))); // Push to stack and return r10
+    currentLabel.addToBody(
+        Stack.PUSH(
+            new RegisterOperand(MAXINDEX + OFFSET),
+            currentSymbolTable)); // Push to stack and return r10
     return MAXINDEX + OFFSET;
   }
 
@@ -75,8 +74,7 @@ public class Context {
     return currentSymbolTable;
   }
 
-  public void setCurrentSymbolTable(
-      SymbolTable currentSymbolTable) {
+  public void setCurrentSymbolTable(SymbolTable currentSymbolTable) {
     this.currentSymbolTable = currentSymbolTable;
   }
 

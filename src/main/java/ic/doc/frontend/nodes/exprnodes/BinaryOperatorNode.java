@@ -119,7 +119,7 @@ public class BinaryOperatorNode extends ExprNode {
     if (lReg.getValue() == rReg.getValue()) {
       //both registers are 10
       lReg = new RegisterOperand(11);
-      curr.addToBody(POP(new RegisterOperand(11)));
+      curr.addToBody(POP(new RegisterOperand(11),context.getCurrentSymbolTable()));
     }
 
     String overflowError = "p_throw_overflow_error";

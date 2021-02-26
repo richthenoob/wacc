@@ -39,7 +39,7 @@ public class ProgNode extends Node {
 
     /* Create main label, the entry point of the program. */
     Label<Instruction> inst = new Label<>("main");
-    inst.addToBody(Stack.PUSH(RegisterOperand.LR));
+    inst.addToBody(Stack.PUSH(RegisterOperand.LR,context.getCurrentSymbolTable()));
     context.getInstructionLabels().add(inst);
     context.setCurrentLabel(inst);
     context.setCurrentSymbolTable(symbolTable);
@@ -48,6 +48,6 @@ public class ProgNode extends Node {
     stat.translate(context);
 
     /* Pass control back to kernel code that called it. */
-    context.getCurrentLabel().addToBody(Stack.POP(RegisterOperand.PC));
+    context.getCurrentLabel().addToBody(Stack.POP(RegisterOperand.PC,context.getCurrentSymbolTable()));
   }
 }

@@ -4,7 +4,7 @@ import ic.doc.backend.Instructions.operands.Operand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.frontend.semantics.SymbolTable;
 
-public class Stack extends Instruction{
+public class Stack extends Instruction {
   private final boolean pushFlag;
   private final RegisterOperand value;
 
@@ -13,12 +13,13 @@ public class Stack extends Instruction{
     this.value = value;
   }
 
-  public static Stack PUSH(RegisterOperand value, SymbolTable symbolTable){
+  public static Stack PUSH(RegisterOperand value, SymbolTable symbolTable) {
+    symbolTable.incrementOffset();
     return new Stack(true, value);
   }
 
-  public static Stack POP(RegisterOperand value, SymbolTable symbolTable){
-
+  public static Stack POP(RegisterOperand value, SymbolTable symbolTable) {
+    symbolTable.decrementOffset();
     return new Stack(false, value);
   }
 
