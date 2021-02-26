@@ -2,6 +2,9 @@ package ic.doc.frontend.semantics;
 
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
+import ic.doc.frontend.types.BoolType;
+import ic.doc.frontend.types.CharType;
+import ic.doc.frontend.types.Type;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,6 +23,31 @@ public class SymbolTable {
 
   public void incrementTableSizeInBytes(int amount){
     tableSizeInBytes +=amount;
+  }
+
+
+  public void incrementTableSizeInBytes(Type type){
+    int amount;
+    if (type instanceof BoolType || type instanceof CharType) {
+      amount = 1;
+    } else {
+      amount = 4;
+    }
+    tableSizeInBytes +=amount;
+  }
+
+  public void incrementOffset(Type type){
+    int amount;
+    if (type instanceof BoolType || type instanceof CharType) {
+      amount = 1;
+    } else {
+      amount = 4;
+    }
+    for(Identifier obj: dictionary.values()){
+      if(obj instanceof VariableIdentifier){
+        ((VariableIdentifier) obj).incrementOffsetStack(amount);
+      }
+    }
   }
 
   public void incrementOffset(int amount){

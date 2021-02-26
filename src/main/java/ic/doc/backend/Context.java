@@ -2,6 +2,7 @@ package ic.doc.backend;
 
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.SingleDataTransfer;
 import ic.doc.backend.Instructions.Stack;
 
 import ic.doc.backend.Instructions.operands.RegisterOperand;
@@ -24,6 +25,10 @@ public class Context {
   private final List<Label<Data>> dataLabels = new ArrayList<>();
   private final Set<Label<Instruction>> pfunctions = new HashSet<>();
 
+  public void addToLastInstructionLabel(Instruction instruction) {
+    instructionLabels.get(instructionLabels.size() - 1).addToBody(instruction);
+  }
+
   public boolean freeRegister(int register_num) {
     if (register_num < OFFSET || register_num > OFFSET + MAXINDEX) {
       return false;
@@ -44,7 +49,8 @@ public class Context {
     }
     instructionLabels
         .get(instructionLabels.size() - 1)
-        .addToBody(Stack.PUSH(new RegisterOperand(MAXINDEX + OFFSET))); // Push to stack and return r10
+        .addToBody(
+            Stack.PUSH(new RegisterOperand(MAXINDEX + OFFSET))); // Push to stack and return r10
     return MAXINDEX + OFFSET;
   }
 
