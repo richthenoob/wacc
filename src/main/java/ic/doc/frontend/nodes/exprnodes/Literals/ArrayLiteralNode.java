@@ -71,21 +71,38 @@ public class ArrayLiteralNode extends LiteralNode {
   public void translate(Context context) {
     Label<Instruction> label = context.getCurrentLabel();
     int bytesToAllocate = values.size() * 4 + 4;
+    int firstRegisterNum = context.getFreeRegister();
+
     label
         .addToBody(
             SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(bytesToAllocate)))
         .addToBody(Branch.BL("malloc"))
-        .addToBody(new Move(new RegisterOperand(4), new RegisterOperand(0), Condition.B));
+        .addToBody(new Move(new RegisterOperand(firstRegisterNum), new RegisterOperand(0), Condition.B));
     int offset = 4;
+
     for (ExprNode value : values) {
       value.translate(context);
       label.addToBody(
           SingleDataTransfer.STR(
               value.getRegister(),
               PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  new RegisterOperand(4), new ImmediateOperand(offset))));
+                  new RegisterOperand(firstRegisterNum), new ImmediateOperand(offset))));
       offset += 4;
+      context.freeRegister(value.getRegister().getValue());
     }
+    int secondRegisterNum = context.getFreeRegister();
+    label
+        .addToBody(
+            SingleDataTransfer.LDR(
+                new RegisterOperand(secondRegisterNum), new ImmediateOperand(values.size())))
+        .addToBody(
+            SingleDataTransfer.STR(
+                new RegisterOperand(secondRegisterNum),
+                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(new RegisterOperand(firstRegisterNum))))
+        .addToBody(
+            SingleDataTransfer.STR(
+                new RegisterOperand(firstRegisterNum),
+                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(new RegisterOperand(13))));
   }
 
   @Override

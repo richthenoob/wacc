@@ -29,7 +29,14 @@ public class PairLiteralNode extends LiteralNode {
   }
 
   @Override
-  public void translate(Context context) { //Do nothing?
+  public void translate(Context context) {
+    Label<Instruction> label = context.getCurrentLabel();
+    int bytesToAllocate = 4 * 2;
+    label
+            .addToBody(
+                    SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(bytesToAllocate)))
+            .addToBody(Branch.BL("malloc"))
+            .addToBody(new Move(new RegisterOperand(4), new RegisterOperand(0), Condition.B));
   }
 
   @Override

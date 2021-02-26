@@ -44,6 +44,7 @@ public class Context {
   public int getFreeRegister() {
     for (int i = 0; i < MAXINDEX + 1; i++) {
       if (!registers[i]) {
+        registers[i] = true;
         return i + OFFSET; // since register 2 corresponds to array index 0
       }
     }

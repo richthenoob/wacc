@@ -110,7 +110,7 @@ public class BinaryOperatorNode extends ExprNode {
     leftExpr.translate(context);
     rightExpr.translate(context);
 
-    Label curr = context.getCurrentLabel();
+    Label<Instruction> curr = context.getCurrentLabel();
 
     RegisterOperand lReg = leftExpr.getRegister();
     RegisterOperand rReg = rightExpr.getRegister();
