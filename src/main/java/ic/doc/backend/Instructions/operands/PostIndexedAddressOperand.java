@@ -2,13 +2,11 @@ package ic.doc.backend.Instructions.operands;
 
 import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.ShiftTypes;
 
-/* Adapter from the ARM specification.
+/* Adapted from the ARM specification.
  * [Rn], <#expression>]        offset of <expression> bytes
  * [Rn],{+/-}Rm {,<shift>}     offset of +/- contents of index register,
  *                             shifted by <shift> */
-public class PostIndexedAddressOperand {
-
-  // TODO: WIP DO NOT USE
+public class PostIndexedAddressOperand extends AddressOperand {
 
   private final RegisterOperand rn;
   private final ImmediateOperand expr;
@@ -29,26 +27,24 @@ public class PostIndexedAddressOperand {
   }
 
   /* Public constructor for operands like
-   * [r0], #5   Access memory at address stored in r0 + 5
-   * [sp], #-16 Access memory at address stored in sp - 16 */
-  public PostIndexedAddressOperand PreIndexedAddressFixedOffset(
+   * [r0], #5   Access memory at address, r0, then set r0 = r0 + 5 */
+  public static PostIndexedAddressOperand PostIndexedAddressFixedOffset(
       RegisterOperand rn, ImmediateOperand expr) {
     return new PostIndexedAddressOperand(rn, expr, null, false, ShiftTypes.NONE);
   }
 
   /* Public constructor for operands like
-   * [r2], r4   Access memory at address, R2, then write back R2+R4 to R2
-   * [sp, -r0]  Access memory at address [sp] - [r0]  */
-  public PostIndexedAddressOperand PreIndexedAddressByRegister(
+   * [r2], r4   Access memory at address, R2, then write back R2+R4 to R2 */
+  public static PostIndexedAddressOperand PostIndexedAddressByRegister(
       RegisterOperand rn, RegisterOperand rm, boolean isNegativeRm) {
     return new PostIndexedAddressOperand(rn, null, rm, isNegativeRm,
         ShiftTypes.NONE);
   }
 
   /* Public constructor for operands like
-   * [r0, r1, LSL #2] Access memory at address r0 + r1 * 4
+   * [r0], r1, LSL #2 Access memory at address r0, then set r0 = r0 + r1 * 4
    */
-  public PostIndexedAddressOperand PreIndexedAddressShiftRegister(
+  public static PostIndexedAddressOperand PostIndexedAddressShiftRegister(
       RegisterOperand rn, RegisterOperand rm, boolean isNegativeRm,
       ShiftTypes shift) {
     return new PostIndexedAddressOperand(rn, null, rm, isNegativeRm, shift);
@@ -64,5 +60,4 @@ public class PostIndexedAddressOperand {
     return "[" + rn.toString() + "]" + signString + rmString + exprString
         + shiftString;
   }
-
 }

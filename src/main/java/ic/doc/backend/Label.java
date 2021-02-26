@@ -16,8 +16,9 @@ public class Label<E> {
     return functionLabel;
   }
 
-  public void addToBody(E item) {
+  public Label<E> addToBody(E item) {
     body.add(item);
+    return this;
   }
 
   public List<E> getBody() {

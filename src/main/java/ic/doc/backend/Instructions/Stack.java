@@ -22,6 +22,6 @@ public class Stack extends Instruction{
   @Override
   public String toAssembly() {
     String action = pushFlag ? "PUSH " : "POP ";
-    return (action + value);
+    return action + "{" + value + "}";
   }
 }

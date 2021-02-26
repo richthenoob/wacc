@@ -53,6 +53,8 @@ public class IntLiteralNode extends LiteralNode {
     instructionLabels
             .get(instructionLabels.size() - 1)
             .addToBody(SingleDataTransfer.LDR(register, operand));
+
+    setRegister(register);
   }
 
   @Override

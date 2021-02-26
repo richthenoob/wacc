@@ -18,14 +18,14 @@ public class SymbolTable {
     tableSizeInBytes = 0;
   }
 
-  public void incrementTableSizeInBytes(){
-    tableSizeInBytes +=4;
+  public void incrementTableSizeInBytes(int amount){
+    tableSizeInBytes +=amount;
   }
 
-  public void incrementOffset(){
+  public void incrementOffset(int amount){
     for(Identifier obj: dictionary.values()){
       if(obj instanceof VariableIdentifier){
-        ((VariableIdentifier) obj).incrementOffsetStack();
+        ((VariableIdentifier) obj).incrementOffsetStack(amount);
       }
     }
   }

@@ -1,6 +1,6 @@
 package ic.doc.backend.Instructions.operands;
 
-/* e.g. #5, #-16 */
+/* e.g. =5, =-16 */
 public class ImmediateOperand extends Operand {
 
   private final int value;
@@ -11,6 +11,6 @@ public class ImmediateOperand extends Operand {
 
   @Override
   public String toString() {
-    return "#" + value;
+    return "=" + value;
   }
 }
