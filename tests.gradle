@@ -67,6 +67,6 @@ task backendTest(type: Test) {
     testLogging {
         events "PASSED", "SKIPPED", "FAILED"
     }
-//    dependsOn(tasks.dockerRun)
-//    finalizedBy(dockerStopAndRemove)
+    dependsOn(tasks.dockerRun)
+    finalizedBy(dockerStopAndRemove)
 }
