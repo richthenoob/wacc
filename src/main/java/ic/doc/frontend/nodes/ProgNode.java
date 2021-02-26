@@ -28,17 +28,21 @@ public class ProgNode extends Node {
   @Override
   public void translate(Context context) {
 
+    /* Add all function labels first. */
     for (FunctionNode node : functions) {
       node.translate(context);
     }
 
+    /* Create main label, the entry point of the program. */
     Label<Instruction> inst = new Label<>("main");
     inst.addToBody(Stack.PUSH(RegisterOperand.LR));
     context.getInstructionLabels().add(inst);
     context.setCurrentLabel(inst);
 
+    /* Translate rest of program. */
     stat.translate(context);
 
-    inst.addToBody(Stack.POP(RegisterOperand.PC));
+    /* Pass control back to kernel code that called it. */
+    context.getCurrentLabel().addToBody(Stack.POP(RegisterOperand.PC));
   }
 }
