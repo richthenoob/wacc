@@ -84,12 +84,14 @@ public class ConditionalBranchNode extends StatNode {
 
     /* Evaluate true body. */
     trueBody.translate(context);
-    currentLabel.addToBody(Branch.B(nextBodyName));
+    context.getCurrentLabel().addToBody(Branch.B(nextBodyName));
+    // reset any stack usages
 
     /* Evaluate false body. */
     context.setCurrentLabel(falseBodyLabel);
     context.getInstructionLabels().add(falseBodyLabel);
     falseBody.translate(context);
+    // reset any stack usages
 
     /* Set up next body label. */
     context.setCurrentLabel(nextBodyLabel);

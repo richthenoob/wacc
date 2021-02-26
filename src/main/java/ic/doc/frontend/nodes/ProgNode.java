@@ -2,7 +2,9 @@ package ic.doc.frontend.nodes;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.SingleDataTransfer;
 import ic.doc.backend.Instructions.Stack;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.statnodes.StatNode;
@@ -48,6 +50,9 @@ public class ProgNode extends Node {
     stat.translate(context);
 
     /* Pass control back to kernel code that called it. */
-    context.getCurrentLabel().addToBody(Stack.POP(RegisterOperand.PC));
+    Label<Instruction> currentLabel = context.getCurrentLabel();
+    currentLabel.addToBody(SingleDataTransfer.LDR(RegisterOperand.R0, new
+        ImmediateOperand(0)));
+    currentLabel.addToBody(Stack.POP(RegisterOperand.PC));
   }
 }
