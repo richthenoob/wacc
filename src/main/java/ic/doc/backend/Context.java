@@ -5,10 +5,8 @@ import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Instructions.Stack;
 
 import ic.doc.backend.Instructions.operands.RegisterOperand;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 
 public class Context {
 
@@ -22,7 +20,9 @@ public class Context {
   private Label<Instruction> currentLabel;
   private final List<Label<Instruction>> instructionLabels = new ArrayList<>();
   private final List<Label<Data>> dataLabels = new ArrayList<>();
-  private final Set<Label<Instruction>> pfunctions = new HashSet<>();
+
+  private final Set<String> pfunctions = new HashSet<>();
+  private final Map<String, String> dataPlaceHolders = new HashMap<>();
 
   public boolean freeRegister(int register_num) {
     if (register_num < OFFSET || register_num > OFFSET + MAXINDEX) {
@@ -64,9 +64,11 @@ public class Context {
     this.currentLabel = currentLabel;
   }
 
-  public Set<Label<Instruction>> getPfunctions() {
+  public Set<String> getPfunctions() {
     return pfunctions;
   }
+
+  public Map<String, String> getDataPlaceHolders() { return dataPlaceHolders; }
 
   public String getNextAnonymousLabel() {
     labelCounter += 1;
