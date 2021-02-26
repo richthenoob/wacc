@@ -82,14 +82,24 @@ public class ConditionalBranchNode extends StatNode {
         .addToBody(DataProcessing.CMP(register, new ImmediateOperand(0)));
     currentLabel.addToBody(Branch.BEQ(falseBodyName));
 
+    // TODO: account for scopes here
+
     /* Evaluate true body. */
+    // set currentSymbolTable in context to symbol table of true branch
+    // set currentLabel in context to current label of true branch
     trueBody.translate(context);
-    currentLabel.addToBody(Branch.B(nextBodyName));
+    context.getCurrentLabel().addToBody(Branch.B(nextBodyName));
+    // reset any stack usages
+    // restore currentSymbolTable and currentLabel
 
     /* Evaluate false body. */
+    // set currentSymbolTable in context to symbol table of true branch
+    // set currentLabel in context to current label of true branch
     context.setCurrentLabel(falseBodyLabel);
     context.getInstructionLabels().add(falseBodyLabel);
     falseBody.translate(context);
+    // reset any stack usages
+    // restore currentSymbolTable and currentLabel
 
     /* Set up next body label. */
     context.setCurrentLabel(nextBodyLabel);
