@@ -10,8 +10,12 @@ public class VariableIdentifier extends Identifier {
     return offsetStack;
   }
 
-  public void incrementOffsetStack(int amount) {
-    this.offsetStack += amount;
+  public void incrementOffsetStack() {
+    this.offsetStack += 4;
+  }
+
+  public void decrementOffsetStack() {
+    this.offsetStack -= 4;
   }
 
   public VariableIdentifier(Type type) {

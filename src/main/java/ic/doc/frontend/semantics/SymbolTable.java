@@ -21,39 +21,22 @@ public class SymbolTable {
     tableSizeInBytes = 0;
   }
 
-  public void incrementTableSizeInBytes(int amount){
-    tableSizeInBytes +=amount;
+  public void incrementTableSizeInBytes(){
+    tableSizeInBytes +=4;
   }
 
-
-  public void incrementTableSizeInBytes(Type type){
-    int amount;
-    if (type instanceof BoolType || type instanceof CharType) {
-      amount = 1;
-    } else {
-      amount = 4;
-    }
-    tableSizeInBytes +=amount;
-  }
-
-  public void incrementOffset(Type type){
-    int amount;
-    if (type instanceof BoolType || type instanceof CharType) {
-      amount = 1;
-    } else {
-      amount = 4;
-    }
+  public void incrementOffset(){
     for(Identifier obj: dictionary.values()){
       if(obj instanceof VariableIdentifier){
-        ((VariableIdentifier) obj).incrementOffsetStack(amount);
+        ((VariableIdentifier) obj).incrementOffsetStack();
       }
     }
   }
 
-  public void incrementOffset(int amount){
+  public void decrementOffset(){
     for(Identifier obj: dictionary.values()){
       if(obj instanceof VariableIdentifier){
-        ((VariableIdentifier) obj).incrementOffsetStack(amount);
+        ((VariableIdentifier) obj).decrementOffsetStack();
       }
     }
   }
