@@ -140,16 +140,16 @@ public class BinaryOperatorNode extends ExprNode {
         // checking for overflow
         // lhsResult, ASR #31
         curr.addToBody(CMP(new RegisterOperand(12),
-            PostIndexedShiftRegister(dstReg, ShiftTypes.ASR, OVERFLOW_SHIFT_AMOUNT)));
+            PostIndexedShiftRegister(dstReg, ShiftTypes.ASR,
+                new ImmediateOperand('#', OVERFLOW_SHIFT_AMOUNT))));
 
         curr.addToBody(BLNE(OVERFLOW_CHECK));
         context.getPfunctions().add(new Label(OVERFLOW_CHECK));
         break;
       case DIV:
       case MOD:
-        curr.addToBody(MOV(new RegisterOperand(0), lReg));
-        curr.addToBody(MOV(new RegisterOperand(1), rReg));
-
+        curr.addToBody(MOV(RegisterOperand.R0, lReg));
+        curr.addToBody(MOV(RegisterOperand.R1, rReg));
         curr.addToBody(BL(DIVIDE_ZERO_CHECK));
         context.getPfunctions().add(new Label(DIVIDE_ZERO_CHECK));
 

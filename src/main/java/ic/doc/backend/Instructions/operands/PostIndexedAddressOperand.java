@@ -9,31 +9,21 @@ import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.ShiftTypes;
 public class PostIndexedAddressOperand extends AddressOperand {
 
   private final RegisterOperand rn;
-  private final ImmediateOperand expr;
   private final RegisterOperand rm;
   private final boolean isNegativeRm;
-  private boolean signed;
   private final ShiftTypes shift;
-  private final Integer shiftVal; // TODO: initialize?
+  private final ImmediateOperand expr; // Doubles as value shifted by
 
   private PostIndexedAddressOperand(
       RegisterOperand rn,
       ImmediateOperand expr,
       RegisterOperand rm, boolean isNegativeRm,
-      ShiftTypes shift,
-      Integer shiftVal) {
+      ShiftTypes shift) {
     this.rn = rn;
-    this.expr = expr;
     this.rm = rm;
     this.isNegativeRm = isNegativeRm;
     this.shift = shift;
-    this.shiftVal = shiftVal;
-    signed = true;
-  }
-
-  private PostIndexedAddressOperand withoutSign() {
-    signed = false;
-    return this;
+    this.expr = expr;
   }
 
   /* Public constructor for operands like
@@ -41,7 +31,7 @@ public class PostIndexedAddressOperand extends AddressOperand {
   public static PostIndexedAddressOperand PostIndexedAddressFixedOffset(
       RegisterOperand rn, ImmediateOperand expr) {
     return new PostIndexedAddressOperand(rn, expr,
-        null, false, ShiftTypes.NONE, null);
+        null, false, ShiftTypes.NONE);
   }
 
   /* Public constructor for operands like
@@ -49,7 +39,7 @@ public class PostIndexedAddressOperand extends AddressOperand {
   public static PostIndexedAddressOperand PostIndexedAddressByRegister(
       RegisterOperand rn, RegisterOperand rm, boolean isNegativeRm) {
     return new PostIndexedAddressOperand(rn, null, rm, isNegativeRm,
-        ShiftTypes.NONE, null);
+        ShiftTypes.NONE);
   }
 
   /* Public constructor for operands like
@@ -58,31 +48,26 @@ public class PostIndexedAddressOperand extends AddressOperand {
   public static PostIndexedAddressOperand PostIndexedAddressShiftRegister(
       RegisterOperand rn, RegisterOperand rm, boolean isNegativeRm,
       ShiftTypes shift) {
-    return new PostIndexedAddressOperand(rn, null, rm, isNegativeRm, shift, null);
+    return new PostIndexedAddressOperand(rn, null, rm, isNegativeRm, shift);
   }
 
   /* Public constructor for operands like
    * r1, LSL #2 Access r1 * 4
    */
   public static PostIndexedAddressOperand PostIndexedShiftRegister(
-      RegisterOperand rm, ShiftTypes shift, int shiftVal) {
+      RegisterOperand rm, ShiftTypes shift, ImmediateOperand expr) {
     return new PostIndexedAddressOperand(null,
-        null, rm, false, shift, shiftVal).withoutSign();
+        expr, rm, false, shift);
   }
 
   @Override
   public String toString() {
     String rnString = rn == null ? "" : "[" + rn.toString() + "]";
     String rmString = rm == null ? "" : "," + rm.toString();
-    String exprString = expr == null ? "" : "," + expr.toString();
-    String signString = "";
-    if (signed) {
-      signString = isNegativeRm ? "-" : "+";
-    }
+    String signString = isNegativeRm ? "-" : "";
     String shiftString = shift == ShiftTypes.NONE ? "" : "," + shift.name();
-    String shiftValString = shiftVal == null ? "" : " #" + shiftVal;
+    String exprString = expr == null ? "" : "," + expr.toString();
 
-    return rnString + signString + rmString + exprString
-        + shiftString + shiftValString;
+    return rnString + signString + rmString + shiftString + exprString;
   }
 }
