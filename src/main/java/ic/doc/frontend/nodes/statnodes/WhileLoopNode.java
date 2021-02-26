@@ -44,5 +44,25 @@ public class WhileLoopNode extends StatNode {
   }
 
   @Override
-  public void translate(Context context) {}
+  public void translate(Context context) {
+//    Label curr = instructionLabels.get(instructionLabels.size() - 1);
+//
+//    // Need some kind of labelCount in the context
+//    String whileBodyLabel = Integer.toString(instructionLabels.size());
+
+
+//    String whileBodyLabel = labelCount.toString();
+//    labelCount++;
+//    CodeGen.main.add(new LabelInstr("L" + whileBodyLabel));
+//    curr.addToBody(new Label("L" + whileBodyLabel));
+//    if (ST.findSize() != 0) {
+//      newScope(statement);
+//    } else {
+//      statement.translate();
+//    }
+//    condition.translate();
+
+//    CodeGen.main.add(new CMP(getRegister(), new ImmValue(1)));
+//    CodeGen.main.add(new Branch("EQ", "L" + whileBodyLabel));
+  }
 }

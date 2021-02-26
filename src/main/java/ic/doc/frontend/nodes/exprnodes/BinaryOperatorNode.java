@@ -1,8 +1,14 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import static ic.doc.backend.Instructions.Branch.*;
+import static ic.doc.backend.Instructions.DataProcessing.*;
+import static ic.doc.backend.Instructions.Move.*;
+import static ic.doc.backend.Instructions.operands.Operand.*;
+import static ic.doc.backend.Instructions.Stack.*;
+
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.*;
+import ic.doc.backend.Instructions.operands.Operand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.*;
@@ -98,86 +104,91 @@ public class BinaryOperatorNode extends ExprNode {
 
   @Override
   public void translate(Context context) {
-    leftExpr.translate(instructionLabels, dataLabels);
-    rightExpr.translate(instructionLabels, dataLabels);
-    // if expression was previously declared, value in its register should be preserved.
-    // Otherwise, it is safe to overwrite it with the result of this operation.
-    Operand lReg = leftExpr instanceof VariableNode ?
-        context.getFreeReg() : leftExpr.getRegister();
-    Operand rReg = rightExpr instanceof VariableNode ?
-        context.getFreeReg() : rightExpr.getRegister();
+    leftExpr.translate(context);
+    rightExpr.translate(context);
 
-    Label curr = instructionLabels
-        .get(instructionLabels.size() - 1);
+    Label curr = context.getCurrentLabel();
+
+    Operand lReg = leftExpr.getRegister();
+    Operand rReg = rightExpr.getRegister();
+    Operand dstReg = lReg;
+
+    if (lReg.getValue() == rReg.getValue()) {
+      //both registers are 10
+      lReg = REG(11);
+      curr.addToBody(POP(REG(11)));
+    }
 
     switch (binaryOperator) {
         /* Arithmetic operators. */
       case MUL:
-        // SMULL
-        curr.addToBody(new DataProcessing(lReg, rReg, lReg, rReg));
+        curr.addToBody(SMULL(dstReg, REG(12), lReg, rReg));
         // TODO: CMP which involves shifting?????
-        curr.addToBody(new DataProcessing(rReg, null));
-        curr.addToBody(new Branch(Condition.BLNE, new Label("p_throw_overflow_error")));
+        curr.addToBody(CMP(REG(12), null));
+        curr.addToBody(BLNE("p_throw_overflow_error"));
         break;
       case DIV:
       case MOD:
-        // TODO: NOT SURE IF B IS THE RIGHT CONDITION TO USE?
-        curr.addToBody(new Move(new Operand(OperandType.REG, 0), lReg, Condition.B));
-        curr.addToBody(new Move(new Operand(OperandType.REG, 1), rReg, Condition.B));
-        curr.addToBody(new Branch(Condition.BL, new Label("p_check_divide_by_zero")));
-        String divLabel =
-            binaryOperator == BinaryOperators.DIV ? "__aeabi_idiv" : "__aeabi_idivmod";
-        curr.addToBody(new Branch(Condition.BL, new Label(divLabel)));
-        int result = binaryOperator == BinaryOperators.DIV ? 0 : 1;
-        curr.addToBody(new Move(new Operand(OperandType.REG, result), lReg, Condition.B));
+        curr.addToBody(MOV(REG(0), lReg));
+        curr.addToBody(MOV(REG(1), rReg));
+        curr.addToBody(BL("p_check_divide_by_zero"));
+        String divLabel = binaryOperator == BinaryOperators.DIV ?
+            "__aeabi_idiv" : "__aeabi_idivmod";
+        curr.addToBody(BL(divLabel));
+        Operand res = binaryOperator == BinaryOperators.DIV ? REG(0) : REG(1);
+        curr.addToBody(MOV(dstReg, res));
         break;
       case PLUS:
       case MINUS:
-        Operation op = binaryOperator == BinaryOperators.PLUS ? Operation.ADD : Operation.SUB;
-        curr.addToBody(new DataProcessing(lReg, lReg, rReg, op));
-        curr.addToBody(new Branch(Condition.BLVS, new Label("p_throw_overflow_error")));
+        DataProcessing op = binaryOperator == BinaryOperators.PLUS ?
+            ADD(dstReg, lReg, rReg) : SUB(dstReg, lReg, rReg);
+        curr.addToBody(op);
+        curr.addToBody(BLVS("p_throw_overflow_error"));
         break;
 
         /* Comparison operators. */
       case GT:
-        addComparisonAssembly(curr, lReg, rReg, Condition.BGT, Condition.BLE);
+        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BGT, Condition.BLE);
         break;
       case GTE:
-        addComparisonAssembly(curr, lReg, rReg, Condition.BGE, Condition.BLT);
+        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BGE, Condition.BLT);
         break;
       case LT:
-        addComparisonAssembly(curr, lReg, rReg, Condition.BLT, Condition.BGE);
+        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BLT, Condition.BGE);
         break;
       case LTE:
-        addComparisonAssembly(curr, lReg, rReg, Condition.BLE, Condition.BGT);
+        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BLE, Condition.BGT);
         break;
 
         /* Equality operators. */
       case EQ:
-        addComparisonAssembly(curr, lReg, rReg, Condition.BEQ, Condition.BNE);
+        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BEQ, Condition.BNE);
         break;
       case NEQ:
-        addComparisonAssembly(curr, lReg, rReg, Condition.BNE, Condition.BEQ);
+        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BNE, Condition.BEQ);
         break;
 
         /* Boolean operators. */
       case AND:
-        curr.addToBody(new DataProcessing(lReg, lReg, rReg, Operation.AND));
+        curr.addToBody(AND(dstReg, lReg, rReg));
         break;
       case OR:
-        curr.addToBody(new DataProcessing(lReg, lReg, rReg, Operation.OR));
+        curr.addToBody(ORR(dstReg, lReg, rReg));
         break;
     }
+
+    setRegister(lReg);
   }
 
   private void addComparisonAssembly(
-      Label curr, Operand lReg, Operand rReg, Condition lCond, Condition rCond) {
+      Label curr, Operand lReg, Operand rReg, Operand dstReg,
+      Condition lCond, Condition rCond) {
     // CMP
-    curr.addToBody(new DataProcessing(lReg, rReg));
+    curr.addToBody(CMP(lReg, rReg));
     // left expr
-    curr.addToBody(new Move(lReg, new Operand(OperandType.CONST, 1), lCond));
+    curr.addToBody(new Move(dstReg, IMM(1), lCond));
     // right expr
-    curr.addToBody(new Move(rReg, new Operand(OperandType.CONST, 0), rCond));
+    curr.addToBody(new Move(dstReg, IMM(0), rCond));
   }
 
   /* Given two expression nodes and a list of valid types,

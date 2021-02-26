@@ -6,10 +6,12 @@ public enum Operation {
     SUB,
     SMULL,
     AND,
-    OR,
+    ORR,
     TST,
     CMP,
     MOV,
     MOVEQ,
-    MOVNE
+    MOVNE,
+    RSBS,
+    EOR
 }

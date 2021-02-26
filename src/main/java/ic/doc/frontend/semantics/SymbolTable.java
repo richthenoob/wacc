@@ -1,6 +1,8 @@
 package ic.doc.frontend.semantics;
 
 import ic.doc.frontend.identifiers.Identifier;
+import ic.doc.frontend.identifiers.VariableIdentifier;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,10 +10,24 @@ public class SymbolTable {
 
   private final SymbolTable parentSymbolTable;
   private final Map<SymbolKey, Identifier> dictionary;
+  private int tableSizeInBytes;
 
   public SymbolTable(SymbolTable parentSymbolTable) {
     this.parentSymbolTable = parentSymbolTable;
     dictionary = new LinkedHashMap<>();
+    tableSizeInBytes = 0;
+  }
+
+  public void incrementTableSizeInBytes(){
+    tableSizeInBytes +=4;
+  }
+
+  public void incrementOffset(){
+    for(Identifier obj: dictionary.values()){
+      if(obj instanceof VariableIdentifier){
+        ((VariableIdentifier) obj).incrementOffsetStack();
+      }
+    }
   }
 
   public SymbolTable getParentSymbolTable() {

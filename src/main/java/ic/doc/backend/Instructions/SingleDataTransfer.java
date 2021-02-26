@@ -1,5 +1,6 @@
 package ic.doc.backend.Instructions;
 
+import ic.doc.backend.Instructions.operands.Operand;
 import ic.doc.frontend.types.*;
 
 public class SingleDataTransfer extends Instruction {
@@ -9,10 +10,18 @@ public class SingleDataTransfer extends Instruction {
     private Operand dst;
     private Operand expr;
 
-    public SingleDataTransfer(boolean loadFlag, Operand dst, Operand expr) {
+    private SingleDataTransfer(boolean loadFlag, Operand dst, Operand expr) {
         this.loadFlag = loadFlag;
         this.dst = dst;
         this.expr = expr;
+    }
+
+    public static SingleDataTransfer LDR(Operand dst, Operand expr){
+        return new SingleDataTransfer(true, dst, expr);
+    }
+
+    public static SingleDataTransfer STR(Operand dst, Operand expr){
+        return new SingleDataTransfer(false, dst, expr);
     }
 
     @Override

@@ -1,11 +1,9 @@
 package ic.doc.frontend.nodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Instructions.Operand;
-import ic.doc.backend.Instructions.OperandType;
 import ic.doc.backend.Instructions.Stack;
+import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.statnodes.StatNode;
 import ic.doc.frontend.semantics.Visitor;
@@ -30,7 +28,7 @@ public class ProgNode extends Node {
   @Override
   public void translate(Context context) {
     // SAMPLE INSTRUCTIONS ONLY. Remove when implemented
-    Stack stack = new Stack(true, new Operand(OperandType.REG, 1));
+    Stack stack = Stack.PUSH(Operand.REG(1));
     Label<Instruction> inst = new Label<>("main");
     inst.addToBody(stack);
     context.getInstructionLabels().add(inst);
