@@ -37,7 +37,6 @@ public class CharacterLiteralNode extends LiteralNode {
 
   @Override
   public void translate(Context context) {
-    List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
     List<Label<Data>> dataLabels = context.getDataLabels();
     int newIndex = dataLabels.size();
     Label<Data> newLabel = new Label<>("msg_" + newIndex);
@@ -48,9 +47,7 @@ public class CharacterLiteralNode extends LiteralNode {
     LabelAddressOperand operand =
         new LabelAddressOperand(
             dataLabels.get(dataLabels.size() - 1).getFunctionLabel()); // dummy value for value
-    instructionLabels
-        .get(instructionLabels.size() - 1)
-        .addToBody(SingleDataTransfer.LDR(register, operand));
+    context.addToLastInstructionLabel(SingleDataTransfer.LDR(register, operand));
   }
 
   @Override
