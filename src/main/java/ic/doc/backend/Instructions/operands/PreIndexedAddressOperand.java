@@ -36,7 +36,7 @@ public class PreIndexedAddressOperand extends AddressOperand {
   /* Public constructor for operands like
    * [r0] Access memory of address stored in r0
    * [sp] Access memory of address stored in sp */
-  public PreIndexedAddressOperand PreIndexedAddressZeroOffset(
+  public static PreIndexedAddressOperand PreIndexedAddressZeroOffset(
       RegisterOperand rn) {
     return new PreIndexedAddressOperand(rn, null, null, false, ShiftTypes.NONE);
   }
