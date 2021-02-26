@@ -23,7 +23,7 @@ public class Context {
   private Label<Instruction> currentLabel;
   private final List<Label<Instruction>> instructionLabels = new ArrayList<>();
   private final List<Label<Data>> dataLabels = new ArrayList<>();
-  private final Set<Label<Instruction>> pfunctions = new HashSet<>();
+  private Set<Label<Instruction>> pfunctions = new HashSet<>();
 
   public void addToLastInstructionLabel(Instruction instruction) {
     instructionLabels.get(instructionLabels.size() - 1).addToBody(instruction);
