@@ -2,7 +2,6 @@ package ic.doc.frontend.nodes.exprnodes.Literals;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Instructions.SingleDataTransfer;
 import ic.doc.backend.Instructions.operands.LabelAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;

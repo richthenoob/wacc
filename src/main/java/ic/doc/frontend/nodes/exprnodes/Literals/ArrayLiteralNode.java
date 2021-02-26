@@ -5,7 +5,6 @@ import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.PostIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
-import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.*;
@@ -77,24 +76,20 @@ public class ArrayLiteralNode extends LiteralNode {
       sizePerValue = 4;
     }
     int bytesToAllocate = values.size() * sizePerValue + 4;
-    List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
-    instructionLabels
-        .get(instructionLabels.size() - 1)
-        .addToBody(
-            SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(bytesToAllocate)))
-        .addToBody(Branch.BL("malloc"))
-        .addToBody(new Move(new RegisterOperand(4), new RegisterOperand(0), Condition.B));
+    context.addToLastInstructionLabel(
+        SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(bytesToAllocate)));
+    context.addToLastInstructionLabel(Branch.BL("malloc"));
+    context.addToLastInstructionLabel(
+        new Move(new RegisterOperand(4), new RegisterOperand(0), Condition.B));
     int offset = 4;
     for (ExprNode value : values) {
       value.translate(context);
-      instructionLabels
-          .get(instructionLabels.size() - 1)
-          .addToBody(
-              SingleDataTransfer.STR(
-                  value.getRegister(),
-                  PostIndexedAddressOperand.PostIndexedAddressFixedOffset(
-                      new RegisterOperand(4), new ImmediateOperand(offset))));
-      offset +=sizePerValue;
+      context.addToLastInstructionLabel(
+          SingleDataTransfer.STR(
+              value.getRegister(),
+              PostIndexedAddressOperand.PostIndexedAddressFixedOffset(
+                  new RegisterOperand(4), new ImmediateOperand(offset))));
+      offset += sizePerValue;
     }
   }
 
