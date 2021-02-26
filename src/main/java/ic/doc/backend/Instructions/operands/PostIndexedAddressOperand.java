@@ -9,10 +9,10 @@ import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.ShiftTypes;
 public class PostIndexedAddressOperand extends AddressOperand {
 
   private final RegisterOperand rn;
-  private final ImmediateOperand expr;
   private final RegisterOperand rm;
   private final boolean isNegativeRm;
   private final ShiftTypes shift;
+  private final ImmediateOperand expr; // Doubles as value shifted by
 
   private PostIndexedAddressOperand(
       RegisterOperand rn,
@@ -20,17 +20,18 @@ public class PostIndexedAddressOperand extends AddressOperand {
       RegisterOperand rm, boolean isNegativeRm,
       ShiftTypes shift) {
     this.rn = rn;
-    this.expr = expr;
     this.rm = rm;
     this.isNegativeRm = isNegativeRm;
     this.shift = shift;
+    this.expr = expr;
   }
 
   /* Public constructor for operands like
    * [r0], #5   Access memory at address, r0, then set r0 = r0 + 5 */
   public static PostIndexedAddressOperand PostIndexedAddressFixedOffset(
       RegisterOperand rn, ImmediateOperand expr) {
-    return new PostIndexedAddressOperand(rn, expr, null, false, ShiftTypes.NONE);
+    return new PostIndexedAddressOperand(rn, expr,
+        null, false, ShiftTypes.NONE);
   }
 
   /* Public constructor for operands like
@@ -50,14 +51,23 @@ public class PostIndexedAddressOperand extends AddressOperand {
     return new PostIndexedAddressOperand(rn, null, rm, isNegativeRm, shift);
   }
 
+  /* Public constructor for operands like
+   * r1, LSL #2 Access r1 * 4
+   */
+  public static PostIndexedAddressOperand PostIndexedShiftRegister(
+      RegisterOperand rm, ShiftTypes shift, ImmediateOperand expr) {
+    return new PostIndexedAddressOperand(null,
+        expr, rm, false, shift);
+  }
+
   @Override
   public String toString() {
+    String rnString = rn == null ? "" : "[" + rn.toString() + "]";
     String rmString = rm == null ? "" : "," + rm.toString();
-    String exprString = expr == null ? "" : "," + expr.toString();
-    String signString = isNegativeRm ? "-" : "+";
+    String signString = isNegativeRm ? "-" : "";
     String shiftString = shift == ShiftTypes.NONE ? "" : "," + shift.name();
+    String exprString = expr == null ? "" : "," + expr.toString();
 
-    return "[" + rn.toString() + "]" + signString + rmString + exprString
-        + shiftString;
+    return rnString + signString + rmString + shiftString + exprString;
   }
 }
