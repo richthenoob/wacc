@@ -8,13 +8,16 @@ import static ic.doc.backend.Instructions.Stack.*;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Instructions.*;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.Operand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -109,33 +112,38 @@ public class BinaryOperatorNode extends ExprNode {
 
     Label curr = context.getCurrentLabel();
 
-    Operand lReg = leftExpr.getRegister();
-    Operand rReg = rightExpr.getRegister();
-    Operand dstReg = lReg;
+    RegisterOperand lReg = leftExpr.getRegister();
+    RegisterOperand rReg = rightExpr.getRegister();
+    RegisterOperand dstReg = lReg;
 
     if (lReg.getValue() == rReg.getValue()) {
       //both registers are 10
-      lReg = REG(11);
-      curr.addToBody(POP(REG(11)));
+      lReg = new RegisterOperand(11);
+      curr.addToBody(POP(new RegisterOperand(11)));
     }
+
+    String overflowError = "p_throw_overflow_error";
 
     switch (binaryOperator) {
         /* Arithmetic operators. */
       case MUL:
-        curr.addToBody(SMULL(dstReg, REG(12), lReg, rReg));
-        // TODO: CMP which involves shifting?????
-        curr.addToBody(CMP(REG(12), null));
-        curr.addToBody(BLNE("p_throw_overflow_error"));
+        curr.addToBody(SMULL(dstReg, new RegisterOperand(12), lReg, rReg));
+        curr.addToBody(CMP(new RegisterOperand(12), null));
+        curr.addToBody(BLNE(overflowError));
+        context.getPfunctions().add(new Label(overflowError));
         break;
       case DIV:
       case MOD:
-        curr.addToBody(MOV(REG(0), lReg));
-        curr.addToBody(MOV(REG(1), rReg));
-        curr.addToBody(BL("p_check_divide_by_zero"));
+        curr.addToBody(MOV(new RegisterOperand(0), lReg));
+        curr.addToBody(MOV(new RegisterOperand(1), rReg));
+        String divByZero = "p_check_divide_by_zero";
+        curr.addToBody(BL(divByZero));
+        context.getPfunctions().add(new Label(divByZero));
         String divLabel = binaryOperator == BinaryOperators.DIV ?
             "__aeabi_idiv" : "__aeabi_idivmod";
         curr.addToBody(BL(divLabel));
-        Operand res = binaryOperator == BinaryOperators.DIV ? REG(0) : REG(1);
+        context.getPfunctions().add(new Label(divLabel));
+        Operand res = binaryOperator == BinaryOperators.DIV ? new RegisterOperand(0) : new RegisterOperand(1);
         curr.addToBody(MOV(dstReg, res));
         break;
       case PLUS:
@@ -143,7 +151,8 @@ public class BinaryOperatorNode extends ExprNode {
         DataProcessing op = binaryOperator == BinaryOperators.PLUS ?
             ADD(dstReg, lReg, rReg) : SUB(dstReg, lReg, rReg);
         curr.addToBody(op);
-        curr.addToBody(BLVS("p_throw_overflow_error"));
+        curr.addToBody(BLVS(overflowError));
+        context.getPfunctions().add(new Label(overflowError));
         break;
 
         /* Comparison operators. */
@@ -186,9 +195,9 @@ public class BinaryOperatorNode extends ExprNode {
     // CMP
     curr.addToBody(CMP(lReg, rReg));
     // left expr
-    curr.addToBody(new Move(dstReg, IMM(1), lCond));
+    curr.addToBody(new Move(dstReg, new ImmediateOperand(1), lCond));
     // right expr
-    curr.addToBody(new Move(dstReg, IMM(0), rCond));
+    curr.addToBody(new Move(dstReg, new ImmediateOperand(0), rCond));
   }
 
   /* Given two expression nodes and a list of valid types,

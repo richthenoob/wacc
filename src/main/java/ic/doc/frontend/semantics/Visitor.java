@@ -137,7 +137,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     VariableNode var = new VariableNode(name);
     var.setType(type);
     ExprNode expr = (ExprNode) visit(ctx.assignRhs());
-    AssignmentNode node = new AssignmentNode(var, expr, true);
+    AssignmentNode node = new AssignmentNode(var, expr, true,currentSymbolTable);
     node.check(this, ctx);
     return node;
   }
@@ -158,7 +158,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   public Node visitAssignment(BasicParser.AssignmentContext ctx) {
     ExprNode lhs = (ExprNode) visit(ctx.assignLhs());
     ExprNode rhs = (ExprNode) visit(ctx.assignRhs());
-    AssignmentNode node = new AssignmentNode(lhs, rhs, false);
+    AssignmentNode node = new AssignmentNode(lhs, rhs, false,currentSymbolTable);
     node.check(this, ctx);
     return node;
   }

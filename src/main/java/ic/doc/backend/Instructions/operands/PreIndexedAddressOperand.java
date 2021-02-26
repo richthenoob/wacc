@@ -44,7 +44,7 @@ public class PreIndexedAddressOperand extends AddressOperand {
   /* Public constructor for operands like
    * [r0, #5]   Access memory at address stored in r0 + 5
    * [sp, #-16] Access memory at address stored in sp - 16 */
-  public PreIndexedAddressOperand PreIndexedAddressFixedOffset(
+  public static PreIndexedAddressOperand PreIndexedAddressFixedOffset(
       RegisterOperand rn, ImmediateOperand expr) {
     return new PreIndexedAddressOperand(rn, expr, null, false, ShiftTypes.NONE);
   }
@@ -52,7 +52,7 @@ public class PreIndexedAddressOperand extends AddressOperand {
   /* Public constructor for operands like
    * [r0, r1]   Access memory at address stored in r0 + address stored in r1
    * [sp, -r0]  Access memory at address [sp] - [r0]  */
-  public PreIndexedAddressOperand PreIndexedAddressByRegister(
+  public static PreIndexedAddressOperand PreIndexedAddressByRegister(
       RegisterOperand rn, RegisterOperand rm, boolean isNegativeRm) {
     return new PreIndexedAddressOperand(rn, null, rm, isNegativeRm,
         ShiftTypes.NONE);
@@ -61,7 +61,7 @@ public class PreIndexedAddressOperand extends AddressOperand {
   /* Public constructor for operands like
    * [r0, r1, LSL #2] Access memory at address r0 + r1 * 4
    */
-  public PreIndexedAddressOperand PreIndexedAddressShiftRegister(
+  public static PreIndexedAddressOperand PreIndexedAddressShiftRegister(
       RegisterOperand rn, RegisterOperand rm, boolean isNegativeRm,
       ShiftTypes shift) {
     return new PreIndexedAddressOperand(rn, null, rm, isNegativeRm, shift);

@@ -1,15 +1,14 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Label;
+import ic.doc.backend.Instructions.*;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.PostIndexedAddressOperand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.Visitor;
-import ic.doc.frontend.types.AnyType;
-import ic.doc.frontend.types.ArrayType;
-import ic.doc.frontend.types.ErrorType;
-import ic.doc.frontend.types.Type;
+import ic.doc.frontend.types.*;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -68,7 +67,31 @@ public class ArrayLiteralNode extends LiteralNode {
   }
 
   @Override
-  public void translate(Context context) {}
+  public void translate(Context context) {
+    int sizePerValue;
+    if (values.get(0).getType() instanceof BoolType
+        || values.get(0).getType() instanceof CharType) {
+      sizePerValue = 1;
+    } else {
+      sizePerValue = 4;
+    }
+    int bytesToAllocate = values.size() * sizePerValue + 4;
+    context.addToLastInstructionLabel(
+        SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(bytesToAllocate)));
+    context.addToLastInstructionLabel(Branch.BL("malloc"));
+    context.addToLastInstructionLabel(
+        new Move(new RegisterOperand(4), new RegisterOperand(0), Condition.B));
+    int offset = 4;
+    for (ExprNode value : values) {
+      value.translate(context);
+      context.addToLastInstructionLabel(
+          SingleDataTransfer.STR(
+              value.getRegister(),
+              PostIndexedAddressOperand.PostIndexedAddressFixedOffset(
+                  new RegisterOperand(4), new ImmediateOperand(offset))));
+      offset += sizePerValue;
+    }
+  }
 
   @Override
   public String getInput() {
