@@ -4,20 +4,22 @@ package ic.doc.backend.Instructions.operands;
 public class ImmediateOperand extends Operand {
 
   private final int value;
-  private char prefix = '=';
+  private boolean offset = false;
 
   public ImmediateOperand(int value) {
     this.value = value;
   }
 
-  public ImmediateOperand(char prefix, int value) {
+  public ImmediateOperand(boolean offset, int value) {
     this.value = value;
-    this.prefix = prefix;
+    this.offset = true;
   }
-  //TODO: refactor?
 
   @Override
   public String toString() {
-    return Character.toString(prefix) + value;
+    if (offset) {
+      return "#" +value;
+    }
+    return "=" +value;
   }
 }

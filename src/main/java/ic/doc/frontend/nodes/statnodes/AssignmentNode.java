@@ -125,14 +125,13 @@ public class AssignmentNode extends StatNode {
   @Override
   public void translate(Context context) {
     ImmediateOperand offset;
-    rhs.translate(context);
     if (isDeclaration) { // if declaring, need to move stack pointer
-      offset = new ImmediateOperand(0);
+      offset = new ImmediateOperand(true,0);
       context.addToLastInstructionLabel(
           DataProcessing.SUB(
-              new RegisterOperand(13),
-              new RegisterOperand(13),
-              new ImmediateOperand(4)));
+              RegisterOperand.SP(),
+              RegisterOperand.SP(),
+              new ImmediateOperand(true,4)));
       symbolTable.incrementOffset();
     } else { // if not declaration, find offset of previous declaration
       VariableNode lhsVar = (VariableNode) lhs;
@@ -141,10 +140,11 @@ public class AssignmentNode extends StatNode {
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
       offset = new ImmediateOperand(id.getOffsetStack());
     }
+    rhs.translate(context);
     context.addToLastInstructionLabel(
         SingleDataTransfer.STR(
             rhs.getRegister(),
             PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                new RegisterOperand(13), offset)));
+                RegisterOperand.SP(), offset)));
   }
 }

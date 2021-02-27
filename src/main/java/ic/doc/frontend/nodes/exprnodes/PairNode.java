@@ -73,12 +73,9 @@ public class PairNode extends ExprNode {
             SingleDataTransfer.STR(
                 new RegisterOperand(0),
                 PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                    new RegisterOperand(firstRegisterNum), new ImmediateOperand(4))));
+                    new RegisterOperand(firstRegisterNum), new ImmediateOperand(true,4))));
     context.freeRegister(snd.getRegister().getValue());
-    label.addToBody(
-        SingleDataTransfer.STR(
-            new RegisterOperand(firstRegisterNum),
-            PreIndexedAddressOperand.PreIndexedAddressZeroOffset(RegisterOperand.SP())));
+    setRegister(new RegisterOperand(firstRegisterNum));
   }
 
   @Override

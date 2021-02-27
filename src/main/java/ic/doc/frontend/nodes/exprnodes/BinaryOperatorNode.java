@@ -141,7 +141,7 @@ public class BinaryOperatorNode extends ExprNode {
         // lhsResult, ASR #31
         curr.addToBody(CMP(new RegisterOperand(12),
             PostIndexedShiftRegister(dstReg, ShiftTypes.ASR,
-                new ImmediateOperand('#', OVERFLOW_SHIFT_AMOUNT))));
+                new ImmediateOperand(true, OVERFLOW_SHIFT_AMOUNT))));
 
         curr.addToBody(BLNE(OVERFLOW_CHECK));
         context.getPfunctions().add(new Label(OVERFLOW_CHECK));
