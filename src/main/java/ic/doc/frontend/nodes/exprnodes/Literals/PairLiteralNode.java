@@ -5,6 +5,7 @@ import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.PostIndexedAddressOperand;
+import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
@@ -29,11 +30,14 @@ public class PairLiteralNode extends LiteralNode {
   }
 
   @Override
-  public void translate(Context context) { //Do nothing?
+  public void translate(Context context) {
+    RegisterOperand reg = new RegisterOperand(context.getFreeRegister());
+    context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(reg,new ImmediateOperand(0)));
+    context.freeRegister(reg.getValue());
   }
 
   @Override
   public String getInput() {
-    return "null";
+    return "(nil)";
   }
 }

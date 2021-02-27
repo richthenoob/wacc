@@ -43,5 +43,5 @@ public class VariableNode extends ExprNode {
   }
 
   @Override
-  public void translate(Context contextx) {}
+  public void translate(Context context) {}
 }

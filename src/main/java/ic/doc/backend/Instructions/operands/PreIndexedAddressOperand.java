@@ -8,7 +8,6 @@ package ic.doc.backend.Instructions.operands;
 public class PreIndexedAddressOperand extends AddressOperand {
 
   public enum ShiftTypes {
-    /* TODO: how to encode expression information here e.g. LSL#2*/
     LSL, /* Left shift logical     */
     ASL, /* Arithmetic left shift  */
     RSL, /* Right shift logical    */
@@ -36,7 +35,7 @@ public class PreIndexedAddressOperand extends AddressOperand {
   /* Public constructor for operands like
    * [r0] Access memory of address stored in r0
    * [sp] Access memory of address stored in sp */
-  public PreIndexedAddressOperand PreIndexedAddressZeroOffset(
+  public static PreIndexedAddressOperand PreIndexedAddressZeroOffset(
       RegisterOperand rn) {
     return new PreIndexedAddressOperand(rn, null, null, false, ShiftTypes.NONE);
   }
@@ -74,7 +73,7 @@ public class PreIndexedAddressOperand extends AddressOperand {
     String signString = isNegativeRm ? "-" : "+";
     String shiftString = shift == ShiftTypes.NONE ? "" : "," + shift.name();
 
-    return "[" + rn.toString() + signString + rmString + exprString
-        + shiftString + "]";
+    return "[" + rn.toString() + signString + rmString
+        + shiftString + exprString + "]";
   }
 }

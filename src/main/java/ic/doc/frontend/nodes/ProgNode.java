@@ -41,10 +41,10 @@ public class ProgNode extends Node {
 
     /* Create main label, the entry point of the program. */
     Label<Instruction> inst = new Label<>("main");
-    inst.addToBody(Stack.PUSH(RegisterOperand.LR));
     context.getInstructionLabels().add(inst);
     context.setCurrentLabel(inst);
     context.setCurrentSymbolTable(symbolTable);
+    inst.addToBody(Stack.PUSH(RegisterOperand.LR,context.getCurrentSymbolTable()));
 
     /* Translate rest of program. */
     stat.translate(context);
@@ -53,6 +53,6 @@ public class ProgNode extends Node {
     Label<Instruction> currentLabel = context.getCurrentLabel();
     currentLabel.addToBody(SingleDataTransfer.LDR(RegisterOperand.R0, new
         ImmediateOperand(0)));
-    currentLabel.addToBody(Stack.POP(RegisterOperand.PC));
+    currentLabel.addToBody(Stack.POP(RegisterOperand.PC,context.getCurrentSymbolTable()));
   }
 }

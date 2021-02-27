@@ -4,13 +4,22 @@ package ic.doc.backend.Instructions.operands;
 public class ImmediateOperand extends Operand {
 
   private final int value;
+  private boolean offset = false;
 
   public ImmediateOperand(int value) {
     this.value = value;
   }
 
+  public ImmediateOperand(boolean offset, int value) {
+    this.value = value;
+    this.offset = true;
+  }
+
   @Override
   public String toString() {
-    return "=" + value;
+    if (offset) {
+      return "#" +value;
+    }
+    return "=" +value;
   }
 }
