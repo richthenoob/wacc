@@ -2,9 +2,6 @@ package ic.doc.frontend.semantics;
 
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
-import ic.doc.frontend.types.BoolType;
-import ic.doc.frontend.types.CharType;
-import ic.doc.frontend.types.Type;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,6 +16,10 @@ public class SymbolTable {
     this.parentSymbolTable = parentSymbolTable;
     dictionary = new LinkedHashMap<>();
     tableSizeInBytes = 0;
+  }
+
+  public int getTableSize() {
+    return tableSizeInBytes;
   }
 
   public void incrementTableSizeInBytes(){
