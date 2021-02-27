@@ -41,7 +41,7 @@ public class CharacterLiteralNode extends LiteralNode {
     setRegister(register);
     Label<Data> label = context.getSpecificLabel(value.toString());
     if (label == null) {
-      ImmediateOperand<Character> operand = new ImmediateOperand<>(true,value);
+      ImmediateOperand<Character> operand = new ImmediateOperand<>(value);
       context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
     } else {
       LabelAddressOperand operand = new LabelAddressOperand(label.getFunctionLabel());

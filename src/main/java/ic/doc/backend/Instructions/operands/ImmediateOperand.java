@@ -17,9 +17,15 @@ public class ImmediateOperand<T> extends Operand {
 
   @Override
   public String toString() {
-    if (hashSymbol) {
-      return "#" +value;
+    if (value instanceof Character) {
+      if (hashSymbol) {
+        return "#" + "'" + value + "'";
+      }
+      return "=" + "'" + value + "'";
     }
-    return "=" +value;
+    if (hashSymbol) {
+      return "#" + value;
+    }
+    return "=" + value;
   }
 }

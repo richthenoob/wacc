@@ -44,7 +44,7 @@ public class StringLiteralNode extends LiteralNode {
     setRegister(register);
     Label<Data> label = context.getSpecificLabel(value);
     if (label == null) {
-      ImmediateOperand<String> operand = new ImmediateOperand<>(true, value);
+      ImmediateOperand<String> operand = new ImmediateOperand<>(value);
       context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
     } else {
       LabelAddressOperand operand = new LabelAddressOperand(label.getFunctionLabel());
