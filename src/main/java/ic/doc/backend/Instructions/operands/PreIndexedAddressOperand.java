@@ -70,7 +70,7 @@ public class PreIndexedAddressOperand extends AddressOperand {
   public String toString() {
     String rmString = rm == null ? "" : "," + rm.toString();
     String exprString = expr == null ? "" : "," + expr.toString();
-    String signString = isNegativeRm ? "-" : "+";
+    String signString = isNegativeRm ? "-" : "";
     String shiftString = shift == ShiftTypes.NONE ? "" : "," + shift.name();
 
     return "[" + rn.toString() + signString + rmString

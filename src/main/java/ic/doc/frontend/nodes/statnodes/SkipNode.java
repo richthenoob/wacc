@@ -19,12 +19,5 @@ public class SkipNode extends StatNode {
 
   @Override
   public void translate(Context context) {
-
-    SingleDataTransfer loadZero = SingleDataTransfer.LDR(RegisterOperand.R0,
-        new ImmediateOperand(0));
-
-    List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
-    instructionLabels.get(instructionLabels.size() - 1)
-        .addToBody(loadZero);
   }
 }
