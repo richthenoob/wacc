@@ -1,8 +1,10 @@
 package ic.doc.backend;
 
 import ic.doc.backend.Data.Data;
+import ic.doc.backend.Instructions.DataProcessing;
 import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Instructions.Stack;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.frontend.semantics.SymbolTable;
 import java.util.ArrayList;
@@ -88,4 +90,22 @@ public class Context {
     labelCounter++;
     return "L" + counterToReturn;
   }
+
+  /* Restores the scope by changing the currentSymbolTable back to its parent
+   * and adding an instruction move the stack pointer. */
+  public void restoreScope() {
+    int tableSize = currentSymbolTable.getTableSize();
+
+    if (tableSize != 0) {
+      DataProcessing restoreStackPtrInstr = DataProcessing
+          .ADD(RegisterOperand.SP,
+              RegisterOperand.SP,
+              new ImmediateOperand(true, tableSize));
+
+      addToLastInstructionLabel(restoreStackPtrInstr);
+    }
+
+    currentSymbolTable = getCurrentSymbolTable().getParentSymbolTable();
+  }
+
 }

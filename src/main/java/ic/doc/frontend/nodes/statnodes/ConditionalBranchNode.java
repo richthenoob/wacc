@@ -61,7 +61,8 @@ public class ConditionalBranchNode extends StatNode {
       visitor
           .getSemanticErrorList()
           .addTypeException(
-              ctx, cond.getInput(), "BOOL", cond.getType().toString(), "", "'if' condition");
+              ctx, cond.getInput(), "BOOL", cond.getType().toString(), "",
+              "'if' condition");
     }
   }
 
@@ -75,31 +76,34 @@ public class ConditionalBranchNode extends StatNode {
     /* Evaluate boolean condition. */
     cond.translate(context);
     RegisterOperand register = cond.getRegister();
+    context.freeRegister(register.getValue());
 
     /* Test boolean condition. */
     Label<Instruction> currentLabel = context.getCurrentLabel();
     currentLabel
-        .addToBody(DataProcessing.CMP(register, new ImmediateOperand(0)));
+        .addToBody(DataProcessing.CMP(register, new ImmediateOperand(true,0)));
     currentLabel.addToBody(Branch.BEQ(falseBodyName));
 
-    // TODO: account for scopes here
+    /* Make sure that the symbol tables were well formed in front end.*/
+    assert (trueBodySymbolTable.getParentSymbolTable()
+        .equals(context.getCurrentSymbolTable()));
+    assert (falseBodySymbolTable.getParentSymbolTable()
+        .equals(context.getCurrentSymbolTable()));
 
     /* Evaluate true body. */
-    // set currentSymbolTable in context to symbol table of true branch
+    context.setCurrentSymbolTable(trueBodySymbolTable);
     // set currentLabel in context to current label of true branch
     trueBody.translate(context);
+    context.restoreScope();
     context.getCurrentLabel().addToBody(Branch.B(nextBodyName));
-    // reset any stack usages
     // restore currentSymbolTable and currentLabel
 
     /* Evaluate false body. */
-    // set currentSymbolTable in context to symbol table of true branch
-    // set currentLabel in context to current label of true branch
+    context.setCurrentSymbolTable(falseBodySymbolTable);
     context.setCurrentLabel(falseBodyLabel);
     context.getInstructionLabels().add(falseBodyLabel);
     falseBody.translate(context);
-    // reset any stack usages
-    // restore currentSymbolTable and currentLabel
+    context.restoreScope();
 
     /* Set up next body label. */
     context.setCurrentLabel(nextBodyLabel);
