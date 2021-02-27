@@ -77,10 +77,6 @@ public class Context {
     return currentSymbolTable;
   }
 
-  public void setCurrentSymbolTable(SymbolTable currentSymbolTable) {
-    this.currentSymbolTable = currentSymbolTable;
-  }
-
   public Set<Label<Instruction>> getPfunctions() {
     return pfunctions;
   }
@@ -89,6 +85,10 @@ public class Context {
     int counterToReturn = labelCounter;
     labelCounter++;
     return "L" + counterToReturn;
+  }
+
+  public void setScope(SymbolTable currentSymbolTable) {
+    this.currentSymbolTable = currentSymbolTable;
   }
 
   /* Restores the scope by changing the currentSymbolTable back to its parent

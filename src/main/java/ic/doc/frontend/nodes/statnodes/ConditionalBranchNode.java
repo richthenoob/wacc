@@ -91,17 +91,15 @@ public class ConditionalBranchNode extends StatNode {
         .equals(context.getCurrentSymbolTable()));
 
     /* Evaluate true body. */
-    context.setCurrentSymbolTable(trueBodySymbolTable);
-    // set currentLabel in context to current label of true branch
+    context.setScope(trueBodySymbolTable);
     trueBody.translate(context);
     context.restoreScope();
     context.getCurrentLabel().addToBody(Branch.B(nextBodyName));
-    // restore currentSymbolTable and currentLabel
 
     /* Evaluate false body. */
-    context.setCurrentSymbolTable(falseBodySymbolTable);
     context.setCurrentLabel(falseBodyLabel);
     context.getInstructionLabels().add(falseBodyLabel);
+    context.setScope(falseBodySymbolTable);
     falseBody.translate(context);
     context.restoreScope();
 

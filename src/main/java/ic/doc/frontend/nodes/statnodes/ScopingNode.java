@@ -11,8 +11,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ScopingNode extends StatNode {
 
-  private SymbolTable symbolTable;
-  private StatNode statNode;
+  private final SymbolTable symbolTable;
+  private final StatNode statNode;
 
   public ScopingNode(SymbolTable symbolTable, StatNode statNode) {
     this.statNode = statNode;
@@ -25,5 +25,9 @@ public class ScopingNode extends StatNode {
   }
 
   @Override
-  public void translate(Context context) {}
+  public void translate(Context context) {
+    context.setScope(symbolTable);
+    statNode.translate(context);
+    context.restoreScope();
+  }
 }
