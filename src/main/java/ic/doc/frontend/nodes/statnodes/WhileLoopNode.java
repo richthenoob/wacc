@@ -1,24 +1,27 @@
 package ic.doc.frontend.nodes.statnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
+import ic.doc.backend.Instructions.Branch;
 import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
+import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.BoolType;
 import ic.doc.frontend.types.ErrorType;
-import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class WhileLoopNode extends StatNode {
 
   private final ExprNode cond;
   private final StatNode body;
+  private final SymbolTable bodySymbolTable;
 
-  public WhileLoopNode(ExprNode cond, StatNode body) {
+  public WhileLoopNode(ExprNode cond, StatNode body,
+      SymbolTable bodySymbolTable) {
     this.cond = cond;
     this.body = body;
+    this.bodySymbolTable = bodySymbolTable;
   }
 
   public ExprNode getCond() {
