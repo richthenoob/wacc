@@ -1,23 +1,23 @@
 package ic.doc.backend.Instructions.operands;
 
 /* e.g. =5, =-16 */
-public class ImmediateOperand extends Operand {
+public class ImmediateOperand<T> extends Operand {
 
-  private final int value;
-  private boolean offset = false;
+  private final T value;
+  private boolean hashSymbol = false;
 
-  public ImmediateOperand(int value) {
+  public ImmediateOperand(T value) {
     this.value = value;
   }
 
-  public ImmediateOperand(boolean offset, int value) {
+  public ImmediateOperand(boolean hashSymbol, T value) {
     this.value = value;
-    this.offset = true;
+    this.hashSymbol = true;
   }
 
   @Override
   public String toString() {
-    if (offset) {
+    if (hashSymbol) {
       return "#" +value;
     }
     return "=" +value;
