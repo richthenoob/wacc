@@ -16,6 +16,10 @@ public class RegisterOperand extends Operand {
     this.value = value;
   }
 
+  public static RegisterOperand SP(){
+    return new RegisterOperand(13);
+  }
+
   public int getValue() {
     return value;
   }

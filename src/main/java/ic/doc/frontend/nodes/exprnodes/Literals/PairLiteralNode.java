@@ -5,6 +5,7 @@ import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.PostIndexedAddressOperand;
+import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
@@ -30,13 +31,6 @@ public class PairLiteralNode extends LiteralNode {
 
   @Override
   public void translate(Context context) {
-    Label<Instruction> label = context.getCurrentLabel();
-    int bytesToAllocate = 4 * 2;
-    label
-            .addToBody(
-                    SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(bytesToAllocate)))
-            .addToBody(Branch.BL("malloc"))
-            .addToBody(new Move(new RegisterOperand(4), new RegisterOperand(0), Condition.B));
   }
 
   @Override

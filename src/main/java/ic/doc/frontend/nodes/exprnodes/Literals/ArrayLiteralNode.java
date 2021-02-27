@@ -102,7 +102,7 @@ public class ArrayLiteralNode extends LiteralNode {
         .addToBody(
             SingleDataTransfer.STR(
                 new RegisterOperand(firstRegisterNum),
-                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(new RegisterOperand(13))));
+                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(RegisterOperand.SP())));
   }
 
   @Override
