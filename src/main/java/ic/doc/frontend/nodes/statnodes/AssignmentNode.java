@@ -58,9 +58,9 @@ public class AssignmentNode extends StatNode {
       if (symbolTable.lookup(key) != null) {
         visitor.getSemanticErrorList().addScopeException(ctx, true, "Variable", name);
       } else {
-        symbolTable.add(key, new VariableIdentifier(lhs.getType()));
         symbolTable.incrementOffset();
         symbolTable.incrementTableSizeInBytes();
+        symbolTable.add(key, new VariableIdentifier(lhs.getType()));
       }
     }
 
@@ -134,7 +134,6 @@ public class AssignmentNode extends StatNode {
     ImmediateOperand<Integer> offset;
     if (isDeclaration) { // if declaring, need to move stack pointer
       if (lhs.getType() instanceof CharType || lhs.getType() instanceof StringType) {
-        offset = null;
         String str;
         int length;
         if (lhs.getType() instanceof CharType) {
@@ -151,13 +150,12 @@ public class AssignmentNode extends StatNode {
         Label<Data> newLabel = new Label<>("msg_" + newIndex);
         dataLabels.add(newIndex, newLabel);
         newLabel.addToBody(new Data(length, str));
-      } else {  // other types
-        offset = null;
-        context.addToCurrentLabel(
-            DataProcessing.SUB(
-                RegisterOperand.SP(), RegisterOperand.SP(), new ImmediateOperand<>(true, 4)));
-        symbolTable.incrementOffset();
-      }
+      } // other types
+      offset = null;
+      context.addToCurrentLabel(
+          DataProcessing.SUB(
+              RegisterOperand.SP(), RegisterOperand.SP(), new ImmediateOperand<>(true, 4)));
+
     } else { // if not declaration, find offset of previous declaration
       VariableNode lhsVar = (VariableNode) lhs;
       String name = lhsVar.getName();
