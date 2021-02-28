@@ -202,7 +202,7 @@ public class PredefinedFunctions {
     if(endFunctions.contains(throwRuntimeErrorLabel)){
       return;
     }
-
+    addPrintStringFunction(ctx);
     throwRuntimeErrorLabel.addToBody(BL(PRINT_STR_FUNC));
     throwRuntimeErrorLabel.addToBody(MOV(RegisterOperand.R0, new ImmediateOperand(RUNTIME_ERROR_EXIT_CODE)));
     throwRuntimeErrorLabel.addToBody(BL("exit"));

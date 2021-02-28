@@ -3,6 +3,8 @@ package ic.doc.frontend.nodes.exprnodes;
 import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.*;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ArrayType;
@@ -13,6 +15,14 @@ import ic.doc.frontend.types.IntType;
 import ic.doc.frontend.types.Type;
 import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
+
+import static ic.doc.backend.Instructions.Branch.BLVS;
+import static ic.doc.backend.Instructions.DataProcessing.EOR;
+import static ic.doc.backend.Instructions.DataProcessing.RSBS;
+import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
+import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressZeroOffset;
+import static ic.doc.backend.PredefinedFunctions.addCheckIntegerOverflowFunction;
+import static ic.doc.backend.PredefinedFunctions.addThrowRuntimeErrorFunction;
 
 public class UnaryOperatorNode extends ExprNode {
 
@@ -114,48 +124,34 @@ public class UnaryOperatorNode extends ExprNode {
 
   @Override
   public void translate(Context context) {
-//    expr.translate(instructionLabels, dataLabels);
-//    Operand reg = null;
-//    Label curr = instructionLabels.get(instructionLabels.size() - 1);
+    expr.translate(context);
+    RegisterOperand reg = expr.getRegister();
+    Label<Instruction> curr = context.getCurrentLabel();
 
-//    switch (unaryOperator) {
-//      case LOGICAL_NOT:
-//        // Need to EOR with IMM 1
-//        // MOV r4, #0
-//        // EOR r4, r4, #1
-//        curr.addToBody(new DataProcessing(reg, reg, new Operand(OperandType.CONST, 1), Operation.EOR));
-//        break;
-//      case MATH_NEGATION:
-//        // Add RSBS instr
-//        curr.addToBody(new DataProcessing(reg, reg, new Operand(OperandType.CONST, 1), Operation.RSBS));
-//        // Add branch instruction for overflows
-//        /* should this be a string? */
-//        curr.addToBody(new Branch(Condition.BLVS, new Label("p_throw_overflow_error")));
-//
-//        // Need to add error message functions if we don't already have it
-//        /*
-//        if(!ctx.hasOverflowErrorFunction){
-//          addOverflowErrorMsg
-//          addOverflowErrorFunction
-//        }
-//        if(!ctx.hasRuntimeErrorFunction){
-//          addRuntimeErrorFunction
-//        }
-//        */
-//
-//          break;
-//      case LEN:
-//        // Just load length of array as an immediate value into the dst reg?
-////        curr.addToBody(new SingleDataTransfer(true, reg, ))
-////      curr.addToBody(new SingleDataTransfer(true, reg, [reg]))
-//        break;
-//      case ORD:
-//        // Do nothing, expr is translated
-//        break;
-//      case CHR:
-//        //Do nothing, expr is translated
-//        break;
-//    }
+    switch (unaryOperator) {
+      case LOGICAL_NOT:
+        // Need to EOR with IMM 1
+        // MOV r4, #0
+        // EOR r4, r4, #1
+        curr.addToBody(EOR(reg, reg, new ImmediateOperand(1)));
+        break;
+      case MATH_NEGATION:
+        // Add RSBS instr
+        curr.addToBody(RSBS(reg, reg, new ImmediateOperand(0)));
+        addCheckIntegerOverflowFunction(context);
+        addThrowRuntimeErrorFunction(context);
+        curr.addToBody(BLVS("p_throw_overflow_error"));
+        break;
+      case LEN:
+        curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
+        break;
+      case ORD:
+        // Do nothing, expr is translated
+        break;
+      case CHR:
+        //Do nothing, expr is translated
+        break;
+    }
   }
 
   @Override
