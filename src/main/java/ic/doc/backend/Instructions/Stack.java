@@ -1,21 +1,25 @@
 package ic.doc.backend.Instructions;
 
 import ic.doc.backend.Instructions.operands.Operand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.frontend.semantics.SymbolTable;
 
-public class Stack extends Instruction{
+public class Stack extends Instruction {
   private final boolean pushFlag;
-  private final Operand value;
+  private final RegisterOperand value;
 
-  private Stack(boolean pushFlag, Operand value) {
+  private Stack(boolean pushFlag, RegisterOperand value) {
     this.pushFlag = pushFlag;
     this.value = value;
   }
 
-  public static Stack PUSH(Operand value){
+  public static Stack PUSH(RegisterOperand value, SymbolTable symbolTable) {
+    symbolTable.incrementOffset();
     return new Stack(true, value);
   }
 
-  public static Stack POP(Operand value){
+  public static Stack POP(RegisterOperand value, SymbolTable symbolTable) {
+    symbolTable.decrementOffset();
     return new Stack(false, value);
   }
 

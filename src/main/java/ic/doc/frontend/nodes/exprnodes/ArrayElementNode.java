@@ -30,6 +30,10 @@ public class ArrayElementNode extends ExprNode {
     this.identNode = identNode;
   }
 
+  public VariableNode getIdentNode() {
+    return identNode;
+  }
+
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
 

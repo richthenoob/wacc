@@ -1,14 +1,16 @@
 package ic.doc.frontend.nodes.statnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
+import ic.doc.backend.Instructions.Branch;
+import ic.doc.backend.Instructions.DataProcessing;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.BoolType;
-import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ConditionalBranchNode extends StatNode {
@@ -59,10 +61,48 @@ public class ConditionalBranchNode extends StatNode {
       visitor
           .getSemanticErrorList()
           .addTypeException(
-              ctx, cond.getInput(), "BOOL", cond.getType().toString(), "", "'if' condition");
+              ctx, cond.getInput(), "BOOL", cond.getType().toString(), "",
+              "'if' condition");
     }
   }
 
   @Override
-  public void translate(Context context) {}
+  public void translate(Context context) {
+    String falseBodyName = context.getNextAnonymousLabel();
+    String nextBodyName = context.getNextAnonymousLabel();
+    Label<Instruction> falseBodyLabel = new Label<>(falseBodyName);
+    Label<Instruction> nextBodyLabel = new Label<>(nextBodyName);
+
+    /* Evaluate boolean condition. */
+    cond.translate(context);
+    RegisterOperand register = cond.getRegister();
+    context.freeRegister(register.getValue());
+
+    /* Test boolean condition. */
+    context.addToCurrentLabel(DataProcessing.CMP(register, new ImmediateOperand(true,0)));
+    context.addToCurrentLabel(Branch.BEQ(falseBodyName));
+
+    /* Make sure that the symbol tables were well formed in front end.*/
+    assert (trueBodySymbolTable.getParentSymbolTable()
+        .equals(context.getCurrentSymbolTable()));
+    assert (falseBodySymbolTable.getParentSymbolTable()
+        .equals(context.getCurrentSymbolTable()));
+
+    /* Evaluate true body. */
+    context.setScope(trueBodySymbolTable);
+    trueBody.translate(context);
+    context.restoreScope();
+    context.addToCurrentLabel(Branch.B(nextBodyName));
+
+    /* Evaluate false body. */
+    context.setCurrentLabel(falseBodyLabel);
+    context.getInstructionLabels().add(falseBodyLabel);
+    context.setScope(falseBodySymbolTable);
+    falseBody.translate(context);
+    context.restoreScope();
+
+    /* Set up next body label. */
+    context.setCurrentLabel(nextBodyLabel);
+    context.getInstructionLabels().add(nextBodyLabel);
+  }
 }

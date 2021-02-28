@@ -3,7 +3,7 @@ package ic.doc.frontend.nodes.exprnodes.Literals;
 import ic.doc.backend.Context;
 import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.PostIndexedAddressOperand;
+import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
@@ -69,33 +69,37 @@ public class ArrayLiteralNode extends LiteralNode {
 
   @Override
   public void translate(Context context) {
-    int sizePerValue;
-    if (values.get(0).getType() instanceof BoolType
-        || values.get(0).getType() instanceof CharType) {
-      sizePerValue = 1;
-    } else {
-      sizePerValue = 4;
-    }
-    int bytesToAllocate = values.size() * sizePerValue + 4;
-    List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
-    instructionLabels
-        .get(instructionLabels.size() - 1)
+    Label<Instruction> label = context.getCurrentLabel();
+    int bytesToAllocate = values.size() * 4 + 4;
+    int firstRegisterNum = context.getFreeRegister();
+    setRegister(new RegisterOperand(firstRegisterNum));
+
+    label
         .addToBody(
             SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(bytesToAllocate)))
         .addToBody(Branch.BL("malloc"))
-        .addToBody(new Move(new RegisterOperand(4), new RegisterOperand(0), Condition.B));
+        .addToBody(new Move(new RegisterOperand(firstRegisterNum), new RegisterOperand(0), Condition.B));
     int offset = 4;
+
     for (ExprNode value : values) {
       value.translate(context);
-      instructionLabels
-          .get(instructionLabels.size() - 1)
-          .addToBody(
-              SingleDataTransfer.STR(
-                  value.getRegister(),
-                  PostIndexedAddressOperand.PostIndexedAddressFixedOffset(
-                      new RegisterOperand(4), new ImmediateOperand(offset))));
-      offset +=sizePerValue;
+      label.addToBody(
+          SingleDataTransfer.STR(
+              value.getRegister(),
+              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+                  new RegisterOperand(firstRegisterNum), new ImmediateOperand<>(true,offset))));
+      offset += 4;
+      context.freeRegister(value.getRegister().getValue());
     }
+    int secondRegisterNum = context.getFreeRegister();
+    label
+        .addToBody(
+            SingleDataTransfer.LDR(
+                new RegisterOperand(secondRegisterNum), new ImmediateOperand<>(values.size())))
+        .addToBody(
+            SingleDataTransfer.STR(
+                new RegisterOperand(secondRegisterNum),
+                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(new RegisterOperand(firstRegisterNum))));
   }
 
   @Override
