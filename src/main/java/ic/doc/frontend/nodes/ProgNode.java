@@ -2,6 +2,7 @@ package ic.doc.frontend.nodes;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.LoadLiterals;
 import ic.doc.backend.Instructions.SingleDataTransfer;
 import ic.doc.backend.Instructions.Stack;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
@@ -54,8 +55,9 @@ public class ProgNode extends Node {
     context.restoreScope();
     context.addToCurrentLabel(
         SingleDataTransfer.LDR(RegisterOperand.R0, new
-            ImmediateOperand(0)));
+            ImmediateOperand<>(0)));
     context.addToCurrentLabel(
         Stack.POP(RegisterOperand.PC, context.getCurrentSymbolTable()));
+    context.addToCurrentLabel(new LoadLiterals());
   }
 }
