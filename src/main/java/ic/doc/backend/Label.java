@@ -29,4 +29,21 @@ public class Label<E> {
   public String toString() {
     return functionLabel;
   }
+
+  @Override
+  public boolean equals(Object o){
+    if(o == this){
+      return true;
+    }
+    if(!(o instanceof Label)){
+      return false;
+    }
+    Label otherLabel = (Label) o;
+    return otherLabel.getFunctionLabel().equals(getFunctionLabel());
+  }
+
+  @Override
+  public int hashCode(){
+    return functionLabel.hashCode();
+  }
 }

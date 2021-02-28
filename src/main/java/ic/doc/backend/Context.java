@@ -7,10 +7,8 @@ import ic.doc.backend.Instructions.Stack;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.frontend.semantics.SymbolTable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 
 public class Context {
 
@@ -23,8 +21,11 @@ public class Context {
 
   private Label<Instruction> currentLabel;
   private final List<Label<Instruction>> instructionLabels = new ArrayList<>();
+
   private final List<Label<Data>> dataLabels = new ArrayList<>();
-  private final Set<Label<Instruction>> pfunctions = new HashSet<>();
+  private final Set<Label<Instruction>> endFunctions = new HashSet<>();
+
+  private final Map<String, String> dataPlaceHolders = new HashMap<>();
   private SymbolTable currentSymbolTable;
 
   public void addToCurrentLabel(Instruction instruction) {
@@ -82,13 +83,15 @@ public class Context {
     this.currentLabel = currentLabel;
   }
 
+  public Set<Label<Instruction>> getEndFunctions() {
+    return endFunctions;
+  }
+
   public SymbolTable getCurrentSymbolTable() {
     return currentSymbolTable;
   }
 
-  public Set<Label<Instruction>> getPfunctions() {
-    return pfunctions;
-  }
+  public Map<String, String> getDataPlaceHolders() { return dataPlaceHolders; }
 
   public String getNextAnonymousLabel() {
     int counterToReturn = labelCounter;
