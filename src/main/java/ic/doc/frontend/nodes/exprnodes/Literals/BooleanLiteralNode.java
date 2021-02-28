@@ -32,7 +32,7 @@ public class BooleanLiteralNode extends LiteralNode {
     int bool = value ? 1 : 0;
     ImmediateOperand operand = new ImmediateOperand(bool);
     RegisterOperand register = new RegisterOperand(context.getFreeRegister());
-    context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
+    context.addToCurrentLabel(SingleDataTransfer.LDR(register, operand));
     setRegister(register);
   }
 

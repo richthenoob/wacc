@@ -127,7 +127,7 @@ public class AssignmentNode extends StatNode {
     ImmediateOperand offset;
     if (isDeclaration) { // if declaring, need to move stack pointer
       offset = new ImmediateOperand(true,0);
-      context.addToLastInstructionLabel(
+      context.addToCurrentLabel(
           DataProcessing.SUB(
               RegisterOperand.SP(),
               RegisterOperand.SP(),
@@ -141,7 +141,7 @@ public class AssignmentNode extends StatNode {
       offset = new ImmediateOperand(id.getOffsetStack());
     }
     rhs.translate(context);
-    context.addToLastInstructionLabel(
+    context.addToCurrentLabel(
         SingleDataTransfer.STR(
             rhs.getRegister(),
             PreIndexedAddressOperand.PreIndexedAddressFixedOffset(

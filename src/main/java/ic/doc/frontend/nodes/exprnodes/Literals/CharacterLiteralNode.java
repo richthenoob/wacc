@@ -46,7 +46,7 @@ public class CharacterLiteralNode extends LiteralNode {
     LabelAddressOperand operand =
         new LabelAddressOperand(
             dataLabels.get(dataLabels.size() - 1).getFunctionLabel()); // dummy value for value
-    context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
+    context.addToCurrentLabel(SingleDataTransfer.LDR(register, operand));
   }
 
   @Override

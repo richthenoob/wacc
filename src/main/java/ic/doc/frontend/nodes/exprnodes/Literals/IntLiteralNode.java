@@ -46,7 +46,7 @@ public class IntLiteralNode extends LiteralNode {
   public void translate(Context context) {
     ImmediateOperand operand = new ImmediateOperand(value.intValue());
     RegisterOperand register = new RegisterOperand(context.getFreeRegister());
-    context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
+    context.addToCurrentLabel(SingleDataTransfer.LDR(register, operand));
     setRegister(register);
   }
 
