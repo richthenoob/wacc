@@ -20,7 +20,8 @@ public class StringLiteralNode extends LiteralNode {
   private final String value;
 
   public StringLiteralNode(String value) {
-    this.value = value;
+    /* Remove quotation marks from any input string. */
+    this.value = value.replace("\"", "");
     setType(new StringType());
   }
 
@@ -44,7 +45,13 @@ public class StringLiteralNode extends LiteralNode {
     setRegister(register);
     Label<Data> label = context.getSpecificLabel(value);
     if (label == null) {
-      ImmediateOperand<String> operand = new ImmediateOperand<>(value);
+      String nextDataLabelString = context.getNextDataLabelString();
+      Label<Data> dataLabel = new Label<>(nextDataLabelString);
+      Data stringData = new Data(value.length(), value);
+      dataLabel.addToBody(stringData);
+      context.addToDataLabels(dataLabel);
+
+      LabelAddressOperand operand = new LabelAddressOperand(nextDataLabelString);
       context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
     } else {
       LabelAddressOperand operand = new LabelAddressOperand(label.getFunctionLabel());

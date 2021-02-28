@@ -145,10 +145,8 @@ public class AssignmentNode extends StatNode {
           length = literalNode.getValue().length();
           str = literalNode.getValue();
         }
-        List<Label<Data>> dataLabels = context.getDataLabels();
-        int newIndex = dataLabels.size();
-        Label<Data> newLabel = new Label<>("msg_" + newIndex);
-        dataLabels.add(newIndex, newLabel);
+        Label<Data> newLabel = new Label<>(context.getNextDataLabelString());
+        context.addToDataLabels(newLabel);
         newLabel.addToBody(new Data(length, str));
       } // other types
       else {

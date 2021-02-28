@@ -54,11 +54,11 @@ public class PredefinedFunctions {
     if (placeholders.containsKey(data)) {
       return placeholders.get(data);
     }
-    List<Label<Data>> dataLabels = ctx.getDataLabels();
-    String msgLabelStr = "msg_" + dataLabels.size();
+
+    String msgLabelStr = ctx.getNextDataLabelString();
     Label<Data> msgLabel = new Label<>(msgLabelStr);
     msgLabel.addToBody(new Data(data.length(), data));
-    dataLabels.add(msgLabel);
+    ctx.addToDataLabels(msgLabel);
     placeholders.put(data, msgLabelStr);
     return msgLabelStr;
   }
