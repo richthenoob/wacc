@@ -26,7 +26,6 @@ public class WaccBackend {
       outputString.append(dataLabel.toString());
       outputString.append(":\n");
       for (Data data : dataLabel.getBody()) {
-        outputString.append('\t');
         outputString.append(data.toAssembly());
         outputString.append('\n');
       }
@@ -39,6 +38,16 @@ public class WaccBackend {
       outputString.append(instructionLabel.toString());
       outputString.append(":\n");
       for (Instruction instruction : instructionLabel.getBody()) {
+        outputString.append('\t');
+        outputString.append(instruction.toAssembly());
+        outputString.append('\n');
+      }
+    }
+
+    for (Label<Instruction> endLabel: context.getEndFunctions()) {
+      outputString.append(endLabel.toString());
+      outputString.append(":\n");
+      for (Instruction instruction : endLabel.getBody()) {
         outputString.append('\t');
         outputString.append(instruction.toAssembly());
         outputString.append('\n');

@@ -66,6 +66,14 @@ public class DataProcessing extends Instruction {
     return new DataProcessing(dst, lhs, rhs, Operation.ORR);
   }
 
+  public static DataProcessing RSBS(Operand dst, Operand lhs, Operand rhs){
+    return new DataProcessing(dst, lhs, rhs, Operation.RSBS);
+  }
+
+  public static DataProcessing EOR(Operand dst, Operand lhs, Operand rhs) {
+    return new DataProcessing(dst, lhs, rhs, Operation.EOR);
+  }
+
   @Override
   public String toAssembly() {
     //TODO: tostring for operation enum?
