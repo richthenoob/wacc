@@ -1,14 +1,15 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Label;
+import ic.doc.backend.Instructions.SingleDataTransfer;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.frontend.identifiers.Identifier;
+import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ErrorType;
-import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class VariableNode extends ExprNode {
@@ -43,5 +44,15 @@ public class VariableNode extends ExprNode {
   }
 
   @Override
-  public void translate(Context context) {}
+  public void translate(Context context) {
+    SymbolKey key = new SymbolKey(getName(), false);
+    RegisterOperand register = new RegisterOperand(context.getFreeRegister());
+    setRegister(register);
+    VariableIdentifier id = (VariableIdentifier) context.getCurrentSymbolTable().lookupAll(key);
+    context.addToCurrentLabel(
+        SingleDataTransfer.LDR(
+            register,
+            PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+                RegisterOperand.SP(), new ImmediateOperand<>(true,id.getOffsetStack()))));
+  }
 }

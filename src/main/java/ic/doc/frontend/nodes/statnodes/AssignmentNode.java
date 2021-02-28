@@ -1,13 +1,18 @@
 package ic.doc.frontend.nodes.statnodes;
 
 import ic.doc.backend.Context;
+import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.DataProcessing;
 import ic.doc.backend.Instructions.SingleDataTransfer;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.Label;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
+import ic.doc.frontend.nodes.exprnodes.Literals.CharacterLiteralNode;
+import ic.doc.frontend.nodes.exprnodes.Literals.LiteralNode;
+import ic.doc.frontend.nodes.exprnodes.Literals.StringLiteralNode;
 import ic.doc.frontend.nodes.exprnodes.VariableNode;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolTable;
@@ -15,6 +20,8 @@ import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.*;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.List;
 
 public class AssignmentNode extends StatNode {
 
@@ -126,13 +133,31 @@ public class AssignmentNode extends StatNode {
   public void translate(Context context) {
     ImmediateOperand offset;
     if (isDeclaration) { // if declaring, need to move stack pointer
-      offset = new ImmediateOperand(true,0);
-      context.addToCurrentLabel(
-          DataProcessing.SUB(
-              RegisterOperand.SP(),
-              RegisterOperand.SP(),
-              new ImmediateOperand(true,4)));
-      symbolTable.incrementOffset();
+      if (lhs.getType() instanceof CharType || lhs.getType() instanceof StringType) {
+        offset = null;
+        String str;
+        int length;
+        if (lhs.getType() instanceof CharType) {
+          CharacterLiteralNode literalNode = (CharacterLiteralNode) lhs;
+          length = 1;
+          str = literalNode.getValue().toString();
+        } else {
+          StringLiteralNode literalNode = (StringLiteralNode) lhs;
+          length = literalNode.getValue().length();
+          str = literalNode.getValue();
+        }
+        List<Label<Data>> dataLabels = context.getDataLabels();
+        int newIndex = dataLabels.size();
+        Label<Data> newLabel = new Label<>("msg_" + newIndex);
+        dataLabels.add(newIndex, newLabel);
+        newLabel.addToBody(new Data(length, str));
+      } else {  // other types
+        offset = null;
+        context.addToCurrentLabel(
+            DataProcessing.SUB(
+                RegisterOperand.SP(), RegisterOperand.SP(), new ImmediateOperand(true, 4)));
+        symbolTable.incrementOffset();
+      }
     } else { // if not declaration, find offset of previous declaration
       VariableNode lhsVar = (VariableNode) lhs;
       String name = lhsVar.getName();
@@ -144,7 +169,6 @@ public class AssignmentNode extends StatNode {
     context.addToCurrentLabel(
         SingleDataTransfer.STR(
             rhs.getRegister(),
-            PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                RegisterOperand.SP(), offset)));
+            PreIndexedAddressOperand.PreIndexedAddressFixedOffset(RegisterOperand.SP(), offset)));
   }
 }

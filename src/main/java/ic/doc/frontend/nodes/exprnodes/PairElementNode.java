@@ -71,5 +71,6 @@ public class PairElementNode extends ExprNode {
   @Override
   public void translate(Context context) {
     expr.translate(context);
+    setRegister(expr.getRegister());
   }
 }

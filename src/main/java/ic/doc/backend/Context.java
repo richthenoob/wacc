@@ -61,6 +61,15 @@ public class Context {
     return instructionLabels;
   }
 
+  public Label<Data> getSpecificLabel(String content){
+    for(Label<Data> data : dataLabels){
+      if(data.getFunctionLabel().equals(content)){
+        return data;
+      }
+    }
+    return null;
+  }
+
   public List<Label<Data>> getDataLabels() {
     return dataLabels;
   }
