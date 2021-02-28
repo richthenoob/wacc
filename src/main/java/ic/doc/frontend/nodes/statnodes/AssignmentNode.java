@@ -58,8 +58,6 @@ public class AssignmentNode extends StatNode {
       if (symbolTable.lookup(key) != null) {
         visitor.getSemanticErrorList().addScopeException(ctx, true, "Variable", name);
       } else {
-        symbolTable.incrementOffset();
-        symbolTable.incrementTableSizeInBytes();
         symbolTable.add(key, new VariableIdentifier(lhs.getType()));
       }
     }
@@ -156,6 +154,8 @@ public class AssignmentNode extends StatNode {
         newLabel.addToBody(new Data(length, str));
       } // other types
       else{
+        symbolTable.incrementOffset();
+        symbolTable.incrementTableSizeInBytes();
         id.setActivated();
       }
       offset = null;
