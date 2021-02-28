@@ -69,14 +69,14 @@ public class PredefinedFunctions {
     instrLabel.addToBody(BL("fflush"));
     instrLabel.addToBody(POP(RegisterOperand.PC));
   }
+
   public static void addPrintStringFunction(Context ctx){
-    Set<String> pFunctions = ctx.getPfunctions();
-    if(pFunctions.contains(PRINT_STR_FUNC)){
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> printStringLabel = new Label(PRINT_STR_FUNC);
+    if(endFunctions.contains(printStringLabel)){
       return;
     }
-    pFunctions.add(PRINT_STR_FUNC);
-    List<Label<Instruction>> instrLabels = ctx.getInstructionLabels();
-    Label<Instruction> printStringLabel = new Label(PRINT_STR_FUNC);
+
     printStringLabel.addToBody(PUSH(RegisterOperand.LR));
     // Operand.R0 needs to be [Operand.R0]
     printStringLabel.addToBody(LDR(RegisterOperand.R1, PreIndexedAddressZeroOffset(RegisterOperand.R0)));
@@ -87,17 +87,16 @@ public class PredefinedFunctions {
     printStringLabel.addToBody(LDR(RegisterOperand.R0, new LabelAddressOperand(msgLabelStr)));
 
     addCommonPrintInstructions(printStringLabel);
-    instrLabels.add(printStringLabel);
+    endFunctions.add(printStringLabel);
   }
 
   public static void addPrintBoolFunction(Context ctx) {
-    Set<String> pFunctions = ctx.getPfunctions();
-    if(pFunctions.contains(PRINT_INT_FUNC)){
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> printBoolLabel = new Label(PRINT_BOOL_FUNC);
+    if(endFunctions.contains(printBoolLabel)){
       return;
     }
-    pFunctions.add(PRINT_INT_FUNC);
-    List<Label<Instruction>> instrLabels = ctx.getInstructionLabels();
-    Label<Instruction> printBoolLabel = new Label(PRINT_BOOL_FUNC);
+
     printBoolLabel.addToBody(PUSH(RegisterOperand.LR));
     printBoolLabel.addToBody(CMP(RegisterOperand.R0, new ImmediateOperand(0)));
     /* TRUE */
@@ -110,18 +109,16 @@ public class PredefinedFunctions {
 
     addCommonPrintInstructions(printBoolLabel);
 
-    instrLabels.add(printBoolLabel);
+    endFunctions.add(printBoolLabel);
   }
 
   public static void addPrintIntFunction(Context ctx) {
-    Set<String> pFunctions = ctx.getPfunctions();
-    if(pFunctions.contains(PRINT_INT_FUNC)){
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> printIntLabel = new Label(PRINT_INT_FUNC);
+    if(endFunctions.contains(printIntLabel)){
       return;
     }
-    pFunctions.add(PRINT_INT_FUNC);
 
-    List<Label<Instruction>> instrLabels = ctx.getInstructionLabels();
-    Label<Instruction> printIntLabel = new Label(PRINT_INT_FUNC);
     printIntLabel.addToBody(PUSH(RegisterOperand.LR));
     printIntLabel.addToBody(MOV(RegisterOperand.R1, RegisterOperand.R0));
     /* INT MSG */
@@ -130,18 +127,16 @@ public class PredefinedFunctions {
 
     addCommonPrintInstructions(printIntLabel);
 
-    instrLabels.add(printIntLabel);
+    endFunctions.add(printIntLabel);
   }
 
   public static void addPrintLnFunction(Context ctx){
-    Set<String> pFunctions = ctx.getPfunctions();
-    if(pFunctions.contains(PRINT_LN_FUNC)){
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> printLnLabel = new Label(PRINT_LN_FUNC);
+    if(endFunctions.contains(printLnLabel)){
       return;
     }
-    pFunctions.add(PRINT_LN_FUNC);
 
-    List<Label<Instruction>> instrLabels = ctx.getInstructionLabels();
-    Label<Instruction> printLnLabel = new Label(PRINT_LN_FUNC);
     printLnLabel.addToBody(PUSH(RegisterOperand.LR));
     /* PRINTLN MSG */
     String newLnLabelStr = getDataLabel(ctx, NEWLN_PLACEHOLDER);
@@ -154,18 +149,15 @@ public class PredefinedFunctions {
     printLnLabel.addToBody(BL("fflush"));
     printLnLabel.addToBody(POP(RegisterOperand.PC));
 
-    instrLabels.add(printLnLabel);
+    endFunctions.add(printLnLabel);
   }
 
   public static void addPrintReferenceFunction(Context ctx) {
-    Set<String> pFunctions = ctx.getPfunctions();
-    if(pFunctions.contains(PRINT_REFERENCE_FUNC)){
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> printReferenceLabel = new Label(PRINT_REFERENCE_FUNC);
+    if(endFunctions.contains(printReferenceLabel)){
       return;
     }
-    pFunctions.add(PRINT_REFERENCE_FUNC);
-
-    List<Label<Instruction>> instrLabels = ctx.getInstructionLabels();
-    Label<Instruction> printReferenceLabel = new Label(PRINT_REFERENCE_FUNC);
 
     printReferenceLabel.addToBody(PUSH(RegisterOperand.LR));
     printReferenceLabel.addToBody(MOV(RegisterOperand.R1, RegisterOperand.R0));
@@ -179,19 +171,16 @@ public class PredefinedFunctions {
 
     addCommonPrintInstructions(printReferenceLabel);
 
-    instrLabels.add(printReferenceLabel);
-
+    endFunctions.add(printReferenceLabel);
   }
 
   public static void addCheckNullPointerFunction(Context ctx) {
-    Set<String> pFunctions = ctx.getPfunctions();
-    if(pFunctions.contains(CHECK_NULL_POINTER_FUNC)){
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> checkNullPointerLabel = new Label(CHECK_NULL_POINTER_FUNC);
+    if(endFunctions.contains(checkNullPointerLabel)){
       return;
     }
-    pFunctions.add(CHECK_NULL_POINTER_FUNC);
 
-    List<Label<Instruction>> instrLabels = ctx.getInstructionLabels();
-    Label<Instruction> checkNullPointerLabel = new Label(CHECK_NULL_POINTER_FUNC);
     checkNullPointerLabel.addToBody(PUSH(RegisterOperand.LR));
     checkNullPointerLabel.addToBody(CMP(RegisterOperand.R0, new ImmediateOperand(0)));
     /* Declare nullReferenceErrorMsg in Data */
@@ -203,35 +192,30 @@ public class PredefinedFunctions {
 
     checkNullPointerLabel.addToBody(BLE(THROW_RUNTIME_ERROR_FUNC));
     checkNullPointerLabel.addToBody(POP(RegisterOperand.PC));
-    instrLabels.add(checkNullPointerLabel);
+
+    endFunctions.add(checkNullPointerLabel);
   }
 
   public static void addThrowRuntimeErrorFunction(Context ctx) {
-    Set<String> pFunctions = ctx.getPfunctions();
-    if(pFunctions.contains(THROW_RUNTIME_ERROR_FUNC)){
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> throwRuntimeErrorLabel = new Label(THROW_RUNTIME_ERROR_FUNC);
+    if(endFunctions.contains(throwRuntimeErrorLabel)){
       return;
     }
-    pFunctions.add(THROW_RUNTIME_ERROR_FUNC);
-
-    List<Label<Instruction>> instrLabels = ctx.getInstructionLabels();
-    Label<Instruction> throwRuntimeErrorLabel = new Label(THROW_RUNTIME_ERROR_FUNC);
 
     throwRuntimeErrorLabel.addToBody(BL(PRINT_STR_FUNC));
     throwRuntimeErrorLabel.addToBody(MOV(RegisterOperand.R0, new ImmediateOperand(RUNTIME_ERROR_EXIT_CODE)));
     throwRuntimeErrorLabel.addToBody(BL("exit"));
 
-    instrLabels.add(throwRuntimeErrorLabel);
+    endFunctions.add(throwRuntimeErrorLabel);
   }
 
   public static void addCheckArrayBoundsFunction(Context ctx) {
-    Set<String> pFunctions = ctx.getPfunctions();
-    if(pFunctions.contains(CHECK_ARRAY_BOUNDS_FUNC)){
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> checkArrayBoundsLabel = new Label(CHECK_ARRAY_BOUNDS_FUNC);
+    if(endFunctions.contains(checkArrayBoundsLabel)){
       return;
     }
-    pFunctions.add(CHECK_ARRAY_BOUNDS_FUNC);
-
-    List<Label<Instruction>> instrLabels = ctx.getInstructionLabels();
-    Label<Instruction> checkArrayBoundsLabel = new Label(CHECK_ARRAY_BOUNDS_FUNC);
 
     checkArrayBoundsLabel.addToBody(PUSH(RegisterOperand.LR));
     checkArrayBoundsLabel.addToBody(CMP(RegisterOperand.R0, new ImmediateOperand(0)));
@@ -252,18 +236,16 @@ public class PredefinedFunctions {
     checkArrayBoundsLabel.addToBody(BLCS(THROW_RUNTIME_ERROR_FUNC));
     checkArrayBoundsLabel.addToBody(POP(RegisterOperand.PC));
 
-    instrLabels.add(checkArrayBoundsLabel);
+    endFunctions.add(checkArrayBoundsLabel);
   }
 
   public static void addCheckDivideByZeroFunction(Context ctx) {
-    Set<String> pFunctions = ctx.getPfunctions();
-    if(pFunctions.contains(CHECK_DIVIDE_BY_ZERO_FUNC)){
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> checkDivideByZeroLabel = new Label(CHECK_DIVIDE_BY_ZERO_FUNC);
+    if(endFunctions.contains(checkDivideByZeroLabel)){
       return;
     }
-    pFunctions.add(CHECK_DIVIDE_BY_ZERO_FUNC);
 
-    List<Label<Instruction>> instrLabels = ctx.getInstructionLabels();
-    Label<Instruction> checkDivideByZeroLabel = new Label(CHECK_DIVIDE_BY_ZERO_FUNC);
     checkDivideByZeroLabel.addToBody(PUSH(RegisterOperand.LR));
     checkDivideByZeroLabel.addToBody(CMP(RegisterOperand.R1, new ImmediateOperand(0)));
 
@@ -274,25 +256,22 @@ public class PredefinedFunctions {
     checkDivideByZeroLabel.addToBody(BLE(THROW_RUNTIME_ERROR_FUNC));
     checkDivideByZeroLabel.addToBody(POP(RegisterOperand.PC));
 
-    instrLabels.add(checkDivideByZeroLabel);
+    endFunctions.add(checkDivideByZeroLabel);
   }
 
   public static void addCheckIntegerOverflowFunction(Context ctx) {
-    Set<String> pFunctions = ctx.getPfunctions();
-    if(pFunctions.contains(THROW_OVERFLOW_ERROR_FUNC)){
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> throwOverflowErrorFuncLabel = new Label(THROW_OVERFLOW_ERROR_FUNC);
+    if(endFunctions.contains(throwOverflowErrorFuncLabel)){
       return;
     }
-    pFunctions.add(THROW_OVERFLOW_ERROR_FUNC);
-
-    List<Label<Instruction>> instrLabels = ctx.getInstructionLabels();
-    Label<Instruction> throwOverflowErrorFuncLabel = new Label(THROW_OVERFLOW_ERROR_FUNC);
 
     /* Declare overflow error msg */
     String integerOverflowLabelStr = getDataLabel(ctx, ErrorMessage.OVERFLOW);
     throwOverflowErrorFuncLabel.addToBody(LDR(RegisterOperand.R0, new LabelAddressOperand(integerOverflowLabelStr)));
     throwOverflowErrorFuncLabel.addToBody(BL(THROW_RUNTIME_ERROR_FUNC));
 
-    instrLabels.add(throwOverflowErrorFuncLabel);
+    endFunctions.add(throwOverflowErrorFuncLabel);
   }
 
   /* Common instructions between p_free_pair and p_free_array */
@@ -310,31 +289,25 @@ public class PredefinedFunctions {
   }
 
   public static void addFreeArrayFunction(Context ctx) {
-    Set<String> pFunctions = ctx.getPfunctions();
-    if(pFunctions.contains(FREE_ARRAY_FUNC)){
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> freeArrayFuncLabel = new Label(FREE_ARRAY_FUNC);
+    if(endFunctions.contains(freeArrayFuncLabel)){
       return;
     }
-    pFunctions.add(FREE_ARRAY_FUNC);
-
-    List<Label<Instruction>> instrLabels = ctx.getInstructionLabels();
-    Label<Instruction> freeArrayFuncLabel = new Label(FREE_ARRAY_FUNC);
 
     addCommonFreeInstructions(ctx, freeArrayFuncLabel);
     freeArrayFuncLabel.addToBody(BL("free"));
     freeArrayFuncLabel.addToBody(POP(RegisterOperand.PC));
 
-    instrLabels.add(freeArrayFuncLabel);
+    endFunctions.add(freeArrayFuncLabel);
   }
 
   public static void addFreePairFunction(Context ctx) {
-    Set<String> pFunctions = ctx.getPfunctions();
-    if(pFunctions.contains(FREE_PAIR_FUNC)){
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> freePairFuncLabel = new Label(FREE_PAIR_FUNC);
+    if(endFunctions.contains(FREE_PAIR_FUNC)){
       return;
     }
-    pFunctions.add(FREE_PAIR_FUNC);
-
-    List<Label<Instruction>> instrLabels = ctx.getInstructionLabels();
-    Label<Instruction> freePairFuncLabel = new Label(FREE_PAIR_FUNC);
 
     addCommonFreeInstructions(ctx, freePairFuncLabel);
 
@@ -349,19 +322,16 @@ public class PredefinedFunctions {
     freePairFuncLabel.addToBody(BL("free"));
     freePairFuncLabel.addToBody(POP(RegisterOperand.PC));
 
-    instrLabels.add(freePairFuncLabel);
+    endFunctions.add(freePairFuncLabel);
   }
 
   /* type must be: "int" or "char". */
   public static void addReadTypeFunction(Context ctx, String type){
-    Set<String> pFunctions = ctx.getPfunctions();
-    if(pFunctions.contains(READ_TYPE_FUNC + type)){
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> readCharFuncLabel = new Label(READ_TYPE_FUNC + type);
+    if(endFunctions.contains(READ_TYPE_FUNC + type)){
       return;
     }
-    pFunctions.add(READ_TYPE_FUNC + type);
-
-    List<Label<Instruction>> instrLabels = ctx.getInstructionLabels();
-    Label<Instruction> readCharFuncLabel = new Label(READ_TYPE_FUNC + type);
 
     readCharFuncLabel.addToBody(MOV(RegisterOperand.R1, RegisterOperand.R0));
 
@@ -370,6 +340,8 @@ public class PredefinedFunctions {
     readCharFuncLabel.addToBody(ADD(RegisterOperand.R0, RegisterOperand.R0, new ImmediateOperand(4)));
     readCharFuncLabel.addToBody(BL("scanf"));
     readCharFuncLabel.addToBody(POP(RegisterOperand.PC));
+
+    endFunctions.add(readCharFuncLabel);
   }
 
 }

@@ -19,9 +19,11 @@ public class Context {
 
   private Label<Instruction> currentLabel;
   private final List<Label<Instruction>> instructionLabels = new ArrayList<>();
+//  private final List<Label<Instruction>> endFunctionLabels = new ArrayList<>();
   private final List<Label<Data>> dataLabels = new ArrayList<>();
 
-  private final Set<String> pfunctions = new HashSet<>();
+  private final Set<Label<Instruction>> endFunctions = new HashSet<>();
+//  private final Map<String, Label<Instruction>> endFunctions = new HashMap<>();
   private final Map<String, String> dataPlaceHolders = new HashMap<>();
 
   public boolean freeRegister(int register_num) {
@@ -64,8 +66,8 @@ public class Context {
     this.currentLabel = currentLabel;
   }
 
-  public Set<String> getPfunctions() {
-    return pfunctions;
+  public Set<Label<Instruction>> getEndFunctions() {
+    return endFunctions;
   }
 
   public Map<String, String> getDataPlaceHolders() { return dataPlaceHolders; }
