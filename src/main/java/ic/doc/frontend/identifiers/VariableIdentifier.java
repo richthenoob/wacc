@@ -5,6 +5,11 @@ import ic.doc.frontend.types.Type;
 public class VariableIdentifier extends Identifier {
 
   private int offsetStack;
+  private boolean activated;
+
+  public boolean isActivated() {
+    return activated;
+  }
 
   public int getOffsetStack() {
     return offsetStack;
@@ -21,6 +26,11 @@ public class VariableIdentifier extends Identifier {
   public VariableIdentifier(Type type) {
     super(type);
     offsetStack = 0;
+    activated = false;
+  }
+
+  public void setActivated() {
+    this.activated = true;
   }
 
   @Override

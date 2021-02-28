@@ -131,6 +131,10 @@ public class AssignmentNode extends StatNode {
 
   @Override
   public void translate(Context context) {
+    VariableNode lhsVar = (VariableNode) lhs;
+    String name = lhsVar.getName();
+    SymbolKey key = new SymbolKey(name, false);
+    VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
     ImmediateOperand<Integer> offset;
     if (isDeclaration) { // if declaring, need to move stack pointer
       if (lhs.getType() instanceof CharType || lhs.getType() instanceof StringType) {
@@ -151,16 +155,15 @@ public class AssignmentNode extends StatNode {
         dataLabels.add(newIndex, newLabel);
         newLabel.addToBody(new Data(length, str));
       } // other types
+      else{
+        id.setActivated();
+      }
       offset = null;
       context.addToCurrentLabel(
           DataProcessing.SUB(
               RegisterOperand.SP(), RegisterOperand.SP(), new ImmediateOperand<>(true, 4)));
 
     } else { // if not declaration, find offset of previous declaration
-      VariableNode lhsVar = (VariableNode) lhs;
-      String name = lhsVar.getName();
-      SymbolKey key = new SymbolKey(name, false);
-      VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
       offset = new ImmediateOperand<>(id.getOffsetStack());
     }
     rhs.translate(context);
