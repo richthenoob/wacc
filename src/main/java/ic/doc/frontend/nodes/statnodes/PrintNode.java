@@ -1,16 +1,13 @@
 package ic.doc.frontend.nodes.statnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.Visitor;
-import java.util.List;
 
 import ic.doc.frontend.types.*;
-import javafx.scene.chart.Chart;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import static ic.doc.backend.Instructions.Branch.BL;
@@ -45,21 +42,27 @@ public class PrintNode extends StatNode {
     curr.addToBody(MOV(RegisterOperand.R0, reg));
     Type exprType = exprNode.getType();
 
-    if(exprType instanceof StringType ||
-            (exprType instanceof ArrayType && ((ArrayType) exprType).getInternalType() instanceof CharType)){
+    if (exprType instanceof StringType ||
+        (exprType instanceof ArrayType && ((ArrayType) exprType)
+            .getInternalType() instanceof CharType)) {
       addPrintStringFunction(context);
       curr.addToBody(BL(PRINT_STR_FUNC));
-    } else if(exprType instanceof IntType){
+    } else if (exprType instanceof IntType) {
       addPrintIntFunction(context);
       curr.addToBody(BL(PRINT_INT_FUNC));
-    } else if(exprType instanceof BoolType){
+    } else if (exprType instanceof BoolType) {
       addPrintBoolFunction(context);
       curr.addToBody(BL(PRINT_BOOL_FUNC));
-    } else if(exprType instanceof CharType){
+    } else if (exprType instanceof CharType) {
       curr.addToBody(BL("putchar"));
     } else {
       addPrintReferenceFunction(context);
       curr.addToBody(BL(PRINT_REFERENCE_FUNC));
+    }
+
+    if (newLine) {
+      curr.addToBody(BL(PRINT_LN_FUNC));
+      addPrintLnFunction(context);
     }
   }
 }
