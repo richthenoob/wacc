@@ -72,6 +72,7 @@ public class ArrayLiteralNode extends LiteralNode {
     Label<Instruction> label = context.getCurrentLabel();
     int bytesToAllocate = values.size() * 4 + 4;
     int firstRegisterNum = context.getFreeRegister();
+    setRegister(new RegisterOperand(firstRegisterNum));
 
     label
         .addToBody(
@@ -86,7 +87,7 @@ public class ArrayLiteralNode extends LiteralNode {
           SingleDataTransfer.STR(
               value.getRegister(),
               PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  new RegisterOperand(firstRegisterNum), new ImmediateOperand(offset))));
+                  new RegisterOperand(firstRegisterNum), new ImmediateOperand<>(true,offset))));
       offset += 4;
       context.freeRegister(value.getRegister().getValue());
     }
@@ -94,15 +95,11 @@ public class ArrayLiteralNode extends LiteralNode {
     label
         .addToBody(
             SingleDataTransfer.LDR(
-                new RegisterOperand(secondRegisterNum), new ImmediateOperand(values.size())))
+                new RegisterOperand(secondRegisterNum), new ImmediateOperand<>(values.size())))
         .addToBody(
             SingleDataTransfer.STR(
                 new RegisterOperand(secondRegisterNum),
-                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(new RegisterOperand(firstRegisterNum))))
-        .addToBody(
-            SingleDataTransfer.STR(
-                new RegisterOperand(firstRegisterNum),
-                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(RegisterOperand.SP())));
+                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(new RegisterOperand(firstRegisterNum))));
   }
 
   @Override
