@@ -132,47 +132,13 @@ public class AssignmentNode extends StatNode {
   @Override
   public void translate(Context context) {
     ImmediateOperand<Integer> offset;
-    if (isDeclaration) { // if declaring, need to move stack pointer
-      if (lhs.getType() instanceof CharType || lhs.getType() instanceof StringType) {
-        String str;
-        int length;
-        if (lhs.getType() instanceof CharType) {
-          CharacterLiteralNode literalNode = (CharacterLiteralNode) lhs;
-          length = 1;
-          str = literalNode.getValue().toString();
-        } else {
-          StringLiteralNode literalNode = (StringLiteralNode) lhs;
-          length = literalNode.getValue().length();
-          str = literalNode.getValue();
-        }
-        List<Label<Data>> dataLabels = context.getDataLabels();
-        int newIndex = dataLabels.size();
-        Label<Data> newLabel = new Label<>("msg_" + newIndex);
-        dataLabels.add(newIndex, newLabel);
-        newLabel.addToBody(new Data(length, str));
-      } // other types
-      else {
-        VariableNode lhsVar = (VariableNode) lhs;
-        String name = lhsVar.getName();
-        SymbolKey key = new SymbolKey(name, false);
-        VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-        symbolTable.incrementOffset();
-        symbolTable.incrementTableSizeInBytes();
-        id.setActivated();
-      }
-      offset = new ImmediateOperand<>(true,0);
-      context.addToCurrentLabel(
-          DataProcessing.SUB(
-              RegisterOperand.SP(), RegisterOperand.SP(), new ImmediateOperand<>(true, 4)));
-
-    } else if (lhs instanceof ArrayElementNode) {
+    if (lhs instanceof ArrayElementNode) {
       VariableNode lhsVar = ((ArrayElementNode) lhs).getIdentNode();
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, false);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-
       int indexOffset = ((ArrayElementNode) lhs).getIndex(0);
-      offset = new ImmediateOperand<>(true,id.getOffsetStack() + indexOffset);
+      offset = new ImmediateOperand<>(true, id.getOffsetStack() + indexOffset);
     } else if (lhs instanceof PairElementNode) {
       VariableNode lhsVar = (VariableNode) ((PairElementNode) lhs).getExpr();
       String name = lhsVar.getName();
@@ -180,19 +146,43 @@ public class AssignmentNode extends StatNode {
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
       int positionOffset =
           ((PairElementNode) lhs).getPos().equals(PairElementNode.PairPosition.FST) ? 0 : 4;
-      offset = new ImmediateOperand<>(true,id.getOffsetStack() + positionOffset);
-    } else { // if not declaration, find offset of previous declaration
+      offset = new ImmediateOperand<>(true, id.getOffsetStack() + positionOffset);
+    } else {
       VariableNode lhsVar = (VariableNode) lhs;
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, false);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-      offset = new ImmediateOperand<>(true,id.getOffsetStack());
+
+      if (isDeclaration
+          || lhs.getType() instanceof StringType) { // if declaring, need to move stack pointer
+        if (lhs.getType() instanceof CharType || lhs.getType() instanceof StringType) {
+          int length = id.toString().length();
+          String str = id.toString();
+          List<Label<Data>> dataLabels = context.getDataLabels();
+          int newIndex = dataLabels.size();
+          Label<Data> newLabel = new Label<>("msg_" + newIndex);
+          dataLabels.add(newIndex, newLabel);
+          newLabel.addToBody(new Data(length, str));
+        } // other types
+        else {
+          symbolTable.incrementOffset();
+          symbolTable.incrementTableSizeInBytes();
+          id.setActivated();
+        }
+        offset = new ImmediateOperand<>(true, 0);
+        context.addToCurrentLabel(
+            DataProcessing.SUB(
+                RegisterOperand.SP(), RegisterOperand.SP(), new ImmediateOperand<>(true, 4)));
+
+      } else { // if not declaration, find offset of previous declaration
+        offset = new ImmediateOperand<>(true, id.getOffsetStack());
+      }
+      rhs.translate(context);
+      context.addToCurrentLabel(
+          SingleDataTransfer.STR(
+              rhs.getRegister(),
+              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(RegisterOperand.SP(), offset)));
+      context.freeRegister(rhs.getRegister().getValue());
     }
-    rhs.translate(context);
-    context.addToCurrentLabel(
-        SingleDataTransfer.STR(
-            rhs.getRegister(),
-            PreIndexedAddressOperand.PreIndexedAddressFixedOffset(RegisterOperand.SP(), offset)));
-    context.freeRegister(rhs.getRegister().getValue());
   }
 }
