@@ -5,6 +5,7 @@ import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Label;
 import ic.doc.frontend.identifiers.Identifier;
+import ic.doc.frontend.nodes.exprnodes.Literals.IntLiteralNode;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ArrayType;
@@ -28,6 +29,18 @@ public class ArrayElementNode extends ExprNode {
   public ArrayElementNode(List<ExprNode> exprNodes, VariableNode identNode) {
     this.exprNodes = exprNodes;
     this.identNode = identNode;
+  }
+
+  public int getDimensions() {
+    return exprNodes.size();
+  }
+
+  public int getIndex(int dimension) {
+    return ((IntLiteralNode) exprNodes.get(dimension)).getValue().intValue();
+  }
+
+  public VariableNode getIdentNode() {
+    return identNode;
   }
 
   @Override

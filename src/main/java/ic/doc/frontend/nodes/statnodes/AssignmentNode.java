@@ -9,10 +9,12 @@ import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.identifiers.VariableIdentifier;
+import ic.doc.frontend.nodes.exprnodes.ArrayElementNode;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.nodes.exprnodes.Literals.CharacterLiteralNode;
 import ic.doc.frontend.nodes.exprnodes.Literals.LiteralNode;
 import ic.doc.frontend.nodes.exprnodes.Literals.StringLiteralNode;
+import ic.doc.frontend.nodes.exprnodes.PairElementNode;
 import ic.doc.frontend.nodes.exprnodes.VariableNode;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolTable;
@@ -59,8 +61,6 @@ public class AssignmentNode extends StatNode {
         visitor.getSemanticErrorList().addScopeException(ctx, true, "Variable", name);
       } else {
         symbolTable.add(key, new VariableIdentifier(lhs.getType()));
-        symbolTable.incrementOffset();
-        symbolTable.incrementTableSizeInBytes();
       }
     }
 
@@ -131,10 +131,9 @@ public class AssignmentNode extends StatNode {
 
   @Override
   public void translate(Context context) {
-    ImmediateOperand offset;
+    ImmediateOperand<Integer> offset;
     if (isDeclaration) { // if declaring, need to move stack pointer
       if (lhs.getType() instanceof CharType || lhs.getType() instanceof StringType) {
-        offset = null;
         String str;
         int length;
         if (lhs.getType() instanceof CharType) {
@@ -151,24 +150,49 @@ public class AssignmentNode extends StatNode {
         Label<Data> newLabel = new Label<>("msg_" + newIndex);
         dataLabels.add(newIndex, newLabel);
         newLabel.addToBody(new Data(length, str));
-      } else {  // other types
-        offset = null;
-        context.addToCurrentLabel(
-            DataProcessing.SUB(
-                RegisterOperand.SP(), RegisterOperand.SP(), new ImmediateOperand(true, 4)));
+      } // other types
+      else {
+        VariableNode lhsVar = (VariableNode) lhs;
+        String name = lhsVar.getName();
+        SymbolKey key = new SymbolKey(name, false);
+        VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
         symbolTable.incrementOffset();
+        symbolTable.incrementTableSizeInBytes();
+        id.setActivated();
       }
+      offset = null;
+      context.addToCurrentLabel(
+          DataProcessing.SUB(
+              RegisterOperand.SP(), RegisterOperand.SP(), new ImmediateOperand<>(true, 4)));
+
+    } else if (lhs instanceof ArrayElementNode) {
+      VariableNode lhsVar = ((ArrayElementNode) lhs).getIdentNode();
+      String name = lhsVar.getName();
+      SymbolKey key = new SymbolKey(name, false);
+      VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
+
+      int indexOffset = ((ArrayElementNode) lhs).getIndex(0);
+      offset = new ImmediateOperand<>(id.getOffsetStack() + indexOffset);
+    } else if (lhs instanceof PairElementNode) {
+      VariableNode lhsVar = (VariableNode) ((PairElementNode) lhs).getExpr();
+      String name = lhsVar.getName();
+      SymbolKey key = new SymbolKey(name, false);
+      VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
+      int positionOffset =
+          ((PairElementNode) lhs).getPos().equals(PairElementNode.PairPosition.FST) ? 0 : 4;
+      offset = new ImmediateOperand<>(id.getOffsetStack() + positionOffset);
     } else { // if not declaration, find offset of previous declaration
       VariableNode lhsVar = (VariableNode) lhs;
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, false);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-      offset = new ImmediateOperand(id.getOffsetStack());
+      offset = new ImmediateOperand<>(id.getOffsetStack());
     }
     rhs.translate(context);
     context.addToCurrentLabel(
         SingleDataTransfer.STR(
             rhs.getRegister(),
             PreIndexedAddressOperand.PreIndexedAddressFixedOffset(RegisterOperand.SP(), offset)));
+    context.freeRegister(rhs.getRegister().getValue());
   }
 }
