@@ -154,8 +154,8 @@ public class AssignmentNode extends StatNode {
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
 
       if (isDeclaration
-          || lhs.getType() instanceof StringType) { // if declaring, need to move stack pointer
-        if (lhs.getType() instanceof CharType || lhs.getType() instanceof StringType) {
+          ) { // if declaring, need to move stack pointer
+        if (lhs.getType() instanceof CharType) {
           int length = id.toString().length();
           String str = id.toString();
           List<Label<Data>> dataLabels = context.getDataLabels();

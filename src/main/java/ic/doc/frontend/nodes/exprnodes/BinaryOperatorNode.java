@@ -221,14 +221,14 @@ public class BinaryOperatorNode extends ExprNode {
   }
 
   private void addComparisonAssembly(
-      Label curr, Operand lReg, Operand rReg, Operand dstReg,
+      Label<Instruction> curr, Operand lReg, Operand rReg, Operand dstReg,
       Condition lCond, Condition rCond) {
     // CMP
     curr.addToBody(CMP(lReg, rReg));
     // left expr
-    curr.addToBody(new Move(dstReg, new ImmediateOperand(1), lCond));
+    curr.addToBody(new Move(dstReg, new ImmediateOperand<>(true,1), lCond));
     // right expr
-    curr.addToBody(new Move(dstReg, new ImmediateOperand(0), rCond));
+    curr.addToBody(new Move(dstReg, new ImmediateOperand<>(true,0), rCond));
   }
 
   /* Given two expression nodes and a list of valid types,
