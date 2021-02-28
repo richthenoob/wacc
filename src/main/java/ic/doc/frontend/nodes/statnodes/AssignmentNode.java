@@ -160,7 +160,7 @@ public class AssignmentNode extends StatNode {
         symbolTable.incrementTableSizeInBytes();
         id.setActivated();
       }
-      offset = null;
+      offset = new ImmediateOperand<>(true,0);
       context.addToCurrentLabel(
           DataProcessing.SUB(
               RegisterOperand.SP(), RegisterOperand.SP(), new ImmediateOperand<>(true, 4)));
@@ -172,7 +172,7 @@ public class AssignmentNode extends StatNode {
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
 
       int indexOffset = ((ArrayElementNode) lhs).getIndex(0);
-      offset = new ImmediateOperand<>(id.getOffsetStack() + indexOffset);
+      offset = new ImmediateOperand<>(true,id.getOffsetStack() + indexOffset);
     } else if (lhs instanceof PairElementNode) {
       VariableNode lhsVar = (VariableNode) ((PairElementNode) lhs).getExpr();
       String name = lhsVar.getName();
@@ -180,13 +180,13 @@ public class AssignmentNode extends StatNode {
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
       int positionOffset =
           ((PairElementNode) lhs).getPos().equals(PairElementNode.PairPosition.FST) ? 0 : 4;
-      offset = new ImmediateOperand<>(id.getOffsetStack() + positionOffset);
+      offset = new ImmediateOperand<>(true,id.getOffsetStack() + positionOffset);
     } else { // if not declaration, find offset of previous declaration
       VariableNode lhsVar = (VariableNode) lhs;
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, false);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-      offset = new ImmediateOperand<>(id.getOffsetStack());
+      offset = new ImmediateOperand<>(true,id.getOffsetStack());
     }
     rhs.translate(context);
     context.addToCurrentLabel(
