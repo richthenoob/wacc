@@ -62,9 +62,9 @@ public class Context {
     return instructionLabels;
   }
 
-  public Label<Data> getSpecificLabel(String content){
-    for(Label<Data> data : dataLabels){
-      if(data.getFunctionLabel().equals(content)){
+  public Label<Data> getSpecificLabel(String content) {
+    for (Label<Data> data : dataLabels) {
+      if (data.getFunctionLabel().equals(content)) {
         return data;
       }
     }
@@ -117,7 +117,11 @@ public class Context {
       addToCurrentLabel(restoreStackPtrInstr);
     }
 
-    currentSymbolTable = getCurrentSymbolTable().getParentSymbolTable();
+    SymbolTable parentSymbolTable = getCurrentSymbolTable()
+        .getParentSymbolTable();
+    if (parentSymbolTable != null) {
+      currentSymbolTable = parentSymbolTable;
+    }
   }
 
 }

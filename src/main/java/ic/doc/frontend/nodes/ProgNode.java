@@ -51,6 +51,7 @@ public class ProgNode extends Node {
     stat.translate(context);
 
     /* Pass control back to kernel code that called it. */
+    context.restoreScope();
     context.addToCurrentLabel(
         SingleDataTransfer.LDR(RegisterOperand.R0, new
             ImmediateOperand(0)));
