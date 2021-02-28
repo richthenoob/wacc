@@ -170,7 +170,8 @@ public class AssignmentNode extends StatNode {
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, false);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-      int indexOffset = 0;
+
+      int indexOffset = ((ArrayElementNode) lhs).getIndex(0);
       offset = new ImmediateOperand<>(id.getOffsetStack() + indexOffset);
     } else if (lhs instanceof PairElementNode) {
       VariableNode lhsVar = (VariableNode) ((PairElementNode) lhs).getExpr();
