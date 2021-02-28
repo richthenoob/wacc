@@ -174,9 +174,14 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   Creates a while loop node */
   @Override
   public Node visitWhile(BasicParser.WhileContext ctx) {
-    StatNode body = (StatNode) visit(ctx.stat());
     ExprNode expr = (ExprNode) visit(ctx.expr());
-    WhileLoopNode node = new WhileLoopNode(expr, body);
+
+    SymbolTable whileBodySymbolTable = new SymbolTable(currentSymbolTable);
+    currentSymbolTable = whileBodySymbolTable;
+    StatNode body = (StatNode) visit(ctx.stat());
+    currentSymbolTable = whileBodySymbolTable.getParentSymbolTable();
+
+    WhileLoopNode node = new WhileLoopNode(expr, body, whileBodySymbolTable);
     node.check(this, ctx);
     return node;
   }

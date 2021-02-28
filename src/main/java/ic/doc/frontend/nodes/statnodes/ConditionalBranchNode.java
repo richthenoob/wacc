@@ -79,10 +79,8 @@ public class ConditionalBranchNode extends StatNode {
     context.freeRegister(register.getValue());
 
     /* Test boolean condition. */
-    Label<Instruction> currentLabel = context.getCurrentLabel();
-    currentLabel
-        .addToBody(DataProcessing.CMP(register, new ImmediateOperand(true,0)));
-    currentLabel.addToBody(Branch.BEQ(falseBodyName));
+    context.addToCurrentLabel(DataProcessing.CMP(register, new ImmediateOperand(true,0)));
+    context.addToCurrentLabel(Branch.BEQ(falseBodyName));
 
     /* Make sure that the symbol tables were well formed in front end.*/
     assert (trueBodySymbolTable.getParentSymbolTable()
@@ -94,7 +92,7 @@ public class ConditionalBranchNode extends StatNode {
     context.setScope(trueBodySymbolTable);
     trueBody.translate(context);
     context.restoreScope();
-    context.getCurrentLabel().addToBody(Branch.B(nextBodyName));
+    context.addToCurrentLabel(Branch.B(nextBodyName));
 
     /* Evaluate false body. */
     context.setCurrentLabel(falseBodyLabel);

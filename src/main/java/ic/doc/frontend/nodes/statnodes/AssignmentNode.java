@@ -153,7 +153,7 @@ public class AssignmentNode extends StatNode {
         newLabel.addToBody(new Data(length, str));
       } else {  // other types
         offset = null;
-        context.addToLastInstructionLabel(
+        context.addToCurrentLabel(
             DataProcessing.SUB(
                 RegisterOperand.SP(), RegisterOperand.SP(), new ImmediateOperand<>(true, 4)));
         symbolTable.incrementOffset();
@@ -166,7 +166,7 @@ public class AssignmentNode extends StatNode {
       offset = new ImmediateOperand<>(id.getOffsetStack());
     }
     rhs.translate(context);
-    context.addToLastInstructionLabel(
+    context.addToCurrentLabel(
         SingleDataTransfer.STR(
             rhs.getRegister(),
             PreIndexedAddressOperand.PreIndexedAddressFixedOffset(RegisterOperand.SP(), offset)));

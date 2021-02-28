@@ -27,8 +27,8 @@ public class Context {
   private final Set<Label<Instruction>> pfunctions = new HashSet<>();
   private SymbolTable currentSymbolTable;
 
-  public void addToLastInstructionLabel(Instruction instruction) {
-    instructionLabels.get(instructionLabels.size() - 1).addToBody(instruction);
+  public void addToCurrentLabel(Instruction instruction) {
+    getCurrentLabel().addToBody(instruction);
   }
 
   public boolean freeRegister(int register_num) {
@@ -111,7 +111,7 @@ public class Context {
               RegisterOperand.SP,
               new ImmediateOperand(true, tableSize));
 
-      addToLastInstructionLabel(restoreStackPtrInstr);
+      addToCurrentLabel(restoreStackPtrInstr);
     }
 
     currentSymbolTable = getCurrentSymbolTable().getParentSymbolTable();

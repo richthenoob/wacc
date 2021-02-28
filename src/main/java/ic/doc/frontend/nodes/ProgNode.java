@@ -51,10 +51,10 @@ public class ProgNode extends Node {
     stat.translate(context);
 
     /* Pass control back to kernel code that called it. */
-    context.addToLastInstructionLabel(
+    context.addToCurrentLabel(
         SingleDataTransfer.LDR(RegisterOperand.R0, new
             ImmediateOperand(0)));
-    context.addToLastInstructionLabel(
+    context.addToCurrentLabel(
         Stack.POP(RegisterOperand.PC, context.getCurrentSymbolTable()));
   }
 }

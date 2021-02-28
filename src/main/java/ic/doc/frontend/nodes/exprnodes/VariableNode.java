@@ -49,7 +49,7 @@ public class VariableNode extends ExprNode {
     RegisterOperand register = new RegisterOperand(context.getFreeRegister());
     setRegister(register);
     VariableIdentifier id = (VariableIdentifier) context.getCurrentSymbolTable().lookupAll(key);
-    context.addToLastInstructionLabel(
+    context.addToCurrentLabel(
         SingleDataTransfer.LDR(
             register,
             PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
