@@ -16,7 +16,7 @@ public class ValidSimpleFunctionTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-//  @Disabled
+  @Disabled
   @Tag("backend")
   @Tag("simple")
   @Tag("function")
