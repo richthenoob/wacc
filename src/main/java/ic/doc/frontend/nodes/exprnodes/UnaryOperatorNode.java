@@ -126,6 +126,7 @@ public class UnaryOperatorNode extends ExprNode {
   public void translate(Context context) {
     expr.translate(context);
     RegisterOperand reg = expr.getRegister();
+    setRegister(reg);
     Label<Instruction> curr = context.getCurrentLabel();
 
     switch (unaryOperator) {
@@ -149,7 +150,7 @@ public class UnaryOperatorNode extends ExprNode {
         // Do nothing, expr is translated
         break;
       case CHR:
-        //Do nothing, expr is translated
+        // Do nothing, expr is translated
         break;
     }
   }
