@@ -2,8 +2,8 @@ package ic.doc.frontend.nodes.exprnodes.Literals;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
+import ic.doc.backend.Data.StringData;
 import ic.doc.backend.Instructions.SingleDataTransfer;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.LabelAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
@@ -20,8 +20,7 @@ public class StringLiteralNode extends LiteralNode {
   private final String value;
 
   public StringLiteralNode(String value) {
-    /* Remove quotation marks from any input string. */
-    this.value = value.replace("\"", "");
+    this.value = value;
     setType(new StringType());
   }
 
@@ -43,20 +42,14 @@ public class StringLiteralNode extends LiteralNode {
   public void translate(Context context) {
     RegisterOperand register = new RegisterOperand(context.getFreeRegister());
     setRegister(register);
-    Label<Data> label = context.getSpecificLabel(value);
-    if (label == null) {
-      String nextDataLabelString = context.getNextDataLabelString();
-      Label<Data> dataLabel = new Label<>(nextDataLabelString);
-      Data stringData = new Data(value.length(), value);
-      dataLabel.addToBody(stringData);
-      context.addToDataLabels(dataLabel);
-
-      LabelAddressOperand operand = new LabelAddressOperand(nextDataLabelString);
-      context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
-    } else {
-      LabelAddressOperand operand = new LabelAddressOperand(label.getFunctionLabel());
-      context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
-    }
+    int length = value.length();
+    List<Label<Data>> dataLabels = context.getDataLabels();
+    int newIndex = dataLabels.size();
+    Label<Data> newLabel = new Label<>("msg_" + newIndex);
+    dataLabels.add(newIndex, newLabel);
+    newLabel.addToBody(new StringData(length, value));
+    LabelAddressOperand operand = new LabelAddressOperand(newLabel.getFunctionLabel());
+    context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
   }
 
   @Override

@@ -122,7 +122,7 @@ public class Context {
       DataProcessing restoreStackPtrInstr = DataProcessing
           .ADD(RegisterOperand.SP,
               RegisterOperand.SP,
-              new ImmediateOperand(true, tableSize));
+              new ImmediateOperand<>(true, tableSize));
 
       addToCurrentLabel(restoreStackPtrInstr);
     }

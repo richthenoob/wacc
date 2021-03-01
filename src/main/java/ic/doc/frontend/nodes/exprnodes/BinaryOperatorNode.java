@@ -167,7 +167,7 @@ public class BinaryOperatorNode extends ExprNode {
 //        context.getPfunctions().add(new Label(divLabel));
 
         Operand res = binaryOperator == BinaryOperators.DIV ?
-            new RegisterOperand(0) : new RegisterOperand(1);
+            RegisterOperand.R0 : RegisterOperand.R1;
         curr.addToBody(MOV(dstReg, res));
         break;
       case PLUS:
@@ -218,17 +218,18 @@ public class BinaryOperatorNode extends ExprNode {
     }
 
     setRegister(lReg);
+    context.freeRegister(rReg.getValue());
   }
 
   private void addComparisonAssembly(
-      Label curr, Operand lReg, Operand rReg, Operand dstReg,
+      Label<Instruction> curr, Operand lReg, Operand rReg, Operand dstReg,
       Condition lCond, Condition rCond) {
     // CMP
     curr.addToBody(CMP(lReg, rReg));
     // left expr
-    curr.addToBody(new Move(dstReg, new ImmediateOperand(1), lCond));
+    curr.addToBody(new Move(dstReg, new ImmediateOperand<>(true,1), lCond));
     // right expr
-    curr.addToBody(new Move(dstReg, new ImmediateOperand(0), rCond));
+    curr.addToBody(new Move(dstReg, new ImmediateOperand<>(true,0), rCond));
   }
 
   /* Given two expression nodes and a list of valid types,

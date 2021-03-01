@@ -33,7 +33,7 @@ public class PairLiteralNode extends LiteralNode {
   public void translate(Context context) {
     RegisterOperand reg = new RegisterOperand(context.getFreeRegister());
     context.addToCurrentLabel(SingleDataTransfer.LDR(reg,new ImmediateOperand(0)));
-    context.freeRegister(reg.getValue());
+    setRegister(reg);
   }
 
   @Override
