@@ -231,7 +231,6 @@ public class AssignmentNode extends StatNode {
             SingleDataTransfer.LDR(
                 indexReg,
                 new ImmediateOperand<>(
-                    true,
                     ((IntLiteralNode) arrays.get(i)).getValue().intValue()))); // Load index literal
       } else {
 
@@ -253,11 +252,12 @@ public class AssignmentNode extends StatNode {
                   RegisterOperand.SP(), new ImmediateOperand<>(true, offsetArray))));
       label.addToBody(Move.MOV(new RegisterOperand(0), indexReg));
       label.addToBody(Move.MOV(new RegisterOperand(1), arrayReg));
+      PredefinedFunctions.addCheckArrayBoundsFunction(context);
       label.addToBody(Branch.BL(PredefinedFunctions.CHECK_ARRAY_BOUNDS_FUNC));
       label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, new ImmediateOperand<>(true, 4)));
       label.addToBody(
           DataProcessing.SHIFTADD(
-              arrayReg, arrayReg, indexReg, PreIndexedAddressOperand.ShiftTypes.LSL));
+              arrayReg, arrayReg, indexReg, PreIndexedAddressOperand.ShiftTypes.LSL, new ImmediateOperand<>(true,2)));
     }
     context.freeRegister(indexReg.getValue());
     return arrayReg;

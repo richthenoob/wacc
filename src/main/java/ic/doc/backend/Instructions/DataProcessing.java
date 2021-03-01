@@ -1,5 +1,6 @@
 package ic.doc.backend.Instructions;
 
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.Operand;
 import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 
@@ -11,10 +12,7 @@ public class DataProcessing extends Instruction {
   private List<Operand> operands;
   private Operation operation;
   private PreIndexedAddressOperand.ShiftTypes shift = null;
-
-  public void setShift(PreIndexedAddressOperand.ShiftTypes shift) {
-    this.shift = shift;
-  }
+  private ImmediateOperand<Integer> multiplier = null;
 
   // CMP
   private DataProcessing(Operand operand1, Operand operand2) {
@@ -25,8 +23,7 @@ public class DataProcessing extends Instruction {
   }
 
   // SMULL
-  private DataProcessing(Operand rdLo, Operand rdHi,
-      Operand rm, Operand rs) {
+  private DataProcessing(Operand rdLo, Operand rdHi, Operand rm, Operand rs) {
     operands = new ArrayList<>();
     operands.add(rdLo); // least significant bits
     operands.add(rdHi); // most significant bits
@@ -35,8 +32,7 @@ public class DataProcessing extends Instruction {
   }
 
   // All other operations
-  private DataProcessing(Operand dst, Operand lhs,
-      Operand rhs, Operation operation) {
+  private DataProcessing(Operand dst, Operand lhs, Operand rhs, Operation operation) {
     operands = new ArrayList<>();
     operands.add(dst);
     operands.add(lhs);
@@ -48,38 +44,39 @@ public class DataProcessing extends Instruction {
     return new DataProcessing(operand1, operand2);
   }
 
-  public static DataProcessing SMULL(Operand rdLo, Operand rdHi,
-      Operand rm, Operand rs) {
+  public static DataProcessing SMULL(Operand rdLo, Operand rdHi, Operand rm, Operand rs) {
     return new DataProcessing(rdLo, rdHi, rm, rs);
   }
 
-  public static DataProcessing ADD(Operand dst, Operand lhs,
-      Operand rhs) {
+  public static DataProcessing ADD(Operand dst, Operand lhs, Operand rhs) {
     return new DataProcessing(dst, lhs, rhs, Operation.ADD);
   }
 
-  public static DataProcessing SHIFTADD(Operand dst, Operand lhs,
-                                        Operand rhs, PreIndexedAddressOperand.ShiftTypes shift) {
+  public static DataProcessing SHIFTADD(
+      Operand dst,
+      Operand lhs,
+      Operand rhs,
+      PreIndexedAddressOperand.ShiftTypes shift,
+      ImmediateOperand<Integer> multiplier) {
     DataProcessing ret = new DataProcessing(dst, lhs, rhs, Operation.ADD);
-    ret.setShift(shift);
+    ret.shift = shift;
+    ret.multiplier = multiplier;
     return ret;
-}
-  public static DataProcessing SUB(Operand dst, Operand lhs,
-      Operand rhs) {
+  }
+
+  public static DataProcessing SUB(Operand dst, Operand lhs, Operand rhs) {
     return new DataProcessing(dst, lhs, rhs, Operation.SUB);
   }
 
-  public static DataProcessing AND(Operand dst, Operand lhs,
-      Operand rhs) {
+  public static DataProcessing AND(Operand dst, Operand lhs, Operand rhs) {
     return new DataProcessing(dst, lhs, rhs, Operation.AND);
   }
 
-  public static DataProcessing ORR(Operand dst, Operand lhs,
-      Operand rhs) {
+  public static DataProcessing ORR(Operand dst, Operand lhs, Operand rhs) {
     return new DataProcessing(dst, lhs, rhs, Operation.ORR);
   }
 
-  public static DataProcessing RSBS(Operand dst, Operand lhs, Operand rhs){
+  public static DataProcessing RSBS(Operand dst, Operand lhs, Operand rhs) {
     return new DataProcessing(dst, lhs, rhs, Operation.RSBS);
   }
 
@@ -89,7 +86,7 @@ public class DataProcessing extends Instruction {
 
   @Override
   public String toAssembly() {
-    //TODO: tostring for operation enum?
+    // TODO: tostring for operation enum?
     StringBuilder assembly = new StringBuilder();
     assembly.append(operation.toString());
     assembly.append(" ");
@@ -97,11 +94,13 @@ public class DataProcessing extends Instruction {
       assembly.append(operands.get(i));
       assembly.append(", ");
     }
-    if(shift != null){
+    if (shift != null) {
       assembly.append(shift.name());
+      assembly.append(" ");
+      assembly.append(multiplier.toString());
       return assembly.toString();
     }
-    assembly.delete(assembly.length()-2, assembly.length()-1);
+    assembly.delete(assembly.length() - 2, assembly.length() - 1);
     return assembly.toString();
   }
 }
