@@ -33,8 +33,7 @@ public class AssignmentNode extends StatNode {
   private final SymbolTable symbolTable;
 
   public AssignmentNode(
-      ExprNode lhs, ExprNode rhs, boolean isDeclaration,
-      SymbolTable symbolTable) {
+      ExprNode lhs, ExprNode rhs, boolean isDeclaration, SymbolTable symbolTable) {
     this.lhs = lhs;
     this.rhs = rhs;
     this.isDeclaration = isDeclaration;
@@ -59,8 +58,7 @@ public class AssignmentNode extends StatNode {
       /* If node corresponds to declarative assignment,
       variable must not have been already defined earlier */
       if (symbolTable.lookup(key) != null) {
-        visitor.getSemanticErrorList()
-            .addScopeException(ctx, true, "Variable", name);
+        visitor.getSemanticErrorList().addScopeException(ctx, true, "Variable", name);
       } else {
         symbolTable.add(key, new VariableIdentifier(lhs.getType()));
       }
@@ -107,14 +105,14 @@ public class AssignmentNode extends StatNode {
       String suggestion =
           suggest
               ? ("Did you mean "
-              + firstApostrophe
-              + rhs.getInput()
-              + firstApostrophe
-              + " instead of "
-              + secondApostrophe
-              + rhs.getInput()
-              + secondApostrophe
-              + "?")
+                  + firstApostrophe
+                  + rhs.getInput()
+                  + firstApostrophe
+                  + " instead of "
+                  + secondApostrophe
+                  + rhs.getInput()
+                  + secondApostrophe
+                  + "?")
               : "";
 
       /* Prints out error message with suggestions
@@ -143,15 +141,19 @@ public class AssignmentNode extends StatNode {
 
     rhs.translate(context);
 
-    if (offset == 0) {
-      storeInstr = SingleDataTransfer.STR(rhs.getRegister(),
-          PreIndexedAddressOperand
-              .PreIndexedAddressZeroOffset(RegisterOperand.SP()));
+    if (lhs.getType().getVarSize() == 1) {
+      storeInstr =
+          SingleDataTransfer.STR(
+              "B",
+              rhs.getRegister(),
+              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+                  RegisterOperand.SP(), new ImmediateOperand<>(offset)));
     } else {
-      storeInstr = SingleDataTransfer.STR(rhs.getRegister(),
-          PreIndexedAddressOperand
-              .PreIndexedAddressFixedOffset(RegisterOperand.SP(),
-                  new ImmediateOperand<>(offset)));
+      storeInstr =
+          SingleDataTransfer.STR(
+              rhs.getRegister(),
+              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+                  RegisterOperand.SP(), new ImmediateOperand<>(offset)));
     }
 
     context.addToCurrentLabel(storeInstr);
@@ -197,15 +199,15 @@ public class AssignmentNode extends StatNode {
      * space for our new variable. */
     context.addToCurrentLabel(
         DataProcessing.SUB(
-            RegisterOperand.SP(), RegisterOperand.SP(),
+            RegisterOperand.SP(),
+            RegisterOperand.SP(),
             new ImmediateOperand<>(true, sizeOfVarOnStack)));
 
     return 0;
   }
 
   /* e.g. i = 5 where i has already been pre-defined */
-  private int translateLHSNonDeclaration(
-      Context context) {
+  private int translateLHSNonDeclaration(Context context) {
 
     /* arr[0] = 5 where arr is a predefined int array. */
     // TODO: is this right? what if it is arr[5]
@@ -227,8 +229,7 @@ public class AssignmentNode extends StatNode {
       SymbolKey key = new SymbolKey(name, false);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
       int positionOffset =
-          ((PairElementNode) lhs).getPos()
-              .equals(PairElementNode.PairPosition.FST) ? 0 : 4;
+          ((PairElementNode) lhs).getPos().equals(PairElementNode.PairPosition.FST) ? 0 : 4;
       return id.getOffsetStack() + positionOffset;
     }
 
