@@ -12,15 +12,16 @@ public class VariableIdentifier extends Identifier {
   }
 
   public int getOffsetStack() {
+    //todo; account for scopes?
     return offsetStack;
   }
 
-  public void incrementOffsetStack() {
-    this.offsetStack += 4;
+  public void incrementOffsetStack(int offset) {
+    this.offsetStack += offset;
   }
 
-  public void decrementOffsetStack() {
-    this.offsetStack -= 4;
+  public void decrementOffsetStack(int offset) {
+    this.offsetStack -= offset;
   }
 
   public VariableIdentifier(Type type) {

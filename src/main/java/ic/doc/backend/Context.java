@@ -51,8 +51,9 @@ public class Context {
         return i + OFFSET; // since register 2 corresponds to array index 0
       }
     }
+    // TODO: maybe pass in an argument to determine how much to push?
     currentLabel.addToBody(
-        Stack.PUSH(
+        Stack.PUSH_FOUR(
             new RegisterOperand(MAXINDEX + OFFSET),
             currentSymbolTable)); // Push to stack and return r10
     return MAXINDEX + OFFSET;

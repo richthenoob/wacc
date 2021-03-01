@@ -4,10 +4,10 @@ import ic.doc.backend.Instructions.operands.Operand;
 import ic.doc.frontend.types.*;
 
 public class SingleDataTransfer extends Instruction {
-  private boolean loadFlag;
-  private String cond = ""; // for conditional returns
-  private Operand dst;
-  private Operand expr;
+  private final boolean loadFlag;
+  private final String cond; // for conditional returns
+  private final Operand dst;
+  private final Operand expr;
 
   private SingleDataTransfer(String cond, boolean loadFlag, Operand dst, Operand expr) {
     this.cond = cond;
@@ -29,7 +29,7 @@ public class SingleDataTransfer extends Instruction {
   }
 
   public static SingleDataTransfer STR(String cond, Operand dst, Operand expr) {
-    return new SingleDataTransfer(cond, true, dst, expr);
+    return new SingleDataTransfer(cond, false, dst, expr);
   }
 
   @Override

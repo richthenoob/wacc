@@ -22,22 +22,22 @@ public class SymbolTable {
     return tableSizeInBytes;
   }
 
-  public void incrementTableSizeInBytes() {
-    tableSizeInBytes += 4;
+  public void incrementTableSizeInBytes(int sizeOfVarOnStack) {
+    tableSizeInBytes += sizeOfVarOnStack;
   }
 
-  public void incrementOffset() {
+  public void incrementOffset(int offset) {
     for (Identifier obj : dictionary.values()) {
       if (obj instanceof VariableIdentifier && ((VariableIdentifier) obj).isActivated()) {
-        ((VariableIdentifier) obj).incrementOffsetStack();
+        ((VariableIdentifier) obj).incrementOffsetStack(offset);
       }
     }
   }
 
-  public void decrementOffset() {
+  public void decrementOffset(int offset) {
     for (Identifier obj : dictionary.values()) {
       if (obj instanceof VariableIdentifier && ((VariableIdentifier) obj).isActivated()) {
-        ((VariableIdentifier) obj).decrementOffsetStack();
+        ((VariableIdentifier) obj).decrementOffsetStack(offset);
       }
     }
   }
