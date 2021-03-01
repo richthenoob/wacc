@@ -3,6 +3,7 @@ package ic.doc.frontend.semantics;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -40,6 +41,17 @@ public class SymbolTable {
         ((VariableIdentifier) obj).decrementOffsetStack();
       }
     }
+  }
+
+  public Identifier getIdentifier(int i) {
+    int curr = 0;
+    for (Identifier obj : dictionary.values()) {
+      if (curr == i) {
+        return obj;
+      }
+      curr++;
+    }
+    return null;
   }
 
   public SymbolTable getParentSymbolTable() {

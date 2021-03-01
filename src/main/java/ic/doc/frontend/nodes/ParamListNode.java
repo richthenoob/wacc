@@ -1,5 +1,7 @@
 package ic.doc.frontend.nodes;
 
+import static ic.doc.backend.Instructions.Stack.PUSH;
+
 import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
@@ -40,7 +42,9 @@ public class ParamListNode extends Node {
   }
 
   @Override
-  public void translate(Context context) {}
+  public void translate(Context context) {
+    /* No translation needed. */
+  }
 
   public String getInput() {
     StringBuilder input = new StringBuilder();

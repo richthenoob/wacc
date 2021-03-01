@@ -24,7 +24,9 @@ public class ParamNode extends Node {
   }
 
   @Override
-  public void translate(Context context) {}
+  public void translate(Context context) {
+    /* No translation needed. */
+  }
 
   public ParamNode(Type type, String input) {
     this.type = type;
