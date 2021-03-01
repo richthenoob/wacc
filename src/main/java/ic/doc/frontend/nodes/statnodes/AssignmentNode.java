@@ -2,18 +2,17 @@ package ic.doc.frontend.nodes.statnodes;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.DataProcessing;
-import ic.doc.backend.Instructions.SingleDataTransfer;
+import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.PostIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
+import ic.doc.backend.PredefinedFunctions;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.ArrayElementNode;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
-import ic.doc.frontend.nodes.exprnodes.Literals.CharacterLiteralNode;
-import ic.doc.frontend.nodes.exprnodes.Literals.LiteralNode;
-import ic.doc.frontend.nodes.exprnodes.Literals.StringLiteralNode;
+import ic.doc.frontend.nodes.exprnodes.Literals.IntLiteralNode;
 import ic.doc.frontend.nodes.exprnodes.PairElementNode;
 import ic.doc.frontend.nodes.exprnodes.VariableNode;
 import ic.doc.frontend.semantics.SymbolKey;
@@ -22,8 +21,6 @@ import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.*;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-
-import java.util.List;
 
 public class AssignmentNode extends StatNode {
 
@@ -212,12 +209,33 @@ public class AssignmentNode extends StatNode {
     /* arr[0] = 5 where arr is a predefined int array. */
     // TODO: is this right? what if it is arr[5]
     if (lhs instanceof ArrayElementNode) {
+      Label<Instruction> label = context.getCurrentLabel();
+
       VariableNode lhsVar = ((ArrayElementNode) lhs).getIdentNode();
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, false);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-      int indexOffset = ((ArrayElementNode) lhs).getIndex(0);
-      return id.getOffsetStack() + indexOffset;
+
+      int offsetArray = id.getOffsetStack(symbolTable,key);
+      RegisterOperand arrayReg = new RegisterOperand(context.getFreeRegister());
+      RegisterOperand indexReg = new RegisterOperand(context.getFreeRegister());
+      ExprNode firstIndex = ((ArrayElementNode) lhs).getFirstIndex();
+      if ( firstIndex instanceof IntLiteralNode){
+        label.addToBody(SingleDataTransfer.LDR(indexReg,new ImmediateOperand<>(true, ((IntLiteralNode) firstIndex).getValue().intValue()))); //Load index literal
+      }
+      else{
+      label.addToBody(SingleDataTransfer.LDR(indexReg,firstIndex.getRegister())); //Load index from register
+        }
+      label.addToBody(SingleDataTransfer.LDR(arrayReg, // Load array
+              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+                      RegisterOperand.SP(), new ImmediateOperand<>(true,offsetArray))));
+      label.addToBody(Move.MOV(new RegisterOperand(0),indexReg));
+      label.addToBody(Move.MOV(new RegisterOperand(1),arrayReg));
+      label.addToBody(Branch.BL(PredefinedFunctions.CHECK_ARRAY_BOUNDS_FUNC));
+      label.addToBody(DataProcessing.ADD(arrayReg,arrayReg,new ImmediateOperand<>(true,4)));
+      label.addToBody(DataProcessing.SHIFTADD(arrayReg,arrayReg,indexReg,PreIndexedAddressOperand.ShiftTypes.LSL));
+
+//      return id.getOffsetStack(symbolTable,key) + indexOffset;
     }
 
     /* FST p = 5 where p is a predefined pair where the first element is of
@@ -230,7 +248,7 @@ public class AssignmentNode extends StatNode {
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
       int positionOffset =
           ((PairElementNode) lhs).getPos().equals(PairElementNode.PairPosition.FST) ? 0 : 4;
-      return id.getOffsetStack() + positionOffset;
+      return id.getOffsetStack(symbolTable,key) + positionOffset;
     }
 
     /* All other types, LHS MUST be a VariableNode. Return the location of
@@ -239,6 +257,6 @@ public class AssignmentNode extends StatNode {
     String name = lhsVar.getName();
     SymbolKey key = new SymbolKey(name, false);
     VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-    return id.getOffsetStack();
+    return id.getOffsetStack(context.getCurrentSymbolTable(), key);
   }
 }

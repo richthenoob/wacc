@@ -1,11 +1,8 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Label;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.frontend.identifiers.Identifier;
-import ic.doc.frontend.nodes.exprnodes.Literals.IntLiteralNode;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ArrayType;
@@ -26,6 +23,10 @@ public class ArrayElementNode extends ExprNode {
   private final VariableNode identNode;
   private boolean isErrored = false;
 
+  public List<ExprNode> getExprNodes() {
+    return exprNodes;
+  }
+
   public ArrayElementNode(List<ExprNode> exprNodes, VariableNode identNode) {
     this.exprNodes = exprNodes;
     this.identNode = identNode;
@@ -35,8 +36,8 @@ public class ArrayElementNode extends ExprNode {
     return exprNodes.size();
   }
 
-  public int getIndex(int dimension) {
-    return ((IntLiteralNode) exprNodes.get(dimension)).getValue().intValue();
+  public ExprNode getFirstIndex(){
+    return exprNodes.get(0);
   }
 
   public VariableNode getIdentNode() {
@@ -108,7 +109,10 @@ public class ArrayElementNode extends ExprNode {
   }
 
   @Override
-  public void translate(Context context) {}
+  public void translate(Context context) {
+
+
+  }
 
   @Override
   public String getInput() {

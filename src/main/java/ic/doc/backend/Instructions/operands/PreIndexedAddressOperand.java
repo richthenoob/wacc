@@ -54,8 +54,8 @@ public class PreIndexedAddressOperand extends AddressOperand {
   }
 
   /* Public constructor for operands like
-   * [r0, #5]   Access memory at address stored in r0 + 5
-   * [sp, #-16] Access memory at address stored in sp - 16 */
+   * [r0, #5]!   Access memory at address stored in r0 + 5
+   * [sp, #-16]! Access memory at address stored in sp - 16 */
   public static PreIndexedAddressOperand PreIndexedAddressFixedOffsetJump(
       RegisterOperand rn, ImmediateOperand expr) {
     return new PreIndexedAddressOperand(rn, expr, null,

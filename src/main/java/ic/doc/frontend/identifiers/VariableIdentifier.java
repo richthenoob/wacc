@@ -1,5 +1,7 @@
 package ic.doc.frontend.identifiers;
 
+import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.types.Type;
 
 public class VariableIdentifier extends Identifier {
@@ -11,9 +13,14 @@ public class VariableIdentifier extends Identifier {
     return activated;
   }
 
-  public int getOffsetStack() {
-    //todo; account for scopes?
-    return offsetStack;
+  public int getOffsetStack(SymbolTable symbolTableCalledFrom, SymbolKey symbolKey ) {
+    SymbolTable currSymbolTable = symbolTableCalledFrom;
+    int tableOffset = 0;
+    while(currSymbolTable.lookup(symbolKey) == null){
+      tableOffset+= currSymbolTable.getTableSize();
+      currSymbolTable = currSymbolTable.getParentSymbolTable();
+    }
+    return offsetStack + tableOffset;
   }
 
   public void incrementOffsetStack(int offset) {

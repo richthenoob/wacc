@@ -1,6 +1,8 @@
 package ic.doc.backend.Instructions;
 
 import ic.doc.backend.Instructions.operands.Operand;
+import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,11 @@ public class DataProcessing extends Instruction {
   // 2 operands for CMP, 4 operands for SMULL, 3 otherwise
   private List<Operand> operands;
   private Operation operation;
+  private PreIndexedAddressOperand.ShiftTypes shift = null;
+
+  public void setShift(PreIndexedAddressOperand.ShiftTypes shift) {
+    this.shift = shift;
+  }
 
   // CMP
   private DataProcessing(Operand operand1, Operand operand2) {
@@ -51,6 +58,12 @@ public class DataProcessing extends Instruction {
     return new DataProcessing(dst, lhs, rhs, Operation.ADD);
   }
 
+  public static DataProcessing SHIFTADD(Operand dst, Operand lhs,
+                                        Operand rhs, PreIndexedAddressOperand.ShiftTypes shift) {
+    DataProcessing ret = new DataProcessing(dst, lhs, rhs, Operation.ADD);
+    ret.setShift(shift);
+    return ret;
+}
   public static DataProcessing SUB(Operand dst, Operand lhs,
       Operand rhs) {
     return new DataProcessing(dst, lhs, rhs, Operation.SUB);
@@ -83,6 +96,10 @@ public class DataProcessing extends Instruction {
     for (int i = 0; i < operands.size(); i++) {
       assembly.append(operands.get(i));
       assembly.append(", ");
+    }
+    if(shift != null){
+      assembly.append(shift.name());
+      return assembly.toString();
     }
     assembly.delete(assembly.length()-2, assembly.length()-1);
     return assembly.toString();
