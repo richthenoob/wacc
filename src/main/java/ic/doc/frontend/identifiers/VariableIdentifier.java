@@ -15,6 +15,10 @@ public class VariableIdentifier extends Identifier {
     return offsetStack;
   }
 
+  public void setOffsetStack(int offsetStack) {
+    this.offsetStack = offsetStack;
+  }
+
   public void incrementOffsetStack() {
     this.offsetStack += 4;
   }
