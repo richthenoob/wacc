@@ -399,7 +399,7 @@ public class PredefinedFunctions {
       return;
     }
 
-    readCharFuncLabel.addToBody(PUSH(RegisterOperand.LR, ctx.getCurrentSymbolTable()));
+    readCharFuncLabel.addToBody(PUSH_FOUR(RegisterOperand.LR, ctx.getCurrentSymbolTable()));
     readCharFuncLabel.addToBody(MOV(RegisterOperand.R1, RegisterOperand.R0));
 
     String typePlaceholderLabel = getDataLabel(ctx,
