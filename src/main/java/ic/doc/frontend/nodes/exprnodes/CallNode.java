@@ -3,16 +3,12 @@ package ic.doc.frontend.nodes.exprnodes;
 import static ic.doc.backend.Instructions.Branch.BL;
 import static ic.doc.backend.Instructions.Move.MOV;
 import static ic.doc.backend.Instructions.SingleDataTransfer.STR;
-import static ic.doc.backend.Instructions.Stack.PUSH;
 import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressFixedOffsetJump;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
-import ic.doc.backend.Label;
 import ic.doc.frontend.identifiers.FunctionIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.ParamIdentifier;

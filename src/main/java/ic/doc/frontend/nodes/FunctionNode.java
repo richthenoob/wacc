@@ -80,8 +80,8 @@ public class FunctionNode extends Node {
 
   @Override
   public void translate(Context context) {
-    Label mainLabel = context.getCurrentLabel();
-    mainLabel.addToBody(PUSH(RegisterOperand.LR, context.getCurrentSymbolTable()));
+    Label<Instruction> mainLabel = context.getCurrentLabel();
+    mainLabel.addToBody(PUSH_FOUR(RegisterOperand.LR, context.getCurrentSymbolTable()));
 
     Label<Instruction> funcLabel = new Label<>("f_" + funcName);
     context.getInstructionLabels().add(funcLabel);
@@ -89,7 +89,7 @@ public class FunctionNode extends Node {
     context.setScope(funcSymbolTable);
 
     functionBody.translate(context);
-    funcLabel.addToBody(POP(RegisterOperand.PC, context.getCurrentSymbolTable()));
+    funcLabel.addToBody(POP_FOUR(RegisterOperand.PC, context.getCurrentSymbolTable()));
 
     context.setCurrentLabel(mainLabel);
     // is this necessary?
