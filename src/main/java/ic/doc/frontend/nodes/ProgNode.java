@@ -37,6 +37,7 @@ public class ProgNode extends Node {
 
     /* Add all function labels first. */
     for (FunctionNode node : functions) {
+
       node.translate(context);
     }
 

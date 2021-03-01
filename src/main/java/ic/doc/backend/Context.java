@@ -28,6 +28,8 @@ public class Context {
   private final Map<String, String> dataPlaceHolders = new HashMap<>();
   private SymbolTable currentSymbolTable;
 
+  private HashMap<String, SymbolTable> functionTables; //TODO: populate
+
   public void addToCurrentLabel(Instruction instruction) {
     getCurrentLabel().addToBody(instruction);
   }
@@ -89,6 +91,10 @@ public class Context {
 
   public SymbolTable getCurrentSymbolTable() {
     return currentSymbolTable;
+  }
+
+  public HashMap<String, SymbolTable> getFunctionTables() {
+    return functionTables;
   }
 
   public Map<String, String> getDataPlaceHolders() { return dataPlaceHolders; }

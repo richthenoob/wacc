@@ -1,14 +1,20 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import static ic.doc.backend.Instructions.Branch.BL;
+import static ic.doc.backend.Instructions.Move.MOV;
+import static ic.doc.backend.Instructions.SingleDataTransfer.STR;
+
 import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.identifiers.FunctionIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.ParamIdentifier;
 import ic.doc.frontend.nodes.ArgListNode;
 import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.Type;
@@ -76,7 +82,24 @@ public class CallNode extends ExprNode {
   }
 
   @Override
-  public void translate(Context context) {}
+  public void translate(Context context) {
+    // lookup function symbol table from func name
+    SymbolTable funcTable = context.getFunctionTables().get(identifier);
+    context.setScope(funcTable);
+
+    context.addToCurrentLabel(BL("f_" + identifier));
+
+    for (ExprNode arg : args.getParams()) {
+      // push arguments onto stack
+
+      // lookup each argument in function symbol table
+      // update entry corresponding to argument to the offset (sp, sp+4, etc)
+      // bool and char means +1 and not +4
+    }
+
+    context.addToCurrentLabel(MOV(new RegisterOperand(4), RegisterOperand.R0));
+    context.addToCurrentLabel(STR(new RegisterOperand(4), RegisterOperand.SP));
+  }
 
   @Override
   public String getInput() {

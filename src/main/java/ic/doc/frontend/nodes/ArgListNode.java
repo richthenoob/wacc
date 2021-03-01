@@ -68,7 +68,7 @@ public class ArgListNode extends Node {
 
   @Override
   public void translate(Context context) {
-
+    /* No translation needed. */
   }
 
 

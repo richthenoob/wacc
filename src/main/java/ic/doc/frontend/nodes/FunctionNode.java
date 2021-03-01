@@ -1,10 +1,11 @@
 package ic.doc.frontend.nodes;
 
-import static ic.doc.backend.Instructions.Stack.POP;
+import static ic.doc.backend.Instructions.DataProcessing.SUB;
+import static ic.doc.backend.Instructions.Stack.*;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.errors.SyntaxException;
@@ -79,18 +80,18 @@ public class FunctionNode extends Node {
 
   @Override
   public void translate(Context context) {
-    //TODO: stack
-    Label prevLabel = context.getCurrentLabel();
-    Label<Instruction> inst = new Label<>("f_" + funcName);
-    context.getInstructionLabels().add(inst);
-    context.setCurrentLabel(inst);
+    Label mainLabel = context.getCurrentLabel();
+    mainLabel.addToBody(PUSH(RegisterOperand.LR, context.getCurrentSymbolTable()));
+
+    Label<Instruction> funcLabel = new Label<>("f_" + funcName);
+    context.getInstructionLabels().add(funcLabel);
+    context.setCurrentLabel(funcLabel);
     context.setScope(funcSymbolTable);
 
     functionBody.translate(context);
+    funcLabel.addToBody(POP(RegisterOperand.PC, context.getCurrentSymbolTable()));
 
-    context.addToCurrentLabel(POP(RegisterOperand.PC, context.getCurrentSymbolTable()));
-
-    context.setCurrentLabel(prevLabel);
+    context.setCurrentLabel(mainLabel);
     // is this necessary?
     context.restoreScope();
   }

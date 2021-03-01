@@ -1,5 +1,7 @@
 package ic.doc.frontend.nodes;
 
+import static ic.doc.backend.Instructions.Stack.PUSH;
+
 import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
