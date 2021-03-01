@@ -1,8 +1,11 @@
 package ic.doc.frontend.nodes;
 
+import static ic.doc.backend.Instructions.Stack.POP;
+
 import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.errors.SyntaxException;
 import ic.doc.frontend.nodes.statnodes.ConditionalBranchNode;
@@ -75,7 +78,22 @@ public class FunctionNode extends Node {
   }
 
   @Override
-  public void translate(Context context) {}
+  public void translate(Context context) {
+    //TODO: stack
+    Label prevLabel = context.getCurrentLabel();
+    Label<Instruction> inst = new Label<>("f_" + funcName);
+    context.getInstructionLabels().add(inst);
+    context.setCurrentLabel(inst);
+    context.setScope(funcSymbolTable);
+
+    functionBody.translate(context);
+
+    context.addToCurrentLabel(POP(RegisterOperand.PC, context.getCurrentSymbolTable()));
+
+    context.setCurrentLabel(prevLabel);
+    // is this necessary?
+    context.restoreScope();
+  }
 
   private boolean endsWithReturnOrExit(StatNode stat) {
     if (stat instanceof FunctionReturnNode || stat instanceof ExitNode) {

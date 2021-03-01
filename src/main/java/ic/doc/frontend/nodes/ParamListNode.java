@@ -40,7 +40,9 @@ public class ParamListNode extends Node {
   }
 
   @Override
-  public void translate(Context context) {}
+  public void translate(Context context) {
+    /* No translation needed. */
+  }
 
   public String getInput() {
     StringBuilder input = new StringBuilder();
