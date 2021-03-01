@@ -11,7 +11,6 @@ import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.frontend.identifiers.FunctionIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
-import ic.doc.frontend.identifiers.ParamIdentifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.ArgListNode;
 import ic.doc.frontend.nodes.exprnodes.Literals.BooleanLiteralNode;
@@ -47,16 +46,12 @@ public class CallNode extends ExprNode {
       visitor.getSemanticErrorList().addScopeException(ctx, false, "Function", functionName);
     } else if (!(id instanceof FunctionIdentifier)) {
       /* Checks if id is an instance of function */
-      String instance = id instanceof ParamIdentifier ? "Param" : "Variable";
       setType(new ErrorType());
       visitor
           .getSemanticErrorList()
           .addException(
               ctx,
-              "Identifier "
-                  + id
-                  + " is not an instance of function. Expected: Function. Actual: "
-                  + instance);
+              "Identifier Variable is not an instance of function. Expected: Function. Actual: Variable.");
     } else {
       FunctionIdentifier functionId = (FunctionIdentifier) id;
       Type functionType = functionId.getType();
@@ -118,7 +113,7 @@ public class CallNode extends ExprNode {
       // store argument onto stack
       RegisterOperand reg = arg.getRegister();
       PreIndexedAddressOperand shiftStack = PreIndexedAddressFixedOffsetJump(RegisterOperand.SP,
-          new ImmediateOperand<>(-offset));
+          new ImmediateOperand<>(true, -offset));
       context.addToCurrentLabel(STR(shiftCond, reg, shiftStack));
 
       // free register used for loading

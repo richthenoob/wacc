@@ -11,8 +11,8 @@ import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.statnodes.StatNode;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ProgNode extends Node {
@@ -35,13 +35,6 @@ public class ProgNode extends Node {
 
   @Override
   public void translate(Context context) {
-    HashMap<String, SymbolTable> functionTables = context.getFunctionTables();
-    /* Add all function labels first. */
-    for (FunctionNode node : functions) {
-      functionTables.put(node.getFuncName(), node.getFuncSymbolTable());
-      node.translate(context);
-    }
-
     /* Create main label, the entry point of the program. */
     Label<Instruction> inst = new Label<>("main");
     context.getInstructionLabels().add(inst);
@@ -49,6 +42,13 @@ public class ProgNode extends Node {
     context.setScope(symbolTable);
     inst.addToBody(Stack.PUSH_FOUR(RegisterOperand.LR,
         context.getCurrentSymbolTable()));
+
+    Map<String, SymbolTable> functionTables = context.getFunctionTables();
+    /* Add all function labels first. */
+    for (FunctionNode node : functions) {
+      functionTables.put(node.getFuncName(), node.getFuncSymbolTable());
+      node.translate(context);
+    }
 
     /* Translate rest of program. */
     stat.translate(context);
