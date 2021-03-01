@@ -49,10 +49,19 @@ public class VariableNode extends ExprNode {
     RegisterOperand register = new RegisterOperand(context.getFreeRegister());
     setRegister(register);
     VariableIdentifier id = (VariableIdentifier) context.getCurrentSymbolTable().lookupAll(key);
-    context.addToCurrentLabel(
-        SingleDataTransfer.LDR(
-            register,
-            PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                RegisterOperand.SP(), new ImmediateOperand<>(true,id.getOffsetStack()))));
+    if (id.getType().getVarSize() == 1) {
+      context.addToCurrentLabel(
+          SingleDataTransfer.LDR(
+              "B",
+              register,
+              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+                  RegisterOperand.SP(), new ImmediateOperand<>(true, id.getOffsetStack()))));
+    } else {
+      context.addToCurrentLabel(
+          SingleDataTransfer.LDR(
+              register,
+              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+                  RegisterOperand.SP(), new ImmediateOperand<>(true, id.getOffsetStack()))));
+    }
   }
 }
