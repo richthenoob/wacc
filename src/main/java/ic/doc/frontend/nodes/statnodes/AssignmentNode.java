@@ -214,53 +214,8 @@ public class AssignmentNode extends StatNode {
   }
 
   private RegisterOperand translateArrayElementNode(Context context) {
-    Label<Instruction> label = context.getCurrentLabel();
-
-    VariableNode lhsVar = ((ArrayElementNode) lhs).getIdentNode();
-    String name = lhsVar.getName();
-    SymbolKey key = new SymbolKey(name, false);
-    VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-
-    int offsetArray = id.getOffsetStack(symbolTable, key);
-    RegisterOperand arrayReg = new RegisterOperand(context.getFreeRegister());
-    RegisterOperand indexReg = new RegisterOperand(context.getFreeRegister());
-    List<ExprNode> arrays = ((ArrayElementNode) lhs).getExprNodes();
-    for (int i = 0; i < arrays.size(); i++) {
-      if (arrays.get(i) instanceof IntLiteralNode) {
-        label.addToBody(
-            SingleDataTransfer.LDR(
-                indexReg,
-                new ImmediateOperand<>(
-                    ((IntLiteralNode) arrays.get(i)).getValue().intValue()))); // Load index literal
-      } else {
-
-        String indexVarName = lhsVar.getName();
-        SymbolKey indexVarkey = new SymbolKey(indexVarName, false);
-        VariableIdentifier indexId = (VariableIdentifier) symbolTable.lookupAll(indexVarkey);
-        int offset = indexId.getOffsetStack(symbolTable, indexVarkey);
-        label.addToBody(
-            SingleDataTransfer.STR(
-                rhs.getRegister(),
-                PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                    RegisterOperand.SP(),
-                    new ImmediateOperand<>(true, offset)))); // Load index from memory
-      }
-      label.addToBody(
-          SingleDataTransfer.LDR(
-              arrayReg, // Load array
-              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  RegisterOperand.SP(), new ImmediateOperand<>(true, offsetArray))));
-      label.addToBody(Move.MOV(new RegisterOperand(0), indexReg));
-      label.addToBody(Move.MOV(new RegisterOperand(1), arrayReg));
-      PredefinedFunctions.addCheckArrayBoundsFunction(context);
-      label.addToBody(Branch.BL(PredefinedFunctions.CHECK_ARRAY_BOUNDS_FUNC));
-      label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, new ImmediateOperand<>(true, 4)));
-      label.addToBody(
-          DataProcessing.SHIFTADD(
-              arrayReg, arrayReg, indexReg, PreIndexedAddressOperand.ShiftTypes.LSL, new ImmediateOperand<>(true,2)));
-    }
-    context.freeRegister(indexReg.getValue());
-    return arrayReg;
+    ArrayElementNode arrayElementNode = (ArrayElementNode) lhs;
+    return ArrayElementNode.translateArray(context, arrayElementNode);
   }
 
   /* e.g. i = 5 where i has already been pre-defined */

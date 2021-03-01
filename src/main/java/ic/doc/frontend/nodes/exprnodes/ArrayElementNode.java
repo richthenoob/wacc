@@ -1,9 +1,17 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import ic.doc.backend.Context;
+import ic.doc.backend.Instructions.*;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.Label;
+import ic.doc.backend.PredefinedFunctions;
 import ic.doc.frontend.identifiers.Identifier;
+import ic.doc.frontend.identifiers.VariableIdentifier;
+import ic.doc.frontend.nodes.exprnodes.Literals.IntLiteralNode;
 import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ArrayType;
 import ic.doc.frontend.types.ErrorType;
@@ -36,11 +44,8 @@ public class ArrayElementNode extends ExprNode {
     return exprNodes.size();
   }
 
-  public ExprNode getFirstIndex
+  public ExprNode getFirstIndex() {
 
-
-
-          (){
     return exprNodes.get(0);
   }
 
@@ -112,10 +117,71 @@ public class ArrayElementNode extends ExprNode {
     }
   }
 
+  public static RegisterOperand translateArray(Context context, ArrayElementNode array) {
+    Label<Instruction> label = context.getCurrentLabel();
+    SymbolTable symbolTable = context.getCurrentSymbolTable();
+    VariableNode lhsVar = array.getIdentNode();
+    String name = lhsVar.getName();
+    SymbolKey key = new SymbolKey(name, false);
+    VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
+
+    int offsetArray = id.getOffsetStack(symbolTable, key);
+    RegisterOperand arrayReg = new RegisterOperand(context.getFreeRegister());
+    RegisterOperand indexReg = new RegisterOperand(context.getFreeRegister());
+    List<ExprNode> arrays = array.getExprNodes();
+    for (int i = 0; i < arrays.size(); i++) {
+      if (arrays.get(i) instanceof IntLiteralNode) {
+        label.addToBody(
+            SingleDataTransfer.LDR(
+                indexReg,
+                new ImmediateOperand<>(
+                    ((IntLiteralNode) arrays.get(i)).getValue().intValue()))); // Load index literal
+      } else {
+
+        String indexVarName = lhsVar.getName();
+        SymbolKey indexVarkey = new SymbolKey(indexVarName, false);
+        VariableIdentifier indexId = (VariableIdentifier) symbolTable.lookupAll(indexVarkey);
+        int offset = indexId.getOffsetStack(symbolTable, indexVarkey);
+        label.addToBody(
+            SingleDataTransfer.LDR(
+                indexReg,
+                PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+                    RegisterOperand.SP(),
+                    new ImmediateOperand<>(true, offset)))); // Load index from memory
+      }
+      label.addToBody(
+          SingleDataTransfer.LDR(
+              arrayReg, // Load array
+              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+                  RegisterOperand.SP(), new ImmediateOperand<>(true, offsetArray))));
+      label.addToBody(Move.MOV(new RegisterOperand(0), indexReg));
+      label.addToBody(Move.MOV(new RegisterOperand(1), arrayReg));
+      PredefinedFunctions.addCheckArrayBoundsFunction(context);
+      label.addToBody(Branch.BL(PredefinedFunctions.CHECK_ARRAY_BOUNDS_FUNC));
+      label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, new ImmediateOperand<>(true, 4)));
+      label.addToBody(
+          DataProcessing.SHIFTADD(
+              arrayReg,
+              arrayReg,
+              indexReg,
+              PreIndexedAddressOperand.ShiftTypes.LSL,
+              new ImmediateOperand<>(true, 2)));
+    }
+    context.freeRegister(indexReg.getValue());
+    return arrayReg;
+  }
+
   @Override
   public void translate(Context context) {
-
-
+    RegisterOperand arrayRegister = translateArray(context, this);
+    setRegister(arrayRegister);
+    context
+        .getCurrentLabel()
+        .addToBody(
+            SingleDataTransfer.LDR(
+                arrayRegister,
+                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(
+                    arrayRegister))); // Load index from memory;
   }
 
   @Override

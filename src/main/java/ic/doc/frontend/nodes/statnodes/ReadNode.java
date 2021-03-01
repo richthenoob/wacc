@@ -103,7 +103,7 @@ public class ReadNode extends StatNode {
       SymbolKey key = new SymbolKey(varName, false);
       VariableIdentifier id = (VariableIdentifier) context.getCurrentSymbolTable().lookupAll(key);
       int offset = id.getOffsetStack(context.getCurrentSymbolTable(), key);
-      curr.addToBody(ADD(reg, RegisterOperand.SP, new ImmediateOperand(true, offset)));
+      curr.addToBody(ADD(reg, RegisterOperand.SP, new ImmediateOperand<>(true, offset)));
     }
     curr.addToBody(MOV(RegisterOperand.R0, reg));
     if(exprType instanceof CharType){
