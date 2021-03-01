@@ -56,7 +56,7 @@ public class PredefinedFunctions {
 
     String msgLabelStr = ctx.getNextDataLabelString();
     Label<Data> msgLabel = new Label<>(msgLabelStr);
-    msgLabel.addToBody(new Data(data.length(), data));
+    msgLabel.addToBody(new Data(data.length() - 1, data));
     ctx.addToDataLabels(msgLabel);
     placeholders.put(data, msgLabelStr);
     return msgLabelStr;

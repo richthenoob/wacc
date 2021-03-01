@@ -2,7 +2,6 @@ package ic.doc.frontend.nodes.exprnodes.Literals;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
-import ic.doc.backend.Data.StringData;
 import ic.doc.backend.Instructions.SingleDataTransfer;
 import ic.doc.backend.Instructions.operands.LabelAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
@@ -20,7 +19,7 @@ public class StringLiteralNode extends LiteralNode {
   private final String value;
 
   public StringLiteralNode(String value) {
-    this.value = value;
+    this.value = value.substring(1, value.length() - 1);
     setType(new StringType());
   }
 
@@ -47,13 +46,13 @@ public class StringLiteralNode extends LiteralNode {
     int newIndex = dataLabels.size();
     Label<Data> newLabel = new Label<>("msg_" + newIndex);
     dataLabels.add(newIndex, newLabel);
-    newLabel.addToBody(new StringData(length, value));
+    newLabel.addToBody(new Data(length, value));
     LabelAddressOperand operand = new LabelAddressOperand(newLabel.getFunctionLabel());
     context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
   }
 
   @Override
   public String getInput() {
-    return value.substring(1, value.length() - 1);
+    return value;
   }
 }
