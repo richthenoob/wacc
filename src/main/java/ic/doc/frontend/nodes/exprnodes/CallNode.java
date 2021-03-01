@@ -125,9 +125,9 @@ public class CallNode extends ExprNode {
       context.freeRegister(reg.getValue());
     }
 
-    // move result of function call to R0
-    context.addToCurrentLabel(MOV(new RegisterOperand(4), RegisterOperand.R0));
-    //TODO: confirm in functionReturn that result is stored in R4
+    // move result of function call from R0 to free register
+    setRegister(new RegisterOperand(context.getFreeRegister()));
+    context.addToCurrentLabel(MOV(getRegister(), RegisterOperand.R0));
   }
 
   @Override

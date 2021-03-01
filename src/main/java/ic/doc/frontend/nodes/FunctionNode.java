@@ -5,6 +5,7 @@ import static ic.doc.backend.Instructions.Stack.*;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.LoadLiterals;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
@@ -94,6 +95,7 @@ public class FunctionNode extends Node {
     // Translate body of function and pop back to main
     functionBody.translate(context);
     funcLabel.addToBody(POP_FOUR(RegisterOperand.PC, context.getCurrentSymbolTable()));
+    funcLabel.addToBody(new LoadLiterals());
 
     // Return to main scope and main label
     context.setCurrentLabel(mainLabel);
