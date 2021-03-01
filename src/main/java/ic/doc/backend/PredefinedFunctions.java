@@ -249,6 +249,8 @@ public class PredefinedFunctions {
       return;
     }
 
+    addThrowRuntimeErrorFunction(ctx);
+
     checkArrayBoundsLabel
         .addToBody(PUSH(RegisterOperand.LR, ctx.getCurrentSymbolTable()));
     checkArrayBoundsLabel
@@ -271,7 +273,9 @@ public class PredefinedFunctions {
         .addToBody(CMP(RegisterOperand.R0, RegisterOperand.R1));
     checkArrayBoundsLabel.addToBody(LDR("CS", RegisterOperand.R0,
         new LabelAddressOperand(arrayOutOfBoundsLargeLabelStr)));
+
     checkArrayBoundsLabel.addToBody(BLCS(THROW_RUNTIME_ERROR_FUNC));
+
     checkArrayBoundsLabel
         .addToBody(POP(RegisterOperand.PC, ctx.getCurrentSymbolTable()));
 
@@ -297,6 +301,8 @@ public class PredefinedFunctions {
 
     checkDivideByZeroLabel.addToBody(LDR("EQ", RegisterOperand.R0,
         new LabelAddressOperand(divideByZeroLabelStr)));
+
+    addThrowRuntimeErrorFunction(ctx);
     checkDivideByZeroLabel.addToBody(BLE(THROW_RUNTIME_ERROR_FUNC));
     checkDivideByZeroLabel
         .addToBody(POP(RegisterOperand.PC, ctx.getCurrentSymbolTable()));
@@ -316,6 +322,8 @@ public class PredefinedFunctions {
     String integerOverflowLabelStr = getDataLabel(ctx, ErrorMessage.OVERFLOW);
     throwOverflowErrorFuncLabel.addToBody(LDR(RegisterOperand.R0,
         new LabelAddressOperand(integerOverflowLabelStr)));
+
+    addThrowRuntimeErrorFunction(ctx);
     throwOverflowErrorFuncLabel.addToBody(BL(THROW_RUNTIME_ERROR_FUNC));
 
     endFunctions.add(throwOverflowErrorFuncLabel);
@@ -335,6 +343,8 @@ public class PredefinedFunctions {
 
     instrLabel.addToBody(LDR("EQ", RegisterOperand.R0,
         new LabelAddressOperand(nullReferenceErrorLabelStr)));
+
+    addThrowRuntimeErrorFunction(ctx);
     instrLabel.addToBody(BEQ(THROW_RUNTIME_ERROR_FUNC));
   }
 
