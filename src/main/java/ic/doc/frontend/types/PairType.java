@@ -2,6 +2,12 @@ package ic.doc.frontend.types;
 
 public class PairType extends Type {
 
+  private static final int VAR_SIZE = 4;
+
+  public int getVarSize() {
+    return VAR_SIZE;
+  }
+
   public static final String CLASS_NAME = "PAIR";
   private final Type type1;
   private final Type type2;

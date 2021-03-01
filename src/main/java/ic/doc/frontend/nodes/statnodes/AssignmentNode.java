@@ -33,7 +33,8 @@ public class AssignmentNode extends StatNode {
   private final SymbolTable symbolTable;
 
   public AssignmentNode(
-      ExprNode lhs, ExprNode rhs, boolean isDeclaration, SymbolTable symbolTable) {
+      ExprNode lhs, ExprNode rhs, boolean isDeclaration,
+      SymbolTable symbolTable) {
     this.lhs = lhs;
     this.rhs = rhs;
     this.isDeclaration = isDeclaration;
@@ -58,7 +59,8 @@ public class AssignmentNode extends StatNode {
       /* If node corresponds to declarative assignment,
       variable must not have been already defined earlier */
       if (symbolTable.lookup(key) != null) {
-        visitor.getSemanticErrorList().addScopeException(ctx, true, "Variable", name);
+        visitor.getSemanticErrorList()
+            .addScopeException(ctx, true, "Variable", name);
       } else {
         symbolTable.add(key, new VariableIdentifier(lhs.getType()));
       }
@@ -105,14 +107,14 @@ public class AssignmentNode extends StatNode {
       String suggestion =
           suggest
               ? ("Did you mean "
-                  + firstApostrophe
-                  + rhs.getInput()
-                  + firstApostrophe
-                  + " instead of "
-                  + secondApostrophe
-                  + rhs.getInput()
-                  + secondApostrophe
-                  + "?")
+              + firstApostrophe
+              + rhs.getInput()
+              + firstApostrophe
+              + " instead of "
+              + secondApostrophe
+              + rhs.getInput()
+              + secondApostrophe
+              + "?")
               : "";
 
       /* Prints out error message with suggestions
@@ -131,58 +133,111 @@ public class AssignmentNode extends StatNode {
 
   @Override
   public void translate(Context context) {
-    ImmediateOperand<Integer> offset;
+    int offset;
+    SingleDataTransfer storeInstr;
+    if (isDeclaration) {
+      offset = translateLHSDeclaration(context);
+    } else {
+      offset = translateLHSNonDeclaration(context);
+    }
+
+    rhs.translate(context);
+
+    if (offset == 0) {
+      storeInstr = SingleDataTransfer.STR(rhs.getRegister(),
+          PreIndexedAddressOperand
+              .PreIndexedAddressZeroOffset(RegisterOperand.SP()));
+    } else {
+      storeInstr = SingleDataTransfer.STR(rhs.getRegister(),
+          PreIndexedAddressOperand
+              .PreIndexedAddressFixedOffset(RegisterOperand.SP(),
+                  new ImmediateOperand<>(offset)));
+    }
+
+    context.addToCurrentLabel(storeInstr);
+    context.freeRegister(rhs.getRegister().getValue());
+  }
+
+  /* New declaration, e.g. int i = 5
+   * Returns the offset from the SP at which the RHS shd be moved into.
+   * (Should always return 0 since we are always pushing into SP directly) */
+  private int translateLHSDeclaration(Context context) {
+
+    /* Sanity check. */
+    assert (lhs instanceof VariableNode);
+
+    /* First parse the LHS as a variable node and look it up. This should
+     * already have been declared in the symbol table when we constructed
+     * the AST. */
+    VariableNode lhsVar = (VariableNode) lhs;
+    String name = lhsVar.getName();
+    SymbolKey key = new SymbolKey(name, false);
+    VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
+
+    /* Special case of char type declaration on lhs. In this case,
+     * we need to add the char to the dataLabels list. */
+    if (lhs.getType() instanceof CharType) {
+      int length = id.toString().length();
+      String str = id.toString();
+
+      String dataLabelName = context.getNextDataLabelString();
+      Label<Data> newLabel = new Label<>(dataLabelName);
+      newLabel.addToBody(new Data(length, str));
+      context.addToDataLabels(newLabel);
+    }
+
+    /* Regardless of type, we need to increment offsets in this scope,
+     * since we are going to be storing a new item on the stack. */
+    int sizeOfVarOnStack = lhs.getType().getVarSize();
+    symbolTable.incrementOffset(sizeOfVarOnStack);
+    symbolTable.incrementTableSizeInBytes(sizeOfVarOnStack);
+    id.setActivated();
+
+    /* Finally, add an instruction to move the stack pointer and "allocate"
+     * space for our new variable. */
+    context.addToCurrentLabel(
+        DataProcessing.SUB(
+            RegisterOperand.SP(), RegisterOperand.SP(),
+            new ImmediateOperand<>(true, sizeOfVarOnStack)));
+
+    return 0;
+  }
+
+  /* e.g. i = 5 where i has already been pre-defined */
+  private int translateLHSNonDeclaration(
+      Context context) {
+
+    /* arr[0] = 5 where arr is a predefined int array. */
+    // TODO: is this right? what if it is arr[5]
     if (lhs instanceof ArrayElementNode) {
       VariableNode lhsVar = ((ArrayElementNode) lhs).getIdentNode();
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, false);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
       int indexOffset = ((ArrayElementNode) lhs).getIndex(0);
-      offset = new ImmediateOperand<>(true, id.getOffsetStack() + indexOffset);
-    } else if (lhs instanceof PairElementNode) {
+      return id.getOffsetStack() + indexOffset;
+    }
+
+    /* FST p = 5 where p is a predefined pair where the first element is of
+     * type int. Return the location of this variable on the stack plus
+     * an offset, depending if it's the FST or SND pair. */
+    if (lhs instanceof PairElementNode) {
       VariableNode lhsVar = (VariableNode) ((PairElementNode) lhs).getExpr();
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, false);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
       int positionOffset =
-          ((PairElementNode) lhs).getPos().equals(PairElementNode.PairPosition.FST) ? 0 : 4;
-      offset = new ImmediateOperand<>(true, id.getOffsetStack() + positionOffset);
-    } else {
-      VariableNode lhsVar = (VariableNode) lhs;
-      String name = lhsVar.getName();
-      SymbolKey key = new SymbolKey(name, false);
-      VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-
-      if (isDeclaration
-          ) { // if declaring, need to move stack pointer
-        if (lhs.getType() instanceof CharType) {
-          int length = id.toString().length();
-          String str = id.toString();
-          List<Label<Data>> dataLabels = context.getDataLabels();
-          int newIndex = dataLabels.size();
-          Label<Data> newLabel = new Label<>("msg_" + newIndex);
-          dataLabels.add(newIndex, newLabel);
-          newLabel.addToBody(new Data(length, str));
-        } // other types
-        else {
-          symbolTable.incrementOffset();
-          symbolTable.incrementTableSizeInBytes();
-          id.setActivated();
-        }
-        offset = new ImmediateOperand<>(true, 0);
-        context.addToCurrentLabel(
-            DataProcessing.SUB(
-                RegisterOperand.SP(), RegisterOperand.SP(), new ImmediateOperand<>(true, 4)));
-
-      } else { // if not declaration, find offset of previous declaration
-        offset = new ImmediateOperand<>(true, id.getOffsetStack());
-      }
+          ((PairElementNode) lhs).getPos()
+              .equals(PairElementNode.PairPosition.FST) ? 0 : 4;
+      return id.getOffsetStack() + positionOffset;
     }
-    rhs.translate(context);
-    context.addToCurrentLabel(
-            SingleDataTransfer.STR(
-                    rhs.getRegister(),
-                    PreIndexedAddressOperand.PreIndexedAddressFixedOffset(RegisterOperand.SP(), offset)));
-    context.freeRegister(rhs.getRegister().getValue());
+
+    /* All other types, LHS MUST be a VariableNode. Return the location of
+     * this variable on the stack. */
+    VariableNode lhsVar = (VariableNode) lhs;
+    String name = lhsVar.getName();
+    SymbolKey key = new SymbolKey(name, false);
+    VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
+    return id.getOffsetStack();
   }
 }

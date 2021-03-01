@@ -47,19 +47,18 @@ public class ProgNode extends Node {
     context.getInstructionLabels().add(inst);
     context.setCurrentLabel(inst);
     context.setScope(symbolTable);
-    inst.addToBody(
-        Stack.PUSH(RegisterOperand.LR, context.getCurrentSymbolTable()));
+    inst.addToBody(Stack.PUSH_FOUR(RegisterOperand.LR,
+        context.getCurrentSymbolTable()));
 
     /* Translate rest of program. */
     stat.translate(context);
 
     /* Pass control back to kernel code that called it. */
     context.restoreScope();
-    context.addToCurrentLabel(
-        SingleDataTransfer.LDR(RegisterOperand.R0, new
-            ImmediateOperand<>(0)));
-    context.addToCurrentLabel(
-        Stack.POP(RegisterOperand.PC, context.getCurrentSymbolTable()));
+    context.addToCurrentLabel(SingleDataTransfer.LDR(RegisterOperand.R0, new
+        ImmediateOperand<>(0)));
+    context.addToCurrentLabel(Stack.POP_FOUR(RegisterOperand.PC,
+        context.getCurrentSymbolTable()));
     context.addToCurrentLabel(new LoadLiterals());
   }
 }

@@ -1,6 +1,5 @@
 package ic.doc.backend.Instructions;
 
-import ic.doc.backend.Instructions.operands.Operand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.frontend.semantics.SymbolTable;
 
@@ -13,14 +12,30 @@ public class Stack extends Instruction {
     this.value = value;
   }
 
-  public static Stack PUSH(RegisterOperand value, SymbolTable symbolTable) {
-    symbolTable.incrementOffset();
+  private static Stack PUSH(RegisterOperand value, SymbolTable symbolTable, int offset) {
+    symbolTable.incrementOffset(offset);
     return new Stack(true, value);
   }
 
-  public static Stack POP(RegisterOperand value, SymbolTable symbolTable) {
-    symbolTable.decrementOffset();
+  private static Stack POP(RegisterOperand value, SymbolTable symbolTable, int offset) {
+    symbolTable.decrementOffset(offset);
     return new Stack(false, value);
+  }
+
+  public static Stack PUSH_FOUR(RegisterOperand value, SymbolTable symbolTable) {
+    return PUSH(value, symbolTable, 4);
+  }
+
+  public static Stack PUSH_ONE(RegisterOperand value, SymbolTable symbolTable) {
+    return PUSH(value, symbolTable, 1);
+  }
+
+  public static Stack POP_FOUR(RegisterOperand value, SymbolTable symbolTable) {
+    return POP(value, symbolTable, 4);
+  }
+
+  public static Stack POP_ONE(RegisterOperand value, SymbolTable symbolTable) {
+    return POP(value, symbolTable, 1);
   }
 
   @Override
