@@ -159,7 +159,7 @@ public class BinaryOperatorNode extends ExprNode {
         context.getPfunctions().add(new Label(divLabel));
 
         Operand res = binaryOperator == BinaryOperators.DIV ?
-            new RegisterOperand(0) : new RegisterOperand(1);
+            RegisterOperand.R0 : RegisterOperand.R1;
         curr.addToBody(MOV(dstReg, res));
         break;
       case PLUS:
@@ -204,6 +204,7 @@ public class BinaryOperatorNode extends ExprNode {
     }
 
     setRegister(lReg);
+    context.freeRegister(rReg.getValue());
   }
 
   private void addComparisonAssembly(
