@@ -14,6 +14,7 @@ public class Context {
 
   public static final int OFFSET = 4;
   public static final int MAXINDEX = 6;
+  private static final int MAX_CONSTANT = 1024;
 
   private final boolean[] registers =
       new boolean[7]; // registers 4-10 initialised by default to false
@@ -28,7 +29,7 @@ public class Context {
   private final Map<String, String> dataPlaceHolders = new HashMap<>();
   private SymbolTable currentSymbolTable;
 
-  private HashMap<String, SymbolTable> functionTables; //TODO: populate
+  private Map<String, SymbolTable> functionTables = new HashMap<>();
 
   public void addToCurrentLabel(Instruction instruction) {
     getCurrentLabel().addToBody(instruction);
@@ -96,11 +97,13 @@ public class Context {
     return currentSymbolTable;
   }
 
-  public HashMap<String, SymbolTable> getFunctionTables() {
+  public Map<String, SymbolTable> getFunctionTables() {
     return functionTables;
   }
 
-  public Map<String, String> getDataPlaceHolders() { return dataPlaceHolders; }
+  public Map<String, String> getDataPlaceHolders() {
+    return dataPlaceHolders;
+  }
 
   public String getNextAnonymousLabel() {
     int counterToReturn = labelCounter;
@@ -126,12 +129,16 @@ public class Context {
     int tableSize = currentSymbolTable.getTableSize();
 
     if (tableSize != 0) {
-      DataProcessing restoreStackPtrInstr = DataProcessing
-          .ADD(RegisterOperand.SP,
-              RegisterOperand.SP,
-              new ImmediateOperand<>(true, tableSize));
-
-      addToCurrentLabel(restoreStackPtrInstr);
+      /* Use multiple ADD instructions if table size > 1024. */
+      do {
+        DataProcessing restoreStackPtrInstr = DataProcessing
+            .ADD(RegisterOperand.SP,
+                RegisterOperand.SP,
+                new ImmediateOperand<>(true,
+                    Integer.min(tableSize, MAX_CONSTANT)));
+        tableSize -= MAX_CONSTANT;
+        addToCurrentLabel(restoreStackPtrInstr);
+      } while (tableSize > 0);
     }
 
     SymbolTable parentSymbolTable = getCurrentSymbolTable()

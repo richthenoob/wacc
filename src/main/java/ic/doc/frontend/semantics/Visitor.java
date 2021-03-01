@@ -96,7 +96,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         String name = p.getInput();
         Type type = p.getType();
         SymbolKey key = new SymbolKey(name, false);
-        currentSymbolTable.add(key, new ParamIdentifier(type));
+        currentSymbolTable.add(key, new VariableIdentifier(type));
       }
       StatNode stat = (StatNode) visit(ctx.stat());
       /* Needs to check current and outer scope*/

@@ -124,7 +124,8 @@ public abstract class AbstractBackendTest {
           .exec(new Adapter<>() {
             @Override
             public void onNext(Frame frame) {
-              stringOutput.append(new String(frame.getPayload(), StandardCharsets.UTF_8));
+              stringOutput.append(
+                  new String(frame.getPayload(), StandardCharsets.UTF_8));
             }
           })
           .awaitCompletion();
@@ -193,7 +194,8 @@ public abstract class AbstractBackendTest {
     StringBuilder outputMessages = new StringBuilder();
     int emulateExitCode = emulateExecutable("/compile/" + TEMP_EXEC_NAME,
         outputMessages);
-    String emulateOutputMessage = outputMessages.toString().replaceAll(Character.toString(6), "");
+    String emulateOutputMessage = outputMessages.toString()
+        .replaceAll("\u0001|\u0002|\u0003|\u0004|\u0005|\u0006|\u0007", "");
 
     /* Retrieve reference stdout and exit code. */
     String fileContent = readFileIntoString(filepath);
@@ -239,7 +241,6 @@ public abstract class AbstractBackendTest {
 
     /* Generate code and write to temporary file. */
     String code = WaccBackend.generateCode(rootNode);
-    System.out.println(code);
     WaccBackend.writeToFile(TEMP_DIR_PATH + TEMP_ASSEMBLY_FILENAME, code);
 
     /* Cross compilation. */
