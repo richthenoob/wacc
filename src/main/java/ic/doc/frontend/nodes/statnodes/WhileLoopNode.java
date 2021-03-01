@@ -64,7 +64,6 @@ public class WhileLoopNode extends StatNode {
 
     /* Add the body label first, then jump to bool label. */
     context.getInstructionLabels().add(bodyLabel);
-    context.getInstructionLabels().add(boolCondLabel);
     context.addToCurrentLabel(Branch.B(boolCondName));
 
     /* Evaluate statement. */
@@ -74,6 +73,7 @@ public class WhileLoopNode extends StatNode {
     context.restoreScope();
 
     /* Evaluate bool condition. */
+    context.getInstructionLabels().add(boolCondLabel);
     context.setCurrentLabel(boolCondLabel);
     cond.translate(context);
 

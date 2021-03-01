@@ -64,5 +64,7 @@ public class PrintNode extends StatNode {
       curr.addToBody(BL(PRINT_LN_FUNC));
       addPrintLnFunction(context);
     }
+
+    context.freeRegister(reg.getValue());
   }
 }
