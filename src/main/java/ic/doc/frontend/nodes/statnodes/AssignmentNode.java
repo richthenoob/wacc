@@ -177,12 +177,12 @@ public class AssignmentNode extends StatNode {
       } else { // if not declaration, find offset of previous declaration
         offset = new ImmediateOperand<>(true, id.getOffsetStack());
       }
-      rhs.translate(context);
-      context.addToCurrentLabel(
-          SingleDataTransfer.STR(
-              rhs.getRegister(),
-              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(RegisterOperand.SP(), offset)));
-      context.freeRegister(rhs.getRegister().getValue());
     }
+    rhs.translate(context);
+    context.addToCurrentLabel(
+            SingleDataTransfer.STR(
+                    rhs.getRegister(),
+                    PreIndexedAddressOperand.PreIndexedAddressFixedOffset(RegisterOperand.SP(), offset)));
+    context.freeRegister(rhs.getRegister().getValue());
   }
 }
