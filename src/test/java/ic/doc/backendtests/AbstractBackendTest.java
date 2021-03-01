@@ -20,6 +20,7 @@ import ic.doc.backend.WaccBackend;
 import ic.doc.frontend.nodes.ProgNode;
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -43,7 +44,7 @@ public abstract class AbstractBackendTest {
   private static final Pattern exitCodePattern = Pattern
       .compile("The exit code is (\\d+).");
   private static final Pattern stdoutPattern = Pattern.compile(
-      "-- Executing\\.\\.\\.\n=+\n(.*)\n=", Pattern.DOTALL);
+      "-- Executing\\.\\.\\.\n=+\n(.*\n)=", Pattern.DOTALL);
 
   private static int getExitCodeFromContent(String content) {
     /* Look for exit code in string */
@@ -123,7 +124,7 @@ public abstract class AbstractBackendTest {
           .exec(new Adapter<>() {
             @Override
             public void onNext(Frame frame) {
-              stringOutput.append(new String(frame.getPayload()));
+              stringOutput.append(new String(frame.getPayload(), StandardCharsets.UTF_8));
             }
           })
           .awaitCompletion();
@@ -192,7 +193,7 @@ public abstract class AbstractBackendTest {
     StringBuilder outputMessages = new StringBuilder();
     int emulateExitCode = emulateExecutable("/compile/" + TEMP_EXEC_NAME,
         outputMessages);
-    String emulateOutputMessage = outputMessages.toString();
+    String emulateOutputMessage = outputMessages.toString().replaceAll(Character.toString(6), "");
 
     /* Retrieve reference stdout and exit code. */
     String fileContent = readFileIntoString(filepath);
@@ -201,13 +202,17 @@ public abstract class AbstractBackendTest {
 
     /* Print expected vs actual message output. */
     System.out.println("EXPECTED OUTPUT");
-    System.out.println("===========================================================");
+    System.out
+        .println("===========================================================");
     System.out.println(referenceOutputMessage);
-    System.out.println("===========================================================");
+    System.out
+        .println("===========================================================");
     System.out.println("ACTUAL OUTPUT");
-    System.out.println("===========================================================");
+    System.out
+        .println("===========================================================");
     System.out.println(emulateOutputMessage);
-    System.out.println("===========================================================");
+    System.out
+        .println("===========================================================");
 
     assertThat("Emulated exit code different from reference.",
         emulateExitCode,

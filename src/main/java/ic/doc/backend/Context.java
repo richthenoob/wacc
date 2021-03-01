@@ -72,6 +72,8 @@ public class Context {
   }
 
   public List<Label<Data>> getDataLabels() {
+    /* Use getNextDataLabelString() and addToDataLabels instead of
+     * manipulating the list directly! */
     return dataLabels;
   }
 
@@ -97,6 +99,14 @@ public class Context {
     int counterToReturn = labelCounter;
     labelCounter++;
     return "L" + counterToReturn;
+  }
+
+  public String getNextDataLabelString() {
+    return "msg_" + dataLabels.size();
+  }
+
+  public void addToDataLabels(Label<Data> dataLabel) {
+    dataLabels.add(dataLabel);
   }
 
   public void setScope(SymbolTable currentSymbolTable) {
