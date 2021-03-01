@@ -122,7 +122,7 @@ public class CallNode extends ExprNode {
       // store argument onto stack
       RegisterOperand reg = arg.getRegister();
       PreIndexedAddressOperand shiftStack = PreIndexedAddressFixedOffsetJump(RegisterOperand.SP,
-          new ImmediateOperand(-offset));
+          new ImmediateOperand<>(-offset));
       context.addToCurrentLabel(STR(shiftCond, reg, shiftStack));
 
       // free register used for loading
@@ -132,8 +132,6 @@ public class CallNode extends ExprNode {
     // move result of function call to R0
     context.addToCurrentLabel(MOV(new RegisterOperand(4), RegisterOperand.R0));
     //TODO: confirm in functionReturn that result is stored in R4
-    //is this needed??
-    //context.addToCurrentLabel(STR(new RegisterOperand(4), RegisterOperand.SP));
   }
 
   @Override
