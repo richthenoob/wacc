@@ -11,6 +11,7 @@ import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.statnodes.StatNode;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
+import java.util.HashMap;
 import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -34,10 +35,10 @@ public class ProgNode extends Node {
 
   @Override
   public void translate(Context context) {
-
+    HashMap<String, SymbolTable> functionTables = context.getFunctionTables();
     /* Add all function labels first. */
     for (FunctionNode node : functions) {
-
+      functionTables.put(node.getFuncName(), node.getFuncSymbolTable());
       node.translate(context);
     }
 
