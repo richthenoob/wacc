@@ -100,6 +100,7 @@ public class ArrayLiteralNode extends LiteralNode {
             SingleDataTransfer.STR(
                 new RegisterOperand(secondRegisterNum),
                 PreIndexedAddressOperand.PreIndexedAddressZeroOffset(new RegisterOperand(firstRegisterNum))));
+    context.freeRegister(secondRegisterNum);
   }
 
   @Override
