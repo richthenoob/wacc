@@ -147,13 +147,13 @@ public class AssignmentNode extends StatNode {
               "B",
               rhs.getRegister(),
               PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  RegisterOperand.SP(), new ImmediateOperand<>(offset)));
+                  RegisterOperand.SP(), new ImmediateOperand<>(true,offset)));
     } else {
       storeInstr =
           SingleDataTransfer.STR(
               rhs.getRegister(),
               PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  RegisterOperand.SP(), new ImmediateOperand<>(offset)));
+                  RegisterOperand.SP(), new ImmediateOperand<>(true,offset)));
     }
 
     context.addToCurrentLabel(storeInstr);
