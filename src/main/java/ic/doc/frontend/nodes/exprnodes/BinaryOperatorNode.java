@@ -160,11 +160,9 @@ public class BinaryOperatorNode extends ExprNode {
         curr.addToBody(BL(DIVIDE_ZERO_CHECK));
         PredefinedFunctions.addCheckDivideByZeroFunction(context);
 
-        // TODO: update predefined functions to handle __aeabi_idiv and __aeabi_idivmod
-//        String divLabel = binaryOperator == BinaryOperators.DIV ?
-//            DIVIDE_PFUNC : MOD_PFUNC;
-//        curr.addToBody(BL(divLabel));
-//        context.getPfunctions().add(new Label(divLabel));
+        String divLabel = binaryOperator == BinaryOperators.DIV ?
+            DIVIDE_PFUNC : MOD_PFUNC;
+        curr.addToBody(BL(divLabel));
 
         Operand res = binaryOperator == BinaryOperators.DIV ?
             RegisterOperand.R0 : RegisterOperand.R1;

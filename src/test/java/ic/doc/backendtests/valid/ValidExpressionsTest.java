@@ -16,7 +16,7 @@ public class ValidExpressionsTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
+//  @Disabled
   @Tag("backend")
   @Tag("expressions")
   @ParameterizedTest
