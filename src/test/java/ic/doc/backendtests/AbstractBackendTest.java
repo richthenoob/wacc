@@ -146,7 +146,7 @@ public abstract class AbstractBackendTest {
       /* Write to STDIN of container. */
       out.write((stdin + "\n").getBytes(StandardCharsets.UTF_8));
 
-      adapter.awaitCompletion(5, TimeUnit.SECONDS);
+      adapter.awaitCompletion(10, TimeUnit.SECONDS);
 
     } catch (Exception e) {
       System.err.println(e.getMessage());

@@ -15,14 +15,22 @@ public class ValidWhileTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  // TODO: Enable all tests when READ node is complete
   @Tag("backend")
   @Tag("while")
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void validWhileTests(String testName) {
-    if (!testName.equals("rmStyleAddIO.wacc")) {
-      backendTestFile(groupTestPath + testName);
+
+    if (testName.equals("rmStyleAddIO.wacc")) {
+      /* WARNING: Manual test needed! */
+      return;
     }
+
+    if (testName.equals("fibonacciFullIt.wacc")) {
+      backendTestFileWithInput(groupTestPath + testName, "12");
+      return;
+    }
+
+    backendTestFile(groupTestPath + testName);
   }
 }
