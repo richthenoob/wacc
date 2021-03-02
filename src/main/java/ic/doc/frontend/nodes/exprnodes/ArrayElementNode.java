@@ -149,11 +149,15 @@ public class ArrayElementNode extends ExprNode {
                     RegisterOperand.SP(),
                     new ImmediateOperand<>(true, offset)))); // Load index from memory
       }
+      if (i == 0) {
+        label.addToBody(
+            DataProcessing.ADD(
+                arrayReg, RegisterOperand.SP(), new ImmediateOperand<>(true, offsetArray)));
+      }
       label.addToBody(
           SingleDataTransfer.LDR(
               arrayReg, // Load array
-              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  RegisterOperand.SP(), new ImmediateOperand<>(true, offsetArray))));
+              PreIndexedAddressOperand.PreIndexedAddressZeroOffset(arrayReg)));
       label.addToBody(Move.MOV(new RegisterOperand(0), indexReg));
       label.addToBody(Move.MOV(new RegisterOperand(1), arrayReg));
       PredefinedFunctions.addCheckArrayBoundsFunction(context);
