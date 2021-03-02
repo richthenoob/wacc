@@ -82,24 +82,27 @@ public class FunctionNode extends Node {
   @Override
   public void translate(Context context) {
     Label<Instruction> mainLabel = context.getCurrentLabel();
-    mainLabel.addToBody(PUSH_FOUR(RegisterOperand.LR, context.getCurrentSymbolTable()));
 
-    // Create new label for function
+    /* Create new label for function */
     Label<Instruction> funcLabel = new Label<>("f_" + funcName);
     context.getInstructionLabels().add(funcLabel);
     context.setCurrentLabel(funcLabel);
 
-    // Set scope to function's symbol table
+    /* Set scope to function's symbol table for translation of paramListNodes
+     * and statements to add to the correct symbol table. */
     context.setScope(funcSymbolTable);
 
-    // Translate body of function and pop back to main
+    /* Translate parameters. */
+    paramListNode.translate(context);
+    funcLabel.addToBody(PUSH_FOUR(RegisterOperand.LR, context.getCurrentSymbolTable()));
+
+    /* Translate body of function and pop back to main */
     functionBody.translate(context);
     funcLabel.addToBody(POP_FOUR(RegisterOperand.PC, context.getCurrentSymbolTable()));
     funcLabel.addToBody(new LoadLiterals());
 
-    // Return to main scope and main label
+    /* Return to main label for rest of program to be translated. */
     context.setCurrentLabel(mainLabel);
-    context.restoreScope();
   }
 
   private boolean endsWithReturnOrExit(StatNode stat) {

@@ -85,8 +85,6 @@ public class CallNode extends ExprNode {
     // look up function symbol table from func name
     SymbolTable funcTable = context.getFunctionTables().get(identifier);
     context.setScope(funcTable);
-    context.addToCurrentLabel(BL("f_" + identifier));
-
     int offset = 0;
 
     for (int i = 0; i < args.getNumParas(); i++) {
@@ -119,6 +117,9 @@ public class CallNode extends ExprNode {
       // free register used for loading
       context.freeRegister(reg.getValue());
     }
+
+    context.addToCurrentLabel(BL("f_" + identifier));
+    context.restoreScope();
 
     // move result of function call from R0 to free register
     setRegister(new RegisterOperand(context.getFreeRegister()));

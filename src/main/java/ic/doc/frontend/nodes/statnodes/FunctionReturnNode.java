@@ -56,5 +56,6 @@ public class FunctionReturnNode extends StatNode {
     // Move result of function to R0
     context.addToCurrentLabel(MOV(RegisterOperand.R0, exprNode.getRegister()));
     context.addToCurrentLabel(POP_FOUR(RegisterOperand.PC, context.getCurrentSymbolTable()));
+    context.freeRegister(exprNode.getRegister().getValue());
   }
 }
