@@ -87,3 +87,7 @@ echoChar.s contents are:
 -- Executing...
 ===========================================================
 enter a character to echo
+a
+===========================================================
+The exit code is 0.
+-- Finished
