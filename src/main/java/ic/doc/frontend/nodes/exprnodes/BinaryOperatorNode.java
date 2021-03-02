@@ -136,7 +136,8 @@ public class BinaryOperatorNode extends ExprNode {
       //both registers are 10
       lReg = new RegisterOperand(11);
       curr.addToBody(
-          POP_FOUR(new RegisterOperand(11), context.getCurrentSymbolTable()));
+          POP(new RegisterOperand(11)));
+      context.getCurrentSymbolTable().decrementOffset(4);
     }
 
     switch (binaryOperator) {

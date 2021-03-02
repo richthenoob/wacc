@@ -40,8 +40,7 @@ public class ProgNode extends Node {
     context.getInstructionLabels().add(inst);
     context.setCurrentLabel(inst);
     context.setScope(symbolTable);
-    inst.addToBody(Stack.PUSH_FOUR(RegisterOperand.LR,
-        context.getCurrentSymbolTable()));
+    inst.addToBody(Stack.PUSH(RegisterOperand.LR));
 
     Map<String, SymbolTable> functionTables = context.getFunctionTables();
     /* Add all function labels first. */
@@ -57,8 +56,8 @@ public class ProgNode extends Node {
     context.restoreScope();
     context.addToCurrentLabel(SingleDataTransfer.LDR(RegisterOperand.R0, new
         ImmediateOperand<>(0)));
-    context.addToCurrentLabel(Stack.POP_FOUR(RegisterOperand.PC,
-        context.getCurrentSymbolTable()));
+    context.addToCurrentLabel(Stack.POP(RegisterOperand.PC
+    ));
     context.addToCurrentLabel(new LoadLiterals());
   }
 }

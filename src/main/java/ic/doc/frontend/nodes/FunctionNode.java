@@ -1,12 +1,10 @@
 package ic.doc.frontend.nodes;
 
-import static ic.doc.backend.Instructions.DataProcessing.SUB;
 import static ic.doc.backend.Instructions.Stack.*;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Instructions.LoadLiterals;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.errors.SyntaxException;
@@ -94,13 +92,15 @@ public class FunctionNode extends Node {
 
     /* Translate parameters. */
     paramListNode.translate(context);
-    funcLabel.addToBody(PUSH_FOUR(RegisterOperand.LR, context.getCurrentSymbolTable()));
+    context.addToCurrentLabel(PUSH(RegisterOperand.LR));
 
     /* Translate body of function and pop back to main */
     functionBody.translate(context);
+    context.restoreScope();
     funcSymbolTable.incrementOffset(4); /* Account for additional PUSH done when loading args. */
-    funcLabel.addToBody(POP_FOUR(RegisterOperand.PC, context.getCurrentSymbolTable()));
-    funcLabel.addToBody(new LoadLiterals());
+    context.addToCurrentLabel(POP(RegisterOperand.PC));
+    context.addToCurrentLabel(POP(RegisterOperand.PC));
+    context.addToCurrentLabel(new LoadLiterals());
 
     /* Return to main label for rest of program to be translated. */
     context.setCurrentLabel(mainLabel);
