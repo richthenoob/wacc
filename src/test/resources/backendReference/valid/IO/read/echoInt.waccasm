@@ -2,7 +2,7 @@
 
 # Output:
 # enter an integer to echo
-# #input#
+# #input# 42
 # #output#
 
 # Program:
@@ -99,7 +99,7 @@ echoInt.s contents are:
 -- Executing...
 ===========================================================
 enter an integer to echo
-1
+42
 ===========================================================
 The exit code is 0.
 -- Finished

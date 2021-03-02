@@ -2,7 +2,7 @@
 
 # Output:
 # enter a character to echo
-# #input#
+# #input# ,
 # #output#
 
 # Program:
@@ -82,8 +82,11 @@ echoPuncChar.s contents are:
 61		BL scanf
 62		POP {pc}
 63	
-===========================================================
 -- Assembling and Linking...
 -- Executing...
 ===========================================================
 enter a character to echo
+,
+===========================================================
+The exit code is 0.
+-- Finished
