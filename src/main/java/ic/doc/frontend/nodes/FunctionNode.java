@@ -98,6 +98,7 @@ public class FunctionNode extends Node {
 
     /* Translate body of function and pop back to main */
     functionBody.translate(context);
+    funcSymbolTable.incrementOffset(4); /* Account for additional PUSH done when loading args. */
     funcLabel.addToBody(POP_FOUR(RegisterOperand.PC, context.getCurrentSymbolTable()));
     funcLabel.addToBody(new LoadLiterals());
 

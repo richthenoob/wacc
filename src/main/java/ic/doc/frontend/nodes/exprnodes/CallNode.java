@@ -82,10 +82,10 @@ public class CallNode extends ExprNode {
 
   @Override
   public void translate(Context context) {
-    // look up function symbol table from func name
+    /* Look up function symbol table from func name */
     SymbolTable funcTable = context.getFunctionTables().get(identifier);
     context.setScope(funcTable);
-    int offset = 0;
+    int offset;
 
     for (int i = 0; i < args.getNumParas(); i++) {
       ExprNode arg = args.getParams().get(i);
@@ -94,34 +94,29 @@ public class CallNode extends ExprNode {
       // bool and char means +1 and not +4
       String shiftCond = "";
       if (arg instanceof BooleanLiteralNode || arg instanceof CharacterLiteralNode) {
-        offset++;
+        offset = 1;
         shiftCond = "B";
       } else {
-        offset =+ 4;
+        offset = 4;
       }
 
-      // look up each argument in function symbol table
-      // update entry corresponding to argument to the offset (sp, sp+4, etc)
-      VariableIdentifier id = (VariableIdentifier) funcTable.getIdentifier(i);
-      id.setOffsetStack(-offset);
-
-      // load argument onto a free register
+      /* Load argument onto a free register */
       arg.translate(context);
 
-      // store argument onto stack
+      /* Store argument onto stack */
       RegisterOperand reg = arg.getRegister();
       PreIndexedAddressOperand shiftStack = PreIndexedAddressFixedOffsetJump(RegisterOperand.SP,
           new ImmediateOperand<>(true, -offset));
       context.addToCurrentLabel(STR(shiftCond, reg, shiftStack));
 
-      // free register used for loading
+      /* Free register used for loading */
       context.freeRegister(reg.getValue());
     }
 
     context.addToCurrentLabel(BL("f_" + identifier));
     context.restoreScope();
 
-    // move result of function call from R0 to free register
+    /* Move result of function call from R0 to free register */
     setRegister(new RegisterOperand(context.getFreeRegister()));
     context.addToCurrentLabel(MOV(getRegister(), RegisterOperand.R0));
   }
