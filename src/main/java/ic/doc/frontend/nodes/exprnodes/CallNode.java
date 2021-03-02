@@ -11,17 +11,15 @@ import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.frontend.identifiers.FunctionIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
-import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.ArgListNode;
-import ic.doc.frontend.nodes.exprnodes.Literals.BooleanLiteralNode;
-import ic.doc.frontend.nodes.exprnodes.Literals.CharacterLiteralNode;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
+import ic.doc.frontend.types.BoolType;
+import ic.doc.frontend.types.CharType;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.Type;
 import java.util.List;
-import java.util.Set;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class CallNode extends ExprNode {
@@ -93,7 +91,7 @@ public class CallNode extends ExprNode {
       // calculate new stack pointer offset after storing each argument
       // bool and char means +1 and not +4
       String shiftCond = "";
-      if (arg instanceof BooleanLiteralNode || arg instanceof CharacterLiteralNode) {
+      if (arg.getType() instanceof BoolType || arg.getType() instanceof CharType) {
         offset = 1;
         shiftCond = "B";
       } else {
