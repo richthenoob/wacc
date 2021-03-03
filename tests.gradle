@@ -1,0 +1,72 @@
+/* Supporting tasks for backend tests */
+String imageName = "jqpoon/arm_compile_emulate:working"
+String containerName = "backendContainer"
+String tempDirPath = "${rootDir}/src/test/resources/tmp/"
+
+dockerRun {
+    name containerName
+    image imageName
+    arguments '-t', '-v', tempDirPath + ':/compile/src:ro'
+}
+
+tasks.dockerRun.doFirst {
+    mkdir tempDirPath
+}
+
+task dockerStopAndRemove(type: Exec) {
+    commandLine 'docker', 'stop', '-t', '1', containerName
+//    delete tempDirPath
+    finalizedBy(dockerRemoveContainer)
+}
+
+/* Frontend tests */
+test {
+    systemProperties = [tempDirPath: tempDirPath,
+                        containerName: containerName,
+                        imageName: imageName,
+                        "org.slf4j.simpleLogger.defaultLogLevel": "error"] // Shut logger up
+    useJUnitPlatform()
+}
+
+task frontendValidTest(type: Test) {
+    useJUnitPlatform {
+        includeTags 'valid'
+    }
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+}
+
+task frontendInvalidSyntaxTest(type: Test) {
+    useJUnitPlatform {
+        includeTags 'syntax'
+    }
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+}
+
+task frontendInvalidSemanticTest(type: Test) {
+    useJUnitPlatform {
+        includeTags 'semantic'
+    }
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+}
+
+/* Backend tests */
+task backendTest(type: Test) {
+    systemProperties = [tempDirPath: tempDirPath,
+                        containerName: containerName,
+                        imageName: imageName,
+                        "org.slf4j.simpleLogger.defaultLogLevel": "error"] // Shut logger up
+    useJUnitPlatform {
+        includeTags 'backend'
+    }
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+    dependsOn(tasks.dockerRun)
+    finalizedBy(dockerStopAndRemove)
+}

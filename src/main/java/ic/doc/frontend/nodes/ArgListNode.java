@@ -1,11 +1,14 @@
 package ic.doc.frontend.nodes;
 
-import ic.doc.frontend.semantics.Visitor;
+import ic.doc.backend.Context;
+import ic.doc.backend.Data.Data;
+import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
+import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.Type;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ArgListNode extends Node {
@@ -62,4 +65,11 @@ public class ArgListNode extends Node {
   public void check(Visitor visitor, ParserRuleContext ctx) {
     /* No checks needed. */
   }
+
+  @Override
+  public void translate(Context context) {
+    /* No translation needed. */
+  }
+
+
 }

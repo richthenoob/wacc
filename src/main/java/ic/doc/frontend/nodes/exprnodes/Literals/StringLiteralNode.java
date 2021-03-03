@@ -1,8 +1,15 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
+import ic.doc.backend.Context;
+import ic.doc.backend.Data.Data;
+import ic.doc.backend.Instructions.SingleDataTransfer;
+import ic.doc.backend.Instructions.operands.LabelAddressOperand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.Label;
+import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.CharType;
 import ic.doc.frontend.types.StringType;
-import ic.doc.frontend.semantics.Visitor;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Multiple ASCII character between two " symbols. A '\' can be used to escape the character
@@ -12,7 +19,7 @@ public class StringLiteralNode extends LiteralNode {
   private final String value;
 
   public StringLiteralNode(String value) {
-    this.value = value;
+    this.value = value.substring(1, value.length() - 1);
     setType(new StringType());
   }
 
@@ -31,7 +38,21 @@ public class StringLiteralNode extends LiteralNode {
   }
 
   @Override
+  public void translate(Context context) {
+    RegisterOperand register = new RegisterOperand(context.getFreeRegister());
+    setRegister(register);
+    int length = value.length();
+    List<Label<Data>> dataLabels = context.getDataLabels();
+    int newIndex = dataLabels.size();
+    Label<Data> newLabel = new Label<>("msg_" + newIndex);
+    dataLabels.add(newIndex, newLabel);
+    newLabel.addToBody(new Data(length, value));
+    LabelAddressOperand operand = new LabelAddressOperand(newLabel.getFunctionLabel());
+    context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
+  }
+
+  @Override
   public String getInput() {
-    return value.substring(1, value.length() - 1);
+    return value;
   }
 }

@@ -1,5 +1,6 @@
 package ic.doc.frontendtests.valid;
 
+import ic.doc.TestUtils;
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.util.Collection;
 import org.junit.jupiter.api.Tag;
@@ -10,7 +11,7 @@ public class ValidRuntimeErrNullDereferenceTest extends AbstractFrontendTest {
   private static final String groupTestPath = "/valid/runtimeErr/nullDereference/";
 
   private static Collection<String> getTestNames() {
-    return getAllTestNames(groupTestPath);
+    return TestUtils.getAllTestNames(groupTestPath);
   }
 
   @Tag("valid")
@@ -18,7 +19,7 @@ public class ValidRuntimeErrNullDereferenceTest extends AbstractFrontendTest {
   @Tag("nullDereference")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void validNullDereferenceTests(String testName) throws Exception {
-    testFile(groupTestPath + testName);
+  public void validNullDereferenceTests(String testName) {
+    frontendTestFile(groupTestPath + testName);
   }
 }

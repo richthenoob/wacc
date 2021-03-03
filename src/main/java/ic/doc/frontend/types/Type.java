@@ -4,6 +4,10 @@ import java.util.List;
 
 public abstract class Type {
 
+  /* Used in code generation to determine the amount of space on the stack
+   * that should be allocated for a variable of this type. */
+  public abstract int getVarSize();
+
   public abstract String toString();
 
   public static boolean checkTypeCompatibility(Type t1, Type t2) {

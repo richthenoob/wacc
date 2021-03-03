@@ -1,16 +1,25 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import ic.doc.backend.Context;
+import ic.doc.backend.Instructions.*;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.Label;
+import ic.doc.backend.PredefinedFunctions;
 import ic.doc.frontend.identifiers.Identifier;
+import ic.doc.frontend.identifiers.VariableIdentifier;
+import ic.doc.frontend.nodes.exprnodes.Literals.IntLiteralNode;
 import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolTable;
+import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ArrayType;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.IntType;
 import ic.doc.frontend.types.Type;
-import ic.doc.frontend.semantics.Visitor;
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Parser definition: arrayElem: IDENT (OPEN_BRACKETS expr CLOSE_BRACKETS)+
  * IDENT MUST be of type T[], expr MUST be of type INT
@@ -22,9 +31,26 @@ public class ArrayElementNode extends ExprNode {
   private final VariableNode identNode;
   private boolean isErrored = false;
 
+  public List<ExprNode> getExprNodes() {
+    return exprNodes;
+  }
+
   public ArrayElementNode(List<ExprNode> exprNodes, VariableNode identNode) {
     this.exprNodes = exprNodes;
     this.identNode = identNode;
+  }
+
+  public int getDimensions() {
+    return exprNodes.size();
+  }
+
+  public ExprNode getFirstIndex() {
+
+    return exprNodes.get(0);
+  }
+
+  public VariableNode getIdentNode() {
+    return identNode;
   }
 
   @Override
@@ -89,6 +115,88 @@ public class ArrayElementNode extends ExprNode {
       }
       setType(type);
     }
+  }
+
+  public static RegisterOperand translateArray(Context context, ArrayElementNode array) {
+    Label<Instruction> label = context.getCurrentLabel();
+    SymbolTable symbolTable = context.getCurrentSymbolTable();
+
+    /* Find offset for array pointer */
+    VariableNode lhsVar = array.getIdentNode();
+    String name = lhsVar.getName();
+    SymbolKey key = new SymbolKey(name, false);
+    VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
+    int offsetArray = id.getOffsetStack(symbolTable, key);
+
+    RegisterOperand arrayReg = new RegisterOperand(context.getFreeRegister());
+    RegisterOperand indexReg = new RegisterOperand(context.getFreeRegister());
+    List<ExprNode> arrays = array.getExprNodes();
+
+    for (int i = 0; i < arrays.size(); i++) {
+      /* Load location of array into ArrayReg, only needed for first layer as for nested arrays the
+      nested array will already be in arrayReg */
+      if (i == 0) {
+        label.addToBody(
+            DataProcessing.ADD(
+                arrayReg, RegisterOperand.SP(), new ImmediateOperand<>(true, offsetArray)));
+      }
+      if (arrays.get(i) instanceof IntLiteralNode) {
+        label.addToBody(
+            SingleDataTransfer.LDR(
+                indexReg,
+                new ImmediateOperand<>(
+                    ((IntLiteralNode) arrays.get(i)).getValue().intValue()))); // Load index literal
+      } else {
+        /* find offset of index pointer if its a variable */
+        String indexVarName = arrays.get(i).getInput();
+        SymbolKey indexVarkey = new SymbolKey(indexVarName, false);
+        VariableIdentifier indexId = (VariableIdentifier) symbolTable.lookupAll(indexVarkey);
+        int offset = indexId.getOffsetStack(symbolTable, indexVarkey);
+
+        /* Load index from memory */
+        label.addToBody(
+            SingleDataTransfer.LDR(
+                indexReg,
+                PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+                    RegisterOperand.SP(), new ImmediateOperand<>(true, offset))));
+      }
+      /* load array */
+      label.addToBody(
+          SingleDataTransfer.LDR(
+              arrayReg, PreIndexedAddressOperand.PreIndexedAddressZeroOffset(arrayReg)));
+
+      /* Move values into correct registers to call predefined function */
+      label.addToBody(Move.MOV(new RegisterOperand(0), indexReg));
+      label.addToBody(Move.MOV(new RegisterOperand(1), arrayReg));
+      PredefinedFunctions.addCheckArrayBoundsFunction(context);
+      label.addToBody(Branch.BL(PredefinedFunctions.CHECK_ARRAY_BOUNDS_FUNC));
+
+      /* address of value = address of first value + value of index * 4 */
+      label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, new ImmediateOperand<>(true, 4)));
+      label.addToBody(
+          DataProcessing.SHIFTADD(
+              arrayReg,
+              arrayReg,
+              indexReg,
+              PreIndexedAddressOperand.ShiftTypes.LSL,
+              new ImmediateOperand<>(true, 2)));
+    }
+    context.freeRegister(indexReg.getValue());
+    return arrayReg;
+  }
+
+  @Override
+  public void translate(Context context) {
+    RegisterOperand arrayRegister = translateArray(context, this);
+    setRegister(arrayRegister);
+    /* Load value at memory location */
+    context
+        .getCurrentLabel()
+        .addToBody(
+            SingleDataTransfer.LDR(
+                arrayRegister,
+                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(
+                    arrayRegister)));
   }
 
   @Override

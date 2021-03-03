@@ -57,7 +57,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     StatNode statNode = (StatNode) visit(ctx.stat());
 
-    return new ProgNode(functionNodes, statNode);
+    return new ProgNode(currentSymbolTable, functionNodes, statNode);
   }
 
   /* Helper function to called to declare functions, adds to symbol table if function name is not already defined */
@@ -96,7 +96,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         String name = p.getInput();
         Type type = p.getType();
         SymbolKey key = new SymbolKey(name, false);
-        currentSymbolTable.add(key, new ParamIdentifier(type));
+        currentSymbolTable.add(key, new VariableIdentifier(type));
       }
       StatNode stat = (StatNode) visit(ctx.stat());
       /* Needs to check current and outer scope*/
@@ -137,7 +137,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     VariableNode var = new VariableNode(name);
     var.setType(type);
     ExprNode expr = (ExprNode) visit(ctx.assignRhs());
-    AssignmentNode node = new AssignmentNode(var, expr, true);
+    AssignmentNode node = new AssignmentNode(var, expr, true,currentSymbolTable);
     node.check(this, ctx);
     return node;
   }
@@ -158,7 +158,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   public Node visitAssignment(BasicParser.AssignmentContext ctx) {
     ExprNode lhs = (ExprNode) visit(ctx.assignLhs());
     ExprNode rhs = (ExprNode) visit(ctx.assignRhs());
-    AssignmentNode node = new AssignmentNode(lhs, rhs, false);
+    AssignmentNode node = new AssignmentNode(lhs, rhs, false,currentSymbolTable);
     node.check(this, ctx);
     return node;
   }
@@ -174,9 +174,14 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   Creates a while loop node */
   @Override
   public Node visitWhile(BasicParser.WhileContext ctx) {
-    StatNode body = (StatNode) visit(ctx.stat());
     ExprNode expr = (ExprNode) visit(ctx.expr());
-    WhileLoopNode node = new WhileLoopNode(expr, body);
+
+    SymbolTable whileBodySymbolTable = new SymbolTable(currentSymbolTable);
+    currentSymbolTable = whileBodySymbolTable;
+    StatNode body = (StatNode) visit(ctx.stat());
+    currentSymbolTable = whileBodySymbolTable.getParentSymbolTable();
+
+    WhileLoopNode node = new WhileLoopNode(expr, body, whileBodySymbolTable);
     node.check(this, ctx);
     return node;
   }

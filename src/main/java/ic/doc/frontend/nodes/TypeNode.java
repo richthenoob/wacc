@@ -1,7 +1,12 @@
 package ic.doc.frontend.nodes;
 
-import ic.doc.frontend.types.Type;
+import ic.doc.backend.Context;
+import ic.doc.backend.Data.Data;
+import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
+import ic.doc.frontend.types.Type;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class TypeNode extends Node {
@@ -20,6 +25,9 @@ public class TypeNode extends Node {
   public void check(Visitor visitor, ParserRuleContext ctx) {
     /* No checks needed. */
   }
+
+  @Override
+  public void translate(Context context) {}
 
   public String getInput() {
     return getType().toString();

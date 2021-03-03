@@ -1,13 +1,23 @@
 package ic.doc.frontend.nodes;
 
+import static ic.doc.backend.Instructions.Stack.*;
+
+import ic.doc.backend.Context;
+import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.LoadLiterals;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.Label;
+import ic.doc.frontend.errors.SyntaxException;
+import ic.doc.frontend.nodes.statnodes.ConditionalBranchNode;
+import ic.doc.frontend.nodes.statnodes.ExitNode;
+import ic.doc.frontend.nodes.statnodes.FunctionReturnNode;
+import ic.doc.frontend.nodes.statnodes.SequentialCompositionNode;
+import ic.doc.frontend.nodes.statnodes.StatNode;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
-import ic.doc.frontend.errors.SyntaxException;
-import ic.doc.frontend.nodes.statnodes.*;
 import ic.doc.frontend.types.Type;
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import java.util.List;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 public class FunctionNode extends Node {
 
@@ -65,6 +75,31 @@ public class FunctionNode extends Node {
           ctx.getStart().getLine(),
           ctx.getStart().getCharPositionInLine());
     }
+  }
+
+  @Override
+  public void translate(Context context) {
+    /* Create new label for function */
+    Label<Instruction> funcLabel = new Label<>("f_" + funcName);
+    context.getInstructionLabels().add(funcLabel);
+    context.setCurrentLabel(funcLabel);
+
+    /* Set scope to function's symbol table for translation of paramListNodes
+     * and statements to add to the correct symbol table. */
+    context.setScope(funcSymbolTable);
+
+    /* Translate parameters. */
+    paramListNode.translate(context);
+    context.addToCurrentLabel(PUSH(RegisterOperand.LR));
+    funcSymbolTable.incrementOffset(4);
+
+    /* Translate body of function and pop back to main */
+    functionBody.translate(context);
+    funcSymbolTable.decrementOffset(4);
+    context.restoreScope();
+    context.addToCurrentLabel(POP(RegisterOperand.PC));
+    context.addToCurrentLabel(POP(RegisterOperand.PC));
+    context.addToCurrentLabel(new LoadLiterals());
   }
 
   private boolean endsWithReturnOrExit(StatNode stat) {
