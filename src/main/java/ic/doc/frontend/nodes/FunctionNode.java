@@ -1,12 +1,10 @@
 package ic.doc.frontend.nodes;
 
-import static ic.doc.backend.Instructions.DataProcessing.SUB;
 import static ic.doc.backend.Instructions.Stack.*;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Instructions.LoadLiterals;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.errors.SyntaxException;
@@ -81,25 +79,27 @@ public class FunctionNode extends Node {
 
   @Override
   public void translate(Context context) {
-    Label<Instruction> mainLabel = context.getCurrentLabel();
-    mainLabel.addToBody(PUSH_FOUR(RegisterOperand.LR, context.getCurrentSymbolTable()));
-
-    // Create new label for function
+    /* Create new label for function */
     Label<Instruction> funcLabel = new Label<>("f_" + funcName);
     context.getInstructionLabels().add(funcLabel);
     context.setCurrentLabel(funcLabel);
 
-    // Set scope to function's symbol table
+    /* Set scope to function's symbol table for translation of paramListNodes
+     * and statements to add to the correct symbol table. */
     context.setScope(funcSymbolTable);
 
-    // Translate body of function and pop back to main
-    functionBody.translate(context);
-    funcLabel.addToBody(POP_FOUR(RegisterOperand.PC, context.getCurrentSymbolTable()));
-    funcLabel.addToBody(new LoadLiterals());
+    /* Translate parameters. */
+    paramListNode.translate(context);
+    context.addToCurrentLabel(PUSH(RegisterOperand.LR));
+    funcSymbolTable.incrementOffset(4);
 
-    // Return to main scope and main label
-    context.setCurrentLabel(mainLabel);
+    /* Translate body of function and pop back to main */
+    functionBody.translate(context);
+    funcSymbolTable.decrementOffset(4);
     context.restoreScope();
+    context.addToCurrentLabel(POP(RegisterOperand.PC));
+    context.addToCurrentLabel(POP(RegisterOperand.PC));
+    context.addToCurrentLabel(new LoadLiterals());
   }
 
   private boolean endsWithReturnOrExit(StatNode stat) {

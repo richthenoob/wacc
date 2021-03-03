@@ -52,7 +52,7 @@ public class VariableNode extends ExprNode {
     if (id.getType().getVarSize() == 1) {
       context.addToCurrentLabel(
           SingleDataTransfer.LDR(
-              "B",
+              "SB",
               register,
               PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
                   RegisterOperand.SP(),

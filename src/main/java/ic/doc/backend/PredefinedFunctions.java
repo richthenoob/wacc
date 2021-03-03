@@ -13,8 +13,8 @@ import static ic.doc.backend.Instructions.DataProcessing.ADD;
 import static ic.doc.backend.Instructions.DataProcessing.CMP;
 import static ic.doc.backend.Instructions.Move.MOV;
 import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
-import static ic.doc.backend.Instructions.Stack.PUSH_FOUR;
-import static ic.doc.backend.Instructions.Stack.POP_FOUR;
+import static ic.doc.backend.Instructions.Stack.PUSH;
+import static ic.doc.backend.Instructions.Stack.POP;
 import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressFixedOffset;
 import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressZeroOffset;
 
@@ -72,7 +72,7 @@ public class PredefinedFunctions {
     instrLabel
         .addToBody(MOV(RegisterOperand.R0, new ImmediateOperand(true, 0)));
     instrLabel.addToBody(BL("fflush"));
-    instrLabel.addToBody(POP_FOUR(RegisterOperand.PC, symboltable));
+    instrLabel.addToBody(POP(RegisterOperand.PC));
   }
 
   public static void addPrintStringFunction(Context ctx) {
@@ -83,7 +83,7 @@ public class PredefinedFunctions {
     }
 
     printStringLabel
-        .addToBody(PUSH_FOUR(RegisterOperand.LR, ctx.getCurrentSymbolTable()));
+        .addToBody(PUSH(RegisterOperand.LR));
     // Operand.R0 needs to be [Operand.R0]
     printStringLabel.addToBody(LDR(RegisterOperand.R1,
         PreIndexedAddressZeroOffset(RegisterOperand.R0)));
@@ -107,7 +107,7 @@ public class PredefinedFunctions {
     }
 
     printBoolLabel
-        .addToBody(PUSH_FOUR(RegisterOperand.LR, ctx.getCurrentSymbolTable()));
+        .addToBody(PUSH(RegisterOperand.LR));
     printBoolLabel
         .addToBody(CMP(RegisterOperand.R0, new ImmediateOperand(true, 0)));
     /* TRUE */
@@ -133,7 +133,7 @@ public class PredefinedFunctions {
     }
 
     printIntLabel
-        .addToBody(PUSH_FOUR(RegisterOperand.LR, ctx.getCurrentSymbolTable()));
+        .addToBody(PUSH(RegisterOperand.LR));
     printIntLabel.addToBody(MOV(RegisterOperand.R1, RegisterOperand.R0));
     /* INT MSG */
     String intLabelStr = getDataLabel(ctx, INT_PLACEHOLDER);
@@ -153,7 +153,7 @@ public class PredefinedFunctions {
     }
 
     printLnLabel
-        .addToBody(PUSH_FOUR(RegisterOperand.LR, ctx.getCurrentSymbolTable()));
+        .addToBody(PUSH(RegisterOperand.LR));
     /* PRINTLN MSG */
     String newLnLabelStr = getDataLabel(ctx, NEWLN_PLACEHOLDER);
     /* */
@@ -167,7 +167,7 @@ public class PredefinedFunctions {
     printLnLabel.addToBody(MOV(RegisterOperand.R0, new ImmediateOperand(true, 0)));
     printLnLabel.addToBody(BL("fflush"));
     printLnLabel
-        .addToBody(POP_FOUR(RegisterOperand.PC, ctx.getCurrentSymbolTable()));
+        .addToBody(POP(RegisterOperand.PC));
 
     endFunctions.add(printLnLabel);
   }
@@ -180,7 +180,7 @@ public class PredefinedFunctions {
     }
 
     printReferenceLabel
-        .addToBody(PUSH_FOUR(RegisterOperand.LR, ctx.getCurrentSymbolTable()));
+        .addToBody(PUSH(RegisterOperand.LR));
     printReferenceLabel.addToBody(MOV(RegisterOperand.R1, RegisterOperand.R0));
 
     /* Declare printRefMsg in Data */
@@ -206,7 +206,7 @@ public class PredefinedFunctions {
     }
 
     checkNullPointerLabel
-        .addToBody(PUSH_FOUR(RegisterOperand.LR, ctx.getCurrentSymbolTable()));
+        .addToBody(PUSH(RegisterOperand.LR));
     checkNullPointerLabel
         .addToBody(CMP(RegisterOperand.R0, new ImmediateOperand(true, 0)));
     /* Declare nullReferenceErrorMsg in Data */
@@ -219,7 +219,7 @@ public class PredefinedFunctions {
 
     checkNullPointerLabel.addToBody(BLE(THROW_RUNTIME_ERROR_FUNC));
     checkNullPointerLabel
-        .addToBody(POP_FOUR(RegisterOperand.PC, ctx.getCurrentSymbolTable()));
+        .addToBody(POP(RegisterOperand.PC));
 
     endFunctions.add(checkNullPointerLabel);
   }
@@ -251,7 +251,7 @@ public class PredefinedFunctions {
     addThrowRuntimeErrorFunction(ctx);
 
     checkArrayBoundsLabel
-        .addToBody(PUSH_FOUR(RegisterOperand.LR, ctx.getCurrentSymbolTable()));
+        .addToBody(PUSH(RegisterOperand.LR));
     checkArrayBoundsLabel
         .addToBody(CMP(RegisterOperand.R0, new ImmediateOperand(true, 0)));
 
@@ -276,7 +276,7 @@ public class PredefinedFunctions {
     checkArrayBoundsLabel.addToBody(BLCS(THROW_RUNTIME_ERROR_FUNC));
 
     checkArrayBoundsLabel
-        .addToBody(POP_FOUR(RegisterOperand.PC, ctx.getCurrentSymbolTable()));
+        .addToBody(POP(RegisterOperand.PC));
 
     endFunctions.add(checkArrayBoundsLabel);
   }
@@ -290,7 +290,7 @@ public class PredefinedFunctions {
     }
 
     checkDivideByZeroLabel
-        .addToBody(PUSH_FOUR(RegisterOperand.LR, ctx.getCurrentSymbolTable()));
+        .addToBody(PUSH(RegisterOperand.LR));
     checkDivideByZeroLabel
         .addToBody(CMP(RegisterOperand.R1, new ImmediateOperand(true, 0)));
 
@@ -304,7 +304,7 @@ public class PredefinedFunctions {
     addThrowRuntimeErrorFunction(ctx);
     checkDivideByZeroLabel.addToBody(BLE(THROW_RUNTIME_ERROR_FUNC));
     checkDivideByZeroLabel
-        .addToBody(POP_FOUR(RegisterOperand.PC, ctx.getCurrentSymbolTable()));
+        .addToBody(POP(RegisterOperand.PC));
 
     endFunctions.add(checkDivideByZeroLabel);
   }
@@ -331,7 +331,7 @@ public class PredefinedFunctions {
   /* Common instructions between p_free_pair and p_free_array */
   private static void addCommonFreeInstructions(Context ctx,
       Label<Instruction> instrLabel) {
-    instrLabel.addToBody(PUSH_FOUR(RegisterOperand.LR, ctx.getCurrentSymbolTable()));
+    instrLabel.addToBody(PUSH(RegisterOperand.LR));
     instrLabel.addToBody(CMP(RegisterOperand.R0, new ImmediateOperand(true, 0)));
 
     /* TODO: THIS WORKS BUT THERE WILL BE MANY DUPLICATE NULL REF MSG. REFACTOR SO THAT WE USE A COMMON ONE SOMEHOW */
@@ -357,7 +357,7 @@ public class PredefinedFunctions {
     addCommonFreeInstructions(ctx, freeArrayFuncLabel);
     freeArrayFuncLabel.addToBody(BL("free"));
     freeArrayFuncLabel
-        .addToBody(POP_FOUR(RegisterOperand.PC, ctx.getCurrentSymbolTable()));
+        .addToBody(POP(RegisterOperand.PC));
 
     endFunctions.add(freeArrayFuncLabel);
   }
@@ -372,7 +372,7 @@ public class PredefinedFunctions {
     addCommonFreeInstructions(ctx, freePairFuncLabel);
 
     freePairFuncLabel
-        .addToBody(PUSH_FOUR(RegisterOperand.R0, ctx.getCurrentSymbolTable()));
+        .addToBody(PUSH(RegisterOperand.R0));
     freePairFuncLabel.addToBody(LDR(RegisterOperand.R0,
         PreIndexedAddressZeroOffset(RegisterOperand.R0)));
     freePairFuncLabel.addToBody(BL("free"));
@@ -383,10 +383,10 @@ public class PredefinedFunctions {
             new ImmediateOperand(true, 4))));
     freePairFuncLabel.addToBody(BL("free"));
     freePairFuncLabel
-        .addToBody(POP_FOUR(RegisterOperand.R0, ctx.getCurrentSymbolTable()));
+        .addToBody(POP(RegisterOperand.R0));
     freePairFuncLabel.addToBody(BL("free"));
     freePairFuncLabel
-        .addToBody(POP_FOUR(RegisterOperand.PC, ctx.getCurrentSymbolTable()));
+        .addToBody(POP(RegisterOperand.PC));
 
     endFunctions.add(freePairFuncLabel);
   }
@@ -399,7 +399,7 @@ public class PredefinedFunctions {
       return;
     }
 
-    readCharFuncLabel.addToBody(PUSH_FOUR(RegisterOperand.LR, ctx.getCurrentSymbolTable()));
+    readCharFuncLabel.addToBody(PUSH(RegisterOperand.LR));
     readCharFuncLabel.addToBody(MOV(RegisterOperand.R1, RegisterOperand.R0));
 
     String typePlaceholderLabel = getDataLabel(ctx,
@@ -410,7 +410,7 @@ public class PredefinedFunctions {
         ADD(RegisterOperand.R0, RegisterOperand.R0, new ImmediateOperand(true,4)));
     readCharFuncLabel.addToBody(BL("scanf"));
     readCharFuncLabel
-        .addToBody(POP_FOUR(RegisterOperand.PC, ctx.getCurrentSymbolTable()));
+        .addToBody(POP(RegisterOperand.PC));
 
     endFunctions.add(readCharFuncLabel);
   }
