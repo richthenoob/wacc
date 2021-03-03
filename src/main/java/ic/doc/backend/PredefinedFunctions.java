@@ -219,7 +219,7 @@ public class PredefinedFunctions {
         new LabelAddressOperand(nullReferenceErrorLabelStr)));
 
     addThrowRuntimeErrorFunction(ctx);
-    checkNullPointerLabel.addToBody(BLE(THROW_RUNTIME_ERROR_FUNC));
+    checkNullPointerLabel.addToBody(BLEQ(THROW_RUNTIME_ERROR_FUNC));
     checkNullPointerLabel
         .addToBody(POP(RegisterOperand.PC));
 
