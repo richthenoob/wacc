@@ -84,12 +84,8 @@ public class FunctionNode extends Node {
     context.getInstructionLabels().add(funcLabel);
     context.setCurrentLabel(funcLabel);
 
-    /* Set scope to function's symbol table for translation of paramListNodes
-     * and statements to add to the correct symbol table. */
+    /* Set up function routine. */
     context.setScope(funcSymbolTable);
-
-    /* Translate parameters. */
-    paramListNode.translate(context);
     context.addToCurrentLabel(PUSH(RegisterOperand.LR));
     funcSymbolTable.incrementOffset(4);
 
@@ -97,6 +93,11 @@ public class FunctionNode extends Node {
     functionBody.translate(context);
     context.addToCurrentLabel(POP(RegisterOperand.PC));
     context.addToCurrentLabel(new LoadLiterals());
+  }
+
+  public void translateParameters(Context context) {
+    context.setScope(funcSymbolTable);
+    paramListNode.translate(context);
   }
 
   private boolean endsWithReturnOrExit(StatNode stat) {

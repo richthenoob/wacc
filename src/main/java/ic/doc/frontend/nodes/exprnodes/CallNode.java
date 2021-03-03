@@ -89,18 +89,21 @@ public class CallNode extends ExprNode {
      * after the function call. */
     SymbolTable previousSymbolTable = context.getCurrentSymbolTable();
 
-    /* Look up function symbol table from func name */
+    /* Look up function symbol table from func name. Use counter to track
+     * the size of parameters that have been pushed onto the stack, ensuring
+     * to restore this at the end of the function call. */
     SymbolTable funcTable = context.getFunctionTables().get(identifier);
-    int offset;
+    int counter = 0;
 
     for (int i = 0; i < args.getNumParas(); i++) {
       ExprNode arg = args.getParams().get(i);
 
+      int offset;
       // calculate new stack pointer offset after storing each argument
       // bool and char means +1 and not +4
       String shiftCond = "";
-      if (arg.getType() instanceof BoolType || arg
-          .getType() instanceof CharType) {
+      if (arg.getType() instanceof BoolType ||
+          arg.getType() instanceof CharType) {
         offset = 1;
         shiftCond = "B";
       } else {
@@ -110,16 +113,27 @@ public class CallNode extends ExprNode {
       /* Load argument onto a free register */
       arg.translate(context);
 
-      /* Store argument onto stack */
+      /* Because there is a push instruction here, we must temporarily
+       * increment the function table so that if we access anything in the stack
+       * in subsequent parameters, this push is accounted for. */
+      funcTable.incrementOffset(offset);
+      counter += offset;
+
+      /* Store argument onto stack for the function to use. */
       RegisterOperand reg = arg.getRegister();
       PreIndexedAddressOperand shiftStack = PreIndexedAddressFixedOffsetJump(
           RegisterOperand.SP,
           new ImmediateOperand<>(true, -offset));
       context.addToCurrentLabel(STR(shiftCond, reg, shiftStack));
 
-      /* Free register used for loading */
+      /* Free register used for loading. */
       context.freeRegister(reg.getValue());
     }
+
+    /* Finally, restore the changes we have made to the function symbol table
+     * after the call. This ensures that the function symbol table is exactly
+     * the same as when we entered the call. */
+    funcTable.decrementOffset(counter);
 
     /* Call the function then restore to previous scope.
      * Also restore any stack space used by parameters to the function. */
@@ -127,7 +141,8 @@ public class CallNode extends ExprNode {
     context.setScope(previousSymbolTable);
     context.addToCurrentLabel(DataProcessing
         .ADD(RegisterOperand.SP(), RegisterOperand.SP(),
-            new ImmediateOperand<>(true, funcTable.getFunctionParametersSizeInBytes())));
+            new ImmediateOperand<>(true,
+                funcTable.getFunctionParametersSizeInBytes())));
 
     /* Move result of function call from R0 to free register */
     setRegister(new RegisterOperand(context.getFreeRegister()));
