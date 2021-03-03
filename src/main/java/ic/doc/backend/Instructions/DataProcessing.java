@@ -4,6 +4,7 @@ import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.Operand;
 import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +51,11 @@ public class DataProcessing extends Instruction {
   }
 
   public static DataProcessing ADD(Operand dst, Operand lhs, Operand rhs) {
-    return new DataProcessing(dst, lhs, rhs, Operation.ADD);
+    Operation op = Operation.ADD;
+    if (rhs instanceof RegisterOperand) {
+      op = Operation.ADDS;
+    }
+    return new DataProcessing(dst, lhs, rhs, op);
   }
 
   public static DataProcessing SHIFTADD(
@@ -66,7 +71,11 @@ public class DataProcessing extends Instruction {
   }
 
   public static DataProcessing SUB(Operand dst, Operand lhs, Operand rhs) {
-    return new DataProcessing(dst, lhs, rhs, Operation.SUB);
+    Operation op = Operation.SUB;
+    if (rhs instanceof RegisterOperand) {
+      op = Operation.SUBS;
+    }
+    return new DataProcessing(dst, lhs, rhs, op);
   }
 
   public static DataProcessing AND(Operand dst, Operand lhs, Operand rhs) {
