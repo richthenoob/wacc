@@ -6,6 +6,7 @@ import static ic.doc.backend.Instructions.SingleDataTransfer.STR;
 import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressFixedOffsetJump;
 
 import ic.doc.backend.Context;
+import ic.doc.backend.Instructions.DataProcessing;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
@@ -41,7 +42,8 @@ public class CallNode extends ExprNode {
     if (id == null) {
       /* Checks if function was defined in scope */
       setType(new ErrorType());
-      visitor.getSemanticErrorList().addScopeException(ctx, false, "Function", functionName);
+      visitor.getSemanticErrorList()
+          .addScopeException(ctx, false, "Function", functionName);
     } else if (!(id instanceof FunctionIdentifier)) {
       /* Checks if id is an instance of function */
       setType(new ErrorType());
@@ -69,11 +71,13 @@ public class CallNode extends ExprNode {
                     + ". Actual count: "
                     + args.getNumParas()
                     + ".");
-      } else if (!(Type.checkTypeListCompatibility(args.getType(), expectedParamListType))) {
+      } else if (!(Type
+          .checkTypeListCompatibility(args.getType(), expectedParamListType))) {
         /* Checks if types of parameters passed in matches expected types */
         visitor
             .getSemanticErrorList()
-            .addTypeException(ctx, args.getInput(), functionId.printTypes(), args.printTypes(), "");
+            .addTypeException(ctx, args.getInput(), functionId.printTypes(),
+                args.printTypes(), "");
       }
     }
   }
@@ -91,7 +95,8 @@ public class CallNode extends ExprNode {
       // calculate new stack pointer offset after storing each argument
       // bool and char means +1 and not +4
       String shiftCond = "";
-      if (arg.getType() instanceof BoolType || arg.getType() instanceof CharType) {
+      if (arg.getType() instanceof BoolType || arg
+          .getType() instanceof CharType) {
         offset = 1;
         shiftCond = "B";
       } else {
@@ -103,7 +108,8 @@ public class CallNode extends ExprNode {
 
       /* Store argument onto stack */
       RegisterOperand reg = arg.getRegister();
-      PreIndexedAddressOperand shiftStack = PreIndexedAddressFixedOffsetJump(RegisterOperand.SP,
+      PreIndexedAddressOperand shiftStack = PreIndexedAddressFixedOffsetJump(
+          RegisterOperand.SP,
           new ImmediateOperand<>(true, -offset));
       context.addToCurrentLabel(STR(shiftCond, reg, shiftStack));
 
@@ -112,7 +118,10 @@ public class CallNode extends ExprNode {
     }
 
     context.addToCurrentLabel(BL("f_" + identifier));
-    context.restoreScope();
+    context.setScope(context.getCurrentSymbolTable().getParentSymbolTable());
+    context.addToCurrentLabel(DataProcessing
+        .ADD(RegisterOperand.SP(), RegisterOperand.SP(),
+            new ImmediateOperand<>(true, funcTable.getFunctionParametersSizeInBytes())));
 
     /* Move result of function call from R0 to free register */
     setRegister(new RegisterOperand(context.getFreeRegister()));

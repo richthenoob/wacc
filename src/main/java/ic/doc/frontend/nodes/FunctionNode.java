@@ -93,11 +93,12 @@ public class FunctionNode extends Node {
     /* Translate parameters. */
     paramListNode.translate(context);
     context.addToCurrentLabel(PUSH(RegisterOperand.LR));
+    funcSymbolTable.incrementOffset(4);
 
     /* Translate body of function and pop back to main */
     functionBody.translate(context);
+    funcSymbolTable.decrementOffset(4);
     context.restoreScope();
-    funcSymbolTable.incrementOffset(4); /* Account for additional PUSH done when loading args. */
     context.addToCurrentLabel(POP(RegisterOperand.PC));
     context.addToCurrentLabel(POP(RegisterOperand.PC));
     context.addToCurrentLabel(new LoadLiterals());

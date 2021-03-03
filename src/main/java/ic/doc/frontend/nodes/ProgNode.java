@@ -56,8 +56,7 @@ public class ProgNode extends Node {
     context.restoreScope();
     context.addToCurrentLabel(SingleDataTransfer.LDR(RegisterOperand.R0, new
         ImmediateOperand<>(0)));
-    context.addToCurrentLabel(Stack.POP(RegisterOperand.PC
-    ));
+    context.addToCurrentLabel(Stack.POP(RegisterOperand.PC));
     context.addToCurrentLabel(new LoadLiterals());
   }
 }

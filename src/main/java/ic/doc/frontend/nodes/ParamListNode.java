@@ -53,7 +53,7 @@ public class ParamListNode extends Node {
 
       int sizeOfVarOnStack = param.getType().getVarSize();
       funcSymbolTable.incrementOffset(sizeOfVarOnStack);
-      funcSymbolTable.incrementTableSizeInBytes(sizeOfVarOnStack);
+      funcSymbolTable.incrementFunctionParametersSize(sizeOfVarOnStack);
       id.setActivated();
     }
   }
