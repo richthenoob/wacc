@@ -1,10 +1,29 @@
 package ic.doc.frontend.nodes.exprnodes;
 
+import ic.doc.backend.Context;
+import ic.doc.backend.Data.Data;
+import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.Label;
+import ic.doc.backend.PredefinedFunctions;
+import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.Literals.PairLiteralNode;
+import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.PairType;
-import ic.doc.frontend.semantics.Visitor;
+
+import java.lang.reflect.Array;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
+
+import static ic.doc.backend.Instructions.Branch.BL;
+import static ic.doc.backend.Instructions.Move.MOV;
+import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
+import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressFixedOffset;
+import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressZeroOffset;
 
 public class PairElementNode extends ExprNode {
 
@@ -41,8 +60,9 @@ public class PairElementNode extends ExprNode {
       setType(new ErrorType());
       return;
     }
+
     /* Must be identifier with type pair. */
-    if (!(expr instanceof VariableNode) || !(expr.getType() instanceof PairType)) {
+    if (!(expr instanceof VariableNode || expr instanceof ArrayElementNode) || !(expr.getType() instanceof PairType)) {
       visitor
           .getSemanticErrorList()
           .addException(
@@ -61,5 +81,23 @@ public class PairElementNode extends ExprNode {
     } else {
       setType(type.getType2());
     }
+  }
+
+  @Override
+  public void translate(Context context) {
+    // Assuming that this is a variable node?
+    expr.translate(context);
+    RegisterOperand reg = expr.getRegister();
+    setRegister(reg);
+    Label<Instruction> curr = context.getCurrentLabel();
+
+    curr.addToBody(MOV(RegisterOperand.R0, reg));
+
+    int val = pos.equals(PairPosition.FST) ? 0 : 4;
+
+    PredefinedFunctions.addCheckNullPointerFunction(context);
+    curr.addToBody(BL("p_check_null_pointer"));
+    curr.addToBody(LDR(reg, PreIndexedAddressFixedOffset(reg, new ImmediateOperand<>(true, val))));
+    curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
   }
 }

@@ -1,8 +1,15 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
-
-import ic.doc.frontend.types.CharType;
+import ic.doc.backend.Context;
+import ic.doc.backend.Data.Data;
+import ic.doc.backend.Instructions.SingleDataTransfer;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.LabelAddressOperand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
+import ic.doc.frontend.types.CharType;
+import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Single ASCII character between two ' symbols. A '\' can be used to escape the character
@@ -25,6 +32,20 @@ public class CharacterLiteralNode extends LiteralNode {
     /* Checks that input character tokens are valid */
     if (!CharType.isValidChar(getValue())) {
       visitor.getSemanticErrorList().addException(ctx, "Invalid character token at " + value);
+    }
+  }
+
+  @Override
+  public void translate(Context context) {
+    RegisterOperand register = new RegisterOperand(context.getFreeRegister());
+    setRegister(register);
+    Label<Data> label = context.getSpecificLabel(value.toString());
+    if (label == null) {
+      ImmediateOperand<Character> operand = new ImmediateOperand<>(value);
+      context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
+    } else {
+      LabelAddressOperand operand = new LabelAddressOperand(label.getFunctionLabel());
+      context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
     }
   }
 

@@ -1,8 +1,12 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
+import ic.doc.backend.Context;
+import ic.doc.backend.Instructions.SingleDataTransfer;
+import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.frontend.errors.SyntaxException;
-import ic.doc.frontend.types.IntType;
 import ic.doc.frontend.semantics.Visitor;
+import ic.doc.frontend.types.IntType;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Consists of a sequence of decimal digits, optionally preceded
@@ -36,6 +40,14 @@ public class IntLiteralNode extends LiteralNode {
           ctx.getStart().getLine(),
           ctx.getStart().getCharPositionInLine());
     }
+  }
+
+  @Override
+  public void translate(Context context) {
+    ImmediateOperand operand = new ImmediateOperand(value.intValue());
+    RegisterOperand register = new RegisterOperand(context.getFreeRegister());
+    context.addToCurrentLabel(SingleDataTransfer.LDR(register, operand));
+    setRegister(register);
   }
 
   @Override

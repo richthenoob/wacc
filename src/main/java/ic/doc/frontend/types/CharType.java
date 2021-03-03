@@ -6,6 +6,11 @@ import java.util.List;
 public class CharType extends Type {
 
   public static final String CLASS_NAME = "CHAR";
+  private static final int VAR_SIZE = 1;
+
+  public int getVarSize() {
+    return VAR_SIZE;
+  }
 
   private static final List<Character> validEscapedChars =
       Arrays.asList('\0', '\b', '\t', '\n', '\f', '\r', '\"', '\'', '\\');

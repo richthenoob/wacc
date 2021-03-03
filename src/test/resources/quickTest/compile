@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ -d "../../../../build/" ]
+then
+  java -cp ../../../../build/classes/java/main/:../../../../lib/antlr-4.9.1-complete.jar ic.doc.frontend.WaccFrontend $1
+else
+  echo "Error: Directory build/ does not exists."
+fi

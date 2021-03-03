@@ -1,8 +1,12 @@
 package ic.doc.frontend.nodes.statnodes;
 
+import static ic.doc.backend.Instructions.Move.MOV;
+
+import ic.doc.backend.Context;
+import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
-import ic.doc.frontend.types.Type;
 import ic.doc.frontend.semantics.Visitor;
+import ic.doc.frontend.types.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class FunctionReturnNode extends StatNode {
@@ -39,5 +43,13 @@ public class FunctionReturnNode extends StatNode {
               "",
               "'return' statement");
     }
+  }
+
+  @Override
+  public void translate(Context context) {
+    exprNode.translate(context);
+    // Move result of function to R0
+    context.addToCurrentLabel(MOV(RegisterOperand.R0, exprNode.getRegister()));
+    context.freeRegister(exprNode.getRegister().getValue());
   }
 }
