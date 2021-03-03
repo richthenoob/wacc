@@ -16,7 +16,6 @@ public class ValidRuntimeErrOutOfBoundsTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
   @Tag("backend")
   @Tag("runtimeErr")
   @Tag("outOfBounds")

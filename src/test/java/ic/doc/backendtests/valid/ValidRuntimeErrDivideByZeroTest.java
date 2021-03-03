@@ -16,7 +16,6 @@ public class ValidRuntimeErrDivideByZeroTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
   @Tag("backend")
   @Tag("runtimeErr")
   @Tag("divideByZero")

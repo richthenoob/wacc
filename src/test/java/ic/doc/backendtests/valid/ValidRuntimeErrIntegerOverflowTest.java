@@ -16,7 +16,6 @@ public class ValidRuntimeErrIntegerOverflowTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
   @Tag("backend")
   @Tag("runtimeErr")
   @Tag("integerOverflow")
