@@ -16,7 +16,6 @@ public class ValidSequenceTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
   @Tag("backend")
   @Tag("sequence")
   @ParameterizedTest
