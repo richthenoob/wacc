@@ -195,10 +195,16 @@ public class ArrayElementNode extends ExprNode {
     RegisterOperand arrayRegister = translateArray(context, this);
     setRegister(arrayRegister);
     /* Load value at memory location */
+    Type internalType = ((ArrayType) (identNode.getType())).getInternalType();
+    String cond = "";
+    if (internalType.getVarSize() == 1) {
+      cond = "SB";
+    }
     context
         .getCurrentLabel()
         .addToBody(
             SingleDataTransfer.LDR(
+                cond,
                 arrayRegister,
                 PreIndexedAddressOperand.PreIndexedAddressZeroOffset(arrayRegister)));
   }
