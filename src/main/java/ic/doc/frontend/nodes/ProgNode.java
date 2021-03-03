@@ -36,10 +36,17 @@ public class ProgNode extends Node {
   @Override
   public void translate(Context context) {
 
-    /* Add all function labels first. */
+    /* Add all function labels and evaluate its parameters first. This
+     * ensures that any recursive definitions can properly resolve
+     * a function's parameters. */
     Map<String, SymbolTable> functionTables = context.getFunctionTables();
     for (FunctionNode node : functions) {
       functionTables.put(node.getFuncName(), node.getFuncSymbolTable());
+      node.translateParameters(context);
+    }
+
+    /* Properly evaluate function nodes. */
+    for (FunctionNode node : functions) {
       node.translate(context);
     }
 
