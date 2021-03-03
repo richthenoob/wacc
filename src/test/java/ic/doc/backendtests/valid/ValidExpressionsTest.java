@@ -21,8 +21,8 @@ public class ValidExpressionsTest extends AbstractBackendTest {
   @Tag("backend")
   @Tag("expressions")
   @ParameterizedTest
-//  @MethodSource("getTestNames")
-  @ValueSource(strings = {"negBothMod.wacc"})
+  @MethodSource("getTestNames")
+//  @ValueSource(strings = {"negBothMod.wacc"})
   public void validExpressionsTests(String testName) {
     backendTestFile(groupTestPath + testName);
   }
