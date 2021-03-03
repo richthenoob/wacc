@@ -43,7 +43,7 @@ public class PredefinedFunctions {
   private static final String FALSE_PLACEHOLDER = "false\\0";
   private static final String TRUE_PLACEHOLDER = "true\\0";
   private static final String INT_PLACEHOLDER = "%d\\0";
-  private static final String CHAR_PLACEHOLDER = "%c\\0";
+  private static final String CHAR_PLACEHOLDER = " %c\\0";
   private static final String NEWLN_PLACEHOLDER = "\\0";
   private static final String REFERENCE_PLACEHOLDER = "%p\\0";
 
