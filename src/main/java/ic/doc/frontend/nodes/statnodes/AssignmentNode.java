@@ -4,7 +4,6 @@ import ic.doc.backend.Context;
 import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.PostIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
@@ -12,7 +11,6 @@ import ic.doc.backend.PredefinedFunctions;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.ArrayElementNode;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
-import ic.doc.frontend.nodes.exprnodes.Literals.IntLiteralNode;
 import ic.doc.frontend.nodes.exprnodes.PairElementNode;
 import ic.doc.frontend.nodes.exprnodes.VariableNode;
 import ic.doc.frontend.semantics.SymbolKey;
@@ -21,8 +19,6 @@ import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.*;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-
-import java.util.List;
 
 import static ic.doc.backend.Instructions.Branch.BL;
 import static ic.doc.backend.Instructions.Move.MOV;
@@ -182,15 +178,18 @@ public class AssignmentNode extends StatNode {
   }
 
   /* Ugly helper method for translate pair element node */
-  private void translatePairElementNode(RegisterOperand base, int offset, Context context){
+  private void translatePairElementNode(RegisterOperand base, int offset, Context context) {
     SingleDataTransfer storeInstr;
     PairElementNode pairElementNode = (PairElementNode) lhs;
     boolean isFst = pairElementNode.getPos().equals(PairElementNode.PairPosition.FST);
     RegisterOperand tempReg = new RegisterOperand(context.getFreeRegister());
 
     /* LOAD MEM ADDRESS OF THE PAIR INTO TEMPREG */
-    context.addToCurrentLabel(LDR(tempReg, PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-            base, new ImmediateOperand<>(true, offset))));
+    context.addToCurrentLabel(
+        LDR(
+            tempReg,
+            PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+                base, new ImmediateOperand<>(true, offset))));
 
     /* CHECK WHETHER THE ADDRESS OF THE PAIR POINTS TO A NULL VALUE */
     context.addToCurrentLabel(MOV(RegisterOperand.R0, tempReg));
@@ -198,21 +197,22 @@ public class AssignmentNode extends StatNode {
     context.addToCurrentLabel(BL(PredefinedFunctions.CHECK_NULL_POINTER_FUNC));
 
     /* LOAD MEM ADDRESS OF THE PAIR ELEMENT INTO TEMPREG*/
-    context.addToCurrentLabel(LDR(tempReg, PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-            tempReg, new ImmediateOperand<>(true, isFst ? 0 : 4)
-    )));
+    context.addToCurrentLabel(
+        LDR(
+            tempReg,
+            PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+                tempReg, new ImmediateOperand<>(true, isFst ? 0 : 4))));
 
     if (lhs.getType().getVarSize() == 1) {
       storeInstr =
-              SingleDataTransfer.STR(
-                      "B",
-                      rhs.getRegister(),
-                      PreIndexedAddressOperand.PreIndexedAddressZeroOffset(tempReg));
+          SingleDataTransfer.STR(
+              "B",
+              rhs.getRegister(),
+              PreIndexedAddressOperand.PreIndexedAddressZeroOffset(tempReg));
     } else {
       storeInstr =
-              SingleDataTransfer.STR(
-                      rhs.getRegister(),
-                      PreIndexedAddressOperand.PreIndexedAddressZeroOffset(tempReg));
+          SingleDataTransfer.STR(
+              rhs.getRegister(), PreIndexedAddressOperand.PreIndexedAddressZeroOffset(tempReg));
     }
 
     context.addToCurrentLabel(storeInstr);
@@ -282,8 +282,8 @@ public class AssignmentNode extends StatNode {
       SymbolKey key = new SymbolKey(name, false);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
       /* No need for this because we want the address of the pair only */
-//      int positionOffset =
-//          ((PairElementNode) lhs).getPos().equals(PairElementNode.PairPosition.FST) ? 0 : 4;
+      //      int positionOffset =
+      //          ((PairElementNode) lhs).getPos().equals(PairElementNode.PairPosition.FST) ? 0 : 4;
       return id.getOffsetStack(symbolTable, key);
     }
 

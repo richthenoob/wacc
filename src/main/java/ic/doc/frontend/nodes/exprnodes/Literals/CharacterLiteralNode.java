@@ -9,7 +9,6 @@ import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.CharType;
-import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Single ASCII character between two ' symbols. A '\' can be used to escape the character

@@ -173,13 +173,18 @@ public class ArrayElementNode extends ExprNode {
 
       /* address of value = address of first value + value of index * 4 */
       label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, new ImmediateOperand<>(true, 4)));
-      label.addToBody(
-          DataProcessing.SHIFTADD(
-              arrayReg,
-              arrayReg,
-              indexReg,
-              PreIndexedAddressOperand.ShiftTypes.LSL,
-              new ImmediateOperand<>(true, 2)));
+      Type internalType = ((ArrayType) (array.identNode.getType())).getInternalType();
+      if (internalType.getVarSize() == 1) {
+        label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, indexReg));
+      } else {
+        label.addToBody(
+            DataProcessing.SHIFTADD(
+                arrayReg,
+                arrayReg,
+                indexReg,
+                PreIndexedAddressOperand.ShiftTypes.LSL,
+                new ImmediateOperand<>(true, 2)));
+      }
     }
     context.freeRegister(indexReg.getValue());
     return arrayReg;
@@ -190,13 +195,18 @@ public class ArrayElementNode extends ExprNode {
     RegisterOperand arrayRegister = translateArray(context, this);
     setRegister(arrayRegister);
     /* Load value at memory location */
+    Type internalType = ((ArrayType) (identNode.getType())).getInternalType();
+    String cond = "";
+    if (internalType.getVarSize() == 1) {
+      cond = "SB";
+    }
     context
         .getCurrentLabel()
         .addToBody(
             SingleDataTransfer.LDR(
+                cond,
                 arrayRegister,
-                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(
-                    arrayRegister)));
+                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(arrayRegister)));
   }
 
   @Override

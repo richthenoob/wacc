@@ -137,7 +137,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     VariableNode var = new VariableNode(name);
     var.setType(type);
     ExprNode expr = (ExprNode) visit(ctx.assignRhs());
-    AssignmentNode node = new AssignmentNode(var, expr, true,currentSymbolTable);
+    AssignmentNode node = new AssignmentNode(var, expr, true, currentSymbolTable);
     node.check(this, ctx);
     return node;
   }
@@ -158,7 +158,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   public Node visitAssignment(BasicParser.AssignmentContext ctx) {
     ExprNode lhs = (ExprNode) visit(ctx.assignLhs());
     ExprNode rhs = (ExprNode) visit(ctx.assignRhs());
-    AssignmentNode node = new AssignmentNode(lhs, rhs, false,currentSymbolTable);
+    AssignmentNode node = new AssignmentNode(lhs, rhs, false, currentSymbolTable);
     node.check(this, ctx);
     return node;
   }
@@ -484,7 +484,11 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         exprNode = new BooleanLiteralNode(stringRepresentation.equals("true"));
         break;
       case BasicLexer.CHAR_LITER:
-        exprNode = new CharacterLiteralNode(stringRepresentation.charAt(1));
+        if (stringRepresentation.charAt(1) == '\\') {
+          exprNode = new CharacterLiteralNode(stringRepresentation.charAt(2));
+        } else {
+          exprNode = new CharacterLiteralNode(stringRepresentation.charAt(1));
+        }
         break;
       case BasicLexer.STR_LITER:
         exprNode = new StringLiteralNode(stringRepresentation);
