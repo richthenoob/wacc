@@ -70,7 +70,8 @@ public class ArrayLiteralNode extends LiteralNode {
   @Override
   public void translate(Context context) {
     Label<Instruction> label = context.getCurrentLabel();
-    int bytesToAllocate = values.size() * 4 + 4;
+    int sizeOfVarOnStack = values.isEmpty() ? 4 : values.get(0).getType().getVarSize();
+    int bytesToAllocate = values.size() * sizeOfVarOnStack + 4;
     int firstRegisterNum = context.getFreeRegister();
     setRegister(new RegisterOperand(firstRegisterNum));
 
@@ -78,8 +79,9 @@ public class ArrayLiteralNode extends LiteralNode {
         .addToBody(
             SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(bytesToAllocate)))
         .addToBody(Branch.BL("malloc"))
-        .addToBody(new Move(new RegisterOperand(firstRegisterNum), new RegisterOperand(0), Condition.B));
-    int offset = 4;
+        .addToBody(
+            new Move(new RegisterOperand(firstRegisterNum), new RegisterOperand(0), Condition.B));
+    int offset = 4; // space for pointer
 
     for (ExprNode value : values) {
       value.translate(context);
@@ -87,8 +89,8 @@ public class ArrayLiteralNode extends LiteralNode {
           SingleDataTransfer.STR(
               value.getRegister(),
               PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  new RegisterOperand(firstRegisterNum), new ImmediateOperand<>(true,offset))));
-      offset += 4;
+                  new RegisterOperand(firstRegisterNum), new ImmediateOperand<>(true, offset))));
+      offset += sizeOfVarOnStack;
       context.freeRegister(value.getRegister().getValue());
     }
     int secondRegisterNum = context.getFreeRegister();
@@ -99,7 +101,8 @@ public class ArrayLiteralNode extends LiteralNode {
         .addToBody(
             SingleDataTransfer.STR(
                 new RegisterOperand(secondRegisterNum),
-                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(new RegisterOperand(firstRegisterNum))));
+                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(
+                    new RegisterOperand(firstRegisterNum))));
     context.freeRegister(secondRegisterNum);
   }
 

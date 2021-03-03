@@ -266,7 +266,7 @@ public abstract class AbstractBackendTest {
 
     /* Generate code and write to temporary file. */
     String code = WaccBackend.generateCode(rootNode);
-//    System.out.println(code);
+    System.out.println(code);
     WaccBackend.writeToFile(TEMP_DIR_PATH + TEMP_ASSEMBLY_FILENAME, code);
 
     /* Cross compilation. */

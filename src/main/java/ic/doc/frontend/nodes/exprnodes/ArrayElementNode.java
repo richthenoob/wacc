@@ -120,16 +120,27 @@ public class ArrayElementNode extends ExprNode {
   public static RegisterOperand translateArray(Context context, ArrayElementNode array) {
     Label<Instruction> label = context.getCurrentLabel();
     SymbolTable symbolTable = context.getCurrentSymbolTable();
+
+    // Find offset for array pointer
     VariableNode lhsVar = array.getIdentNode();
     String name = lhsVar.getName();
     SymbolKey key = new SymbolKey(name, false);
     VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-
     int offsetArray = id.getOffsetStack(symbolTable, key);
+
     RegisterOperand arrayReg = new RegisterOperand(context.getFreeRegister());
     RegisterOperand indexReg = new RegisterOperand(context.getFreeRegister());
     List<ExprNode> arrays = array.getExprNodes();
+
     for (int i = 0; i < arrays.size(); i++) {
+      // Load location of array into ArrayReg, only needed for first layer as for nested arrays the
+      // nested array will
+      // already be in arrayReg
+      if (i == 0) {
+        label.addToBody(
+            DataProcessing.ADD(
+                arrayReg, RegisterOperand.SP(), new ImmediateOperand<>(true, offsetArray)));
+      }
       if (arrays.get(i) instanceof IntLiteralNode) {
         label.addToBody(
             SingleDataTransfer.LDR(
@@ -137,11 +148,12 @@ public class ArrayElementNode extends ExprNode {
                 new ImmediateOperand<>(
                     ((IntLiteralNode) arrays.get(i)).getValue().intValue()))); // Load index literal
       } else {
-
-        String indexVarName = lhsVar.getName();
+        // find offset of index pointer if its a variable
+        String indexVarName = arrays.get(i).getInput();
         SymbolKey indexVarkey = new SymbolKey(indexVarName, false);
         VariableIdentifier indexId = (VariableIdentifier) symbolTable.lookupAll(indexVarkey);
         int offset = indexId.getOffsetStack(symbolTable, indexVarkey);
+
         label.addToBody(
             SingleDataTransfer.LDR(
                 indexReg,
@@ -149,19 +161,18 @@ public class ArrayElementNode extends ExprNode {
                     RegisterOperand.SP(),
                     new ImmediateOperand<>(true, offset)))); // Load index from memory
       }
-      if (i == 0) {
-        label.addToBody(
-            DataProcessing.ADD(
-                arrayReg, RegisterOperand.SP(), new ImmediateOperand<>(true, offsetArray)));
-      }
+      // load array
       label.addToBody(
           SingleDataTransfer.LDR(
-              arrayReg, // Load array
-              PreIndexedAddressOperand.PreIndexedAddressZeroOffset(arrayReg)));
+              arrayReg, PreIndexedAddressOperand.PreIndexedAddressZeroOffset(arrayReg)));
+
+      // Move values into correct registers to call predefined function
       label.addToBody(Move.MOV(new RegisterOperand(0), indexReg));
       label.addToBody(Move.MOV(new RegisterOperand(1), arrayReg));
       PredefinedFunctions.addCheckArrayBoundsFunction(context);
       label.addToBody(Branch.BL(PredefinedFunctions.CHECK_ARRAY_BOUNDS_FUNC));
+
+      // address of value = address of first value + value of index * 4
       label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, new ImmediateOperand<>(true, 4)));
       label.addToBody(
           DataProcessing.SHIFTADD(
