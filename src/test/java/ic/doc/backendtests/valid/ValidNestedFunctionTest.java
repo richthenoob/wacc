@@ -23,6 +23,17 @@ public class ValidNestedFunctionTest extends AbstractBackendTest {
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void validNestedFunctionTests(String testName) {
+
+    if (testName.equals("printInputTriangle.wacc")) {
+      backendTestFileWithInput(groupTestPath + testName, "10");
+      return;
+    }
+
+    if (testName.equals("fibonacciFullRec.wacc")) {
+      backendTestFileWithInput(groupTestPath + testName, "30");
+      return;
+    }
+
     backendTestFile(groupTestPath + testName);
   }
 }

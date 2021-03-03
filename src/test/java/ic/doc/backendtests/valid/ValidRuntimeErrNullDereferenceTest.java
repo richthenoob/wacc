@@ -16,7 +16,7 @@ public class ValidRuntimeErrNullDereferenceTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-//  @Disabled
+  @Disabled
   @Tag("backend")
   @Tag("runtimeErr")
   @Tag("nullDereference")

@@ -146,14 +146,13 @@ public class AssignmentNode extends StatNode {
     }
     rhs.translate(context);
 
-    if (rhs instanceof PairElementNode) {
-      context.addToCurrentLabel(
-          LDR(rhs.getRegister(), PreIndexedAddressZeroOffset(rhs.getRegister())));
-    }
-
-    if (lhs instanceof PairElementNode) {
+    if(lhs instanceof PairElementNode){
       translatePairElementNode(base, offset, context);
       return;
+    }
+
+    if(rhs instanceof PairElementNode){
+      context.addToCurrentLabel(LDR(rhs.getRegister(), PreIndexedAddressZeroOffset(rhs.getRegister())));
     }
 
     if (lhs.getType().getVarSize() == 1) {
@@ -184,13 +183,18 @@ public class AssignmentNode extends StatNode {
     PairElementNode pairElementNode = (PairElementNode) lhs;
     boolean isFst = pairElementNode.getPos().equals(PairElementNode.PairPosition.FST);
     RegisterOperand tempReg = new RegisterOperand(context.getFreeRegister());
-    //    int sizeOfFst = pairElementNode
+
     /* LOAD MEM ADDRESS OF THE PAIR INTO TEMPREG */
     context.addToCurrentLabel(
         LDR(
             tempReg,
             PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
                 base, new ImmediateOperand<>(true, offset))));
+
+    /* CHECK WHETHER THE ADDRESS OF THE PAIR POINTS TO A NULL VALUE */
+    context.addToCurrentLabel(MOV(RegisterOperand.R0, tempReg));
+    PredefinedFunctions.addCheckNullPointerFunction(context);
+    context.addToCurrentLabel(BL(PredefinedFunctions.CHECK_NULL_POINTER_FUNC));
 
     /* LOAD MEM ADDRESS OF THE PAIR ELEMENT INTO TEMPREG*/
     context.addToCurrentLabel(
@@ -199,9 +203,6 @@ public class AssignmentNode extends StatNode {
             PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
                 tempReg, new ImmediateOperand<>(true, isFst ? 0 : 4))));
 
-    context.addToCurrentLabel(MOV(RegisterOperand.R0, tempReg));
-    PredefinedFunctions.addCheckNullPointerFunction(context);
-    context.addToCurrentLabel(BL(PredefinedFunctions.CHECK_NULL_POINTER_FUNC));
     if (lhs.getType().getVarSize() == 1) {
       storeInstr =
           SingleDataTransfer.STR(
