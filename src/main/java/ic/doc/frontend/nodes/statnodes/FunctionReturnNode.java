@@ -1,6 +1,7 @@
 package ic.doc.frontend.nodes.statnodes;
 
 import static ic.doc.backend.Instructions.Move.MOV;
+import static ic.doc.backend.Instructions.Stack.POP;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
@@ -51,5 +52,7 @@ public class FunctionReturnNode extends StatNode {
     // Move result of function to R0
     context.addToCurrentLabel(MOV(RegisterOperand.R0, exprNode.getRegister()));
     context.freeRegister(exprNode.getRegister().getValue());
+    context.restoreScope();
+    context.addToCurrentLabel(POP(RegisterOperand.PC));
   }
 }

@@ -95,8 +95,6 @@ public class FunctionNode extends Node {
 
     /* Translate body of function and pop back to main */
     functionBody.translate(context);
-    context.restoreScope();
-    context.addToCurrentLabel(POP(RegisterOperand.PC));
     context.addToCurrentLabel(POP(RegisterOperand.PC));
     context.addToCurrentLabel(new LoadLiterals());
   }
