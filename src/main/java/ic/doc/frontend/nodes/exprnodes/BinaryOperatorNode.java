@@ -136,7 +136,8 @@ public class BinaryOperatorNode extends ExprNode {
       //both registers are 10
       lReg = new RegisterOperand(11);
       curr.addToBody(
-          POP_FOUR(new RegisterOperand(11), context.getCurrentSymbolTable()));
+          POP(new RegisterOperand(11)));
+      context.getCurrentSymbolTable().decrementOffset(4);
     }
 
     switch (binaryOperator) {
@@ -160,11 +161,9 @@ public class BinaryOperatorNode extends ExprNode {
         curr.addToBody(BL(DIVIDE_ZERO_CHECK));
         PredefinedFunctions.addCheckDivideByZeroFunction(context);
 
-        // TODO: update predefined functions to handle __aeabi_idiv and __aeabi_idivmod
-//        String divLabel = binaryOperator == BinaryOperators.DIV ?
-//            DIVIDE_PFUNC : MOD_PFUNC;
-//        curr.addToBody(BL(divLabel));
-//        context.getPfunctions().add(new Label(divLabel));
+        String divLabel = binaryOperator == BinaryOperators.DIV ?
+            DIVIDE_PFUNC : MOD_PFUNC;
+        curr.addToBody(BL(divLabel));
 
         Operand res = binaryOperator == BinaryOperators.DIV ?
             RegisterOperand.R0 : RegisterOperand.R1;

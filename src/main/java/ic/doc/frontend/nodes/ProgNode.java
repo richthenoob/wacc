@@ -35,20 +35,20 @@ public class ProgNode extends Node {
 
   @Override
   public void translate(Context context) {
+
+    /* Add all function labels first. */
+    Map<String, SymbolTable> functionTables = context.getFunctionTables();
+    for (FunctionNode node : functions) {
+      functionTables.put(node.getFuncName(), node.getFuncSymbolTable());
+      node.translate(context);
+    }
+
     /* Create main label, the entry point of the program. */
     Label<Instruction> inst = new Label<>("main");
     context.getInstructionLabels().add(inst);
     context.setCurrentLabel(inst);
     context.setScope(symbolTable);
-    inst.addToBody(Stack.PUSH_FOUR(RegisterOperand.LR,
-        context.getCurrentSymbolTable()));
-
-    Map<String, SymbolTable> functionTables = context.getFunctionTables();
-    /* Add all function labels first. */
-    for (FunctionNode node : functions) {
-      functionTables.put(node.getFuncName(), node.getFuncSymbolTable());
-      node.translate(context);
-    }
+    inst.addToBody(Stack.PUSH(RegisterOperand.LR));
 
     /* Translate rest of program. */
     stat.translate(context);
@@ -57,8 +57,7 @@ public class ProgNode extends Node {
     context.restoreScope();
     context.addToCurrentLabel(SingleDataTransfer.LDR(RegisterOperand.R0, new
         ImmediateOperand<>(0)));
-    context.addToCurrentLabel(Stack.POP_FOUR(RegisterOperand.PC,
-        context.getCurrentSymbolTable()));
+    context.addToCurrentLabel(Stack.POP(RegisterOperand.PC));
     context.addToCurrentLabel(new LoadLiterals());
   }
 }

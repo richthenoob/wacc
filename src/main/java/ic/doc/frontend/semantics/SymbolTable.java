@@ -12,11 +12,21 @@ public class SymbolTable {
   private final SymbolTable parentSymbolTable;
   private final Map<SymbolKey, Identifier> dictionary;
   private int tableSizeInBytes;
+  private int functionParametersSizeInBytes;
 
   public SymbolTable(SymbolTable parentSymbolTable) {
     this.parentSymbolTable = parentSymbolTable;
     dictionary = new LinkedHashMap<>();
     tableSizeInBytes = 0;
+    functionParametersSizeInBytes = 0;
+  }
+
+  public void incrementFunctionParametersSize(int paramSize) {
+    functionParametersSizeInBytes += paramSize;
+  }
+
+  public int getFunctionParametersSizeInBytes() {
+    return functionParametersSizeInBytes;
   }
 
   public int getTableSize() {

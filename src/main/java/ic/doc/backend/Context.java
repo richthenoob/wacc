@@ -56,9 +56,10 @@ public class Context {
     }
     // TODO: maybe pass in an argument to determine how much to push?
     currentLabel.addToBody(
-        Stack.PUSH_FOUR(
-            new RegisterOperand(MAXINDEX + OFFSET),
-            currentSymbolTable)); // Push to stack and return r10
+        Stack.PUSH(
+            new RegisterOperand(MAXINDEX + OFFSET)
+        )); // Push to stack and return r10
+    this.getCurrentSymbolTable().incrementOffset(4);
     return MAXINDEX + OFFSET;
   }
 
