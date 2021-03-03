@@ -82,10 +82,10 @@ public class PreIndexedAddressOperand extends AddressOperand {
 
   @Override
   public String toString() {
-    String rmString = rm == null ? "" : "," + rm.toString();
-    String exprString = expr == null ? "" : "," + expr.toString();
+    String rmString = rm == null ? "" : ", " + rm.toString();
+    String exprString = expr == null ? "" : ", " + expr.toString();
     String signString = isNegativeRm ? "-" : "";
-    String shiftString = shift == ShiftTypes.NONE ? "" : "," + shift.name();
+    String shiftString = shift == ShiftTypes.NONE ? "" : ", " + shift.name();
     String jumpString = jump ? "!" : "";
 
     return "[" + rn.toString() + signString + rmString

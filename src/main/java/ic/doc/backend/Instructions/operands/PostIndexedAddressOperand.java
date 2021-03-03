@@ -62,10 +62,10 @@ public class PostIndexedAddressOperand extends AddressOperand {
 
   @Override
   public String toString() {
-    String rnString = rn == null ? "" : "[" + rn.toString() + "]" + ",";
-    String rmString = rm == null ? "" : rm.toString() + ",";
+    String rnString = rn == null ? "" : "[" + rn.toString() + "]" + ", ";
+    String rmString = rm == null ? "" : rm.toString() + ", ";
     String signString = isNegativeRm ? "-" : "";
-    String shiftString = shift == ShiftTypes.NONE ? "" : shift.name();
+    String shiftString = shift == ShiftTypes.NONE ? "" : shift.name() + " ";
     String exprString = expr == null ? "" : expr.toString();
 
     return rnString + signString + rmString + shiftString + exprString;
