@@ -91,7 +91,6 @@ public class CallNode extends ExprNode {
 
     /* Look up function symbol table from func name */
     SymbolTable funcTable = context.getFunctionTables().get(identifier);
-    context.setScope(funcTable);
     int offset;
 
     for (int i = 0; i < args.getNumParas(); i++) {

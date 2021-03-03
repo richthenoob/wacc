@@ -95,7 +95,6 @@ public class FunctionNode extends Node {
 
     /* Translate body of function and pop back to main */
     functionBody.translate(context);
-    funcSymbolTable.decrementOffset(4);
     context.restoreScope();
     context.addToCurrentLabel(POP(RegisterOperand.PC));
     context.addToCurrentLabel(POP(RegisterOperand.PC));
