@@ -217,6 +217,7 @@ public class PredefinedFunctions {
     checkNullPointerLabel.addToBody(LDR("EQ", RegisterOperand.R0,
         new LabelAddressOperand(nullReferenceErrorLabelStr)));
 
+    addThrowRuntimeErrorFunction(ctx);
     checkNullPointerLabel.addToBody(BLE(THROW_RUNTIME_ERROR_FUNC));
     checkNullPointerLabel
         .addToBody(POP(RegisterOperand.PC));

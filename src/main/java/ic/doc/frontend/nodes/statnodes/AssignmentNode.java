@@ -24,6 +24,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.List;
 
+import static ic.doc.backend.Instructions.Branch.BL;
+import static ic.doc.backend.Instructions.Move.MOV;
+import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
+
 public class AssignmentNode extends StatNode {
 
   private final ExprNode lhs;
@@ -145,6 +149,12 @@ public class AssignmentNode extends StatNode {
     }
     rhs.translate(context);
 
+
+    if(lhs instanceof PairElementNode){
+      translatePairElementNode(base, offset, context);
+      return;
+    }
+
     if (lhs.getType().getVarSize() == 1) {
       storeInstr =
           SingleDataTransfer.STR(
@@ -167,6 +177,42 @@ public class AssignmentNode extends StatNode {
     }
   }
 
+  /* Ugly helper method for translate pair element node */
+  private void translatePairElementNode(RegisterOperand base, int offset, Context context){
+    SingleDataTransfer storeInstr;
+    PairElementNode pairElementNode = (PairElementNode) lhs;
+    boolean isFst = pairElementNode.getPos().equals(PairElementNode.PairPosition.FST);
+    RegisterOperand tempReg = new RegisterOperand(context.getFreeRegister());
+//    int sizeOfFst = pairElementNode
+    /* LOAD MEM ADDRESS OF THE PAIR INTO TEMPREG */
+    context.addToCurrentLabel(LDR(tempReg, PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+            base, new ImmediateOperand<>(true, offset))));
+
+    /* LOAD MEM ADDRESS OF THE PAIR ELEMENT INTO TEMPREG*/
+    context.addToCurrentLabel(LDR(tempReg, PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
+            tempReg, new ImmediateOperand<>(true, isFst ? 0 : 4)
+    )));
+
+    context.addToCurrentLabel(MOV(RegisterOperand.R0, tempReg));
+    PredefinedFunctions.addCheckNullPointerFunction(context);
+    context.addToCurrentLabel(BL(PredefinedFunctions.CHECK_NULL_POINTER_FUNC));
+    if (lhs.getType().getVarSize() == 1) {
+      storeInstr =
+              SingleDataTransfer.STR(
+                      "B",
+                      rhs.getRegister(),
+                      PreIndexedAddressOperand.PreIndexedAddressZeroOffset(tempReg));
+    } else {
+      storeInstr =
+              SingleDataTransfer.STR(
+                      rhs.getRegister(),
+                      PreIndexedAddressOperand.PreIndexedAddressZeroOffset(tempReg));
+    }
+
+    context.addToCurrentLabel(storeInstr);
+    context.freeRegister(tempReg.getValue());
+    context.freeRegister(rhs.getRegister().getValue());
+  }
   /* New declaration, e.g. int i = 5
    * Returns the offset from the SP at which the RHS shd be moved into.
    * (Should always return 0 since we are always pushing into SP directly) */
@@ -229,9 +275,10 @@ public class AssignmentNode extends StatNode {
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, false);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-      int positionOffset =
-          ((PairElementNode) lhs).getPos().equals(PairElementNode.PairPosition.FST) ? 0 : 4;
-      return id.getOffsetStack(symbolTable, key) + positionOffset;
+      /* No need for this because we want the address of the pair only */
+//      int positionOffset =
+//          ((PairElementNode) lhs).getPos().equals(PairElementNode.PairPosition.FST) ? 0 : 4;
+      return id.getOffsetStack(symbolTable, key);
     }
 
     /* All other types, LHS MUST be a VariableNode. Return the location of
