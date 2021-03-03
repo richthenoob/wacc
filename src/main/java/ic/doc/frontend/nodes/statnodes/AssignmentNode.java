@@ -27,6 +27,7 @@ import java.util.List;
 import static ic.doc.backend.Instructions.Branch.BL;
 import static ic.doc.backend.Instructions.Move.MOV;
 import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
+import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressZeroOffset;
 
 public class AssignmentNode extends StatNode {
 
@@ -149,6 +150,11 @@ public class AssignmentNode extends StatNode {
     }
     rhs.translate(context);
 
+
+
+    if(rhs instanceof PairElementNode){
+      context.addToCurrentLabel(LDR(rhs.getRegister(), PreIndexedAddressZeroOffset(rhs.getRegister())));
+    }
 
     if(lhs instanceof PairElementNode){
       translatePairElementNode(base, offset, context);
