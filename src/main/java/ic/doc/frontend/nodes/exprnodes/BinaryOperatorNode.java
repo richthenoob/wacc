@@ -133,7 +133,7 @@ public class BinaryOperatorNode extends ExprNode {
     RegisterOperand dstReg = lReg;
 
     if (lReg.getValue() == rReg.getValue()) {
-      //both registers are 10
+      //both registers are 10 i.e. all registers are occupied
       lReg = new RegisterOperand(11);
       curr.addToBody(
           POP(new RegisterOperand(11)));
@@ -215,7 +215,7 @@ public class BinaryOperatorNode extends ExprNode {
         break;
     }
 
-    setRegister(lReg);
+    setRegister(dstReg);
     context.freeRegister(rReg.getValue());
   }
 

@@ -16,7 +16,7 @@ public class ValidScopeTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
+//  @Disabled
   @Tag("backend")
   @Tag("scope")
   @ParameterizedTest
