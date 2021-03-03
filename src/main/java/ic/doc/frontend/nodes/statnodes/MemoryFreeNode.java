@@ -51,13 +51,11 @@ public class MemoryFreeNode extends StatNode {
 
   @Override
   public void translate(Context context) {
-    /* I don't think we need to translate the exprNode? */
-    /* Expr is guaranteed to have type Char or Int from semantic analysis */
+    exprNode.translate(context);
     RegisterOperand reg = exprNode.getRegister();
     Label<Instruction> curr = context.getCurrentLabel();
-    curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(RegisterOperand.SP)));
-    curr.addToBody(MOV(RegisterOperand.R0, PreIndexedAddressZeroOffset(reg)));
-    exprNode.setRegister(RegisterOperand.R0);
+//    curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(RegisterOperand.SP)));
+    curr.addToBody(MOV(RegisterOperand.R0, reg));
 
     PredefinedFunctions.addThrowRuntimeErrorFunction(context);
 

@@ -34,6 +34,10 @@ public class Branch extends Instruction {
     return new Branch(Condition.BLE, label);
   }
 
+  public static Branch BLEQ(String label) {
+    return new Branch(Condition.BLEQ, label);
+  }
+
   public static Branch B(String label) {
     return new Branch(Condition.B, label);
   }

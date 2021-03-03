@@ -87,17 +87,14 @@ public class ReadNode extends StatNode {
     RegisterOperand reg = expr.getRegister();
     Label<Instruction> curr = context.getCurrentLabel();
 
-    if(expr instanceof PairElementNode){
-      PairElementNode.PairPosition pos = ((PairElementNode) expr).getPos();
-      /* SND is always at an offset of 4, regardless of type (according to ref compiler) */
-      if(pos == PairElementNode.PairPosition.FST){
-        curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
-      } else {
-        curr.addToBody(LDR(reg, PreIndexedAddressFixedOffset(reg, new ImmediateOperand(4))));
-      }
-    } else if(expr instanceof ArrayElementNode){
-      curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
-    } else if(expr instanceof VariableNode) {
+//    if(expr instanceof PairElementNode){
+//      PairElementNode.PairPosition pos = ((PairElementNode) expr).getPos();
+//      /* SND is always at an offset of 4, regardless of type (according to ref compiler) */
+//      curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
+//    } else if(expr instanceof ArrayElementNode){
+//      curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
+    /* When expr is translated */
+    if(expr instanceof VariableNode) {
       /* Variable node here !*/
       String varName = ((VariableNode) expr).getName();
       SymbolKey key = new SymbolKey(varName, false);
@@ -105,6 +102,7 @@ public class ReadNode extends StatNode {
       int offset = id.getOffsetStack(context.getCurrentSymbolTable(), key);
       curr.addToBody(ADD(reg, RegisterOperand.SP, new ImmediateOperand<>(true, offset)));
     }
+
     curr.addToBody(MOV(RegisterOperand.R0, reg));
     if(exprType instanceof CharType){
       PredefinedFunctions.addReadTypeFunction(context, "char");
