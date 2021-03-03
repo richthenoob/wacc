@@ -84,6 +84,11 @@ public class CallNode extends ExprNode {
 
   @Override
   public void translate(Context context) {
+
+    /* Save the previous symbol table so that we can restore it
+     * after the function call. */
+    SymbolTable previousSymbolTable = context.getCurrentSymbolTable();
+
     /* Look up function symbol table from func name */
     SymbolTable funcTable = context.getFunctionTables().get(identifier);
     context.setScope(funcTable);
@@ -117,8 +122,10 @@ public class CallNode extends ExprNode {
       context.freeRegister(reg.getValue());
     }
 
+    /* Call the function then restore to previous scope.
+     * Also restore any stack space used by parameters to the function. */
     context.addToCurrentLabel(BL("f_" + identifier));
-    context.setScope(context.getCurrentSymbolTable().getParentSymbolTable());
+    context.setScope(previousSymbolTable);
     context.addToCurrentLabel(DataProcessing
         .ADD(RegisterOperand.SP(), RegisterOperand.SP(),
             new ImmediateOperand<>(true, funcTable.getFunctionParametersSizeInBytes())));

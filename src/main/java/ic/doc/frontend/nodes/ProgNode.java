@@ -35,19 +35,20 @@ public class ProgNode extends Node {
 
   @Override
   public void translate(Context context) {
+
+    /* Add all function labels first. */
+    Map<String, SymbolTable> functionTables = context.getFunctionTables();
+    for (FunctionNode node : functions) {
+      functionTables.put(node.getFuncName(), node.getFuncSymbolTable());
+      node.translate(context);
+    }
+
     /* Create main label, the entry point of the program. */
     Label<Instruction> inst = new Label<>("main");
     context.getInstructionLabels().add(inst);
     context.setCurrentLabel(inst);
     context.setScope(symbolTable);
     inst.addToBody(Stack.PUSH(RegisterOperand.LR));
-
-    Map<String, SymbolTable> functionTables = context.getFunctionTables();
-    /* Add all function labels first. */
-    for (FunctionNode node : functions) {
-      functionTables.put(node.getFuncName(), node.getFuncSymbolTable());
-      node.translate(context);
-    }
 
     /* Translate rest of program. */
     stat.translate(context);

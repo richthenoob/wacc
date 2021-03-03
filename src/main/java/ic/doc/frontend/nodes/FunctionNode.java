@@ -79,8 +79,6 @@ public class FunctionNode extends Node {
 
   @Override
   public void translate(Context context) {
-    Label<Instruction> mainLabel = context.getCurrentLabel();
-
     /* Create new label for function */
     Label<Instruction> funcLabel = new Label<>("f_" + funcName);
     context.getInstructionLabels().add(funcLabel);
@@ -102,9 +100,6 @@ public class FunctionNode extends Node {
     context.addToCurrentLabel(POP(RegisterOperand.PC));
     context.addToCurrentLabel(POP(RegisterOperand.PC));
     context.addToCurrentLabel(new LoadLiterals());
-
-    /* Return to main label for rest of program to be translated. */
-    context.setCurrentLabel(mainLabel);
   }
 
   private boolean endsWithReturnOrExit(StatNode stat) {
