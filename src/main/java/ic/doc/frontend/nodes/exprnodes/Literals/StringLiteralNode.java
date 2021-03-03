@@ -41,12 +41,12 @@ public class StringLiteralNode extends LiteralNode {
   public void translate(Context context) {
     RegisterOperand register = new RegisterOperand(context.getFreeRegister());
     setRegister(register);
-    int length = value.length();
+    int size = strSize(value);
     List<Label<Data>> dataLabels = context.getDataLabels();
     int newIndex = dataLabels.size();
     Label<Data> newLabel = new Label<>("msg_" + newIndex);
     dataLabels.add(newIndex, newLabel);
-    newLabel.addToBody(new Data(length, value));
+    newLabel.addToBody(new Data(size, value));
     LabelAddressOperand operand = new LabelAddressOperand(newLabel.getFunctionLabel());
     context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
   }
@@ -54,5 +54,17 @@ public class StringLiteralNode extends LiteralNode {
   @Override
   public String getInput() {
     return value;
+  }
+
+  // TODO: Use this for all stuff in data, such as for the placeholders in PredefinedFunctions
+  private int strSize(String s){
+    int size = 0;
+    for(int i = 0; i < s.length(); i++){
+      if(s.charAt(i) == '\\'){
+        i++;
+      }
+      size++;
+    }
+    return size;
   }
 }
