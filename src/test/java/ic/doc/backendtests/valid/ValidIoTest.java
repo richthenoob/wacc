@@ -16,7 +16,7 @@ public class ValidIoTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
+  @Disabled("Multiple reads from stdin not yet supported on backend testing.")
   @Tag("backend")
   @Tag("io")
   @ParameterizedTest

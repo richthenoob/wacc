@@ -142,7 +142,7 @@ printPairOfNulls.s contents are:
 -- Assembling and Linking...
 -- Executing...
 ===========================================================
-0x22150 = ((nil),(nil))
+0x22190 = ((nil),(nil))
 ===========================================================
 The exit code is 0.
 -- Finished

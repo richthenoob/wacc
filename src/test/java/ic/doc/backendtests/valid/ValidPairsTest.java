@@ -16,12 +16,16 @@ public class ValidPairsTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
   @Tag("backend")
   @Tag("pairs")
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void validPairTests(String testName) {
+
+    if (testName.equals("readPair.wacc")) {
+      /* Multiple reads from stdin not yet supported on backend testing. */
+      return;
+    }
     backendTestFile(groupTestPath + testName);
   }
 }

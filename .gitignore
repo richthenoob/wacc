@@ -1,8 +1,11 @@
-#ignore generated binary files and auto-generated ANTLR code
+#ignore generated binary files, auto-generated ANTLR code, assembly files and executables
 bin
 src/main/java/ic/doc/antlr/
 *.tokens
 *.interp
+*.s
+exec
+execFile
 
 #ignore Java class files
 *.class
@@ -17,3 +20,4 @@ src/main/java/ic/doc/antlr/
 .idea/
 build/
 out/
+tmp/

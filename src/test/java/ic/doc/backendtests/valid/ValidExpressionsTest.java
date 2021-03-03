@@ -17,12 +17,10 @@ public class ValidExpressionsTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-//  @Disabled
   @Tag("backend")
   @Tag("expressions")
   @ParameterizedTest
   @MethodSource("getTestNames")
-//  @ValueSource(strings = {"negBothMod.wacc"})
   public void validExpressionsTests(String testName) {
     backendTestFile(groupTestPath + testName);
   }
