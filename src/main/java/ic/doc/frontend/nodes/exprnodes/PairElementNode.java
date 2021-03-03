@@ -98,6 +98,6 @@ public class PairElementNode extends ExprNode {
     PredefinedFunctions.addCheckNullPointerFunction(context);
     curr.addToBody(BL("p_check_null_pointer"));
     curr.addToBody(LDR(reg, PreIndexedAddressFixedOffset(reg, new ImmediateOperand<>(true, val))));
-    curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
+//    curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
   }
 }

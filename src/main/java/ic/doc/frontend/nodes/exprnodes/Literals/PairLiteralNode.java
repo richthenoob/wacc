@@ -17,6 +17,8 @@ import ic.doc.frontend.types.PairType;
 import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import static ic.doc.backend.Instructions.Move.MOV;
+
 /* Only pair literal is 'null'. Can match the type of any pair. */
 public class PairLiteralNode extends LiteralNode {
 
@@ -32,7 +34,7 @@ public class PairLiteralNode extends LiteralNode {
   @Override
   public void translate(Context context) {
     RegisterOperand reg = new RegisterOperand(context.getFreeRegister());
-    context.addToCurrentLabel(SingleDataTransfer.LDR(reg,new ImmediateOperand(0)));
+    context.addToCurrentLabel(MOV(reg,new ImmediateOperand(true,0)));
     setRegister(reg);
   }
 
