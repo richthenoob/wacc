@@ -16,7 +16,6 @@ public class ValidIoPrintTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
   @Tag("backend")
   @Tag("io")
   @Tag("print")

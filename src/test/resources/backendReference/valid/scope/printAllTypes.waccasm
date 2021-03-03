@@ -804,7 +804,7 @@ printAllTypes.s contents are:
 -- Executing...
 ===========================================================
 ( [1, 2, 3] , [a, b, c] )
-[ 0x221d0 = (a, true), 0x22200 = (b, false) ]
+[ 0x23210 = (a, true), 0x23240 = (b, false) ]
 1, 2
 array, of, strings
 true, false, true

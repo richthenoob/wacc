@@ -16,7 +16,6 @@ public class ValidArrayTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
   @Tag("backend")
   @Tag("array")
   @ParameterizedTest

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class ValidNestedFunctionTest extends AbstractBackendTest {
 
@@ -16,12 +17,13 @@ public class ValidNestedFunctionTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
+//  @Disabled
   @Tag("backend")
   @Tag("function")
   @Tag("nested")
   @ParameterizedTest
   @MethodSource("getTestNames")
+//  @ValueSource(strings = {"fibonacciRecursive.wacc"})
   public void validNestedFunctionTests(String testName) {
 
     if (testName.equals("printInputTriangle.wacc")) {

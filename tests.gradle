@@ -24,7 +24,7 @@ test {
     systemProperties = [tempDirPath: tempDirPath,
                         containerName: containerName,
                         imageName: imageName,
-                        "org.slf4j.simpleLogger.defaultLogLevel": "error"] // Shut logger up
+                        "org.slf4j.simpleLogger.defaultLogLevel": "error"]
     useJUnitPlatform()
 }
 
@@ -60,7 +60,7 @@ task backendTest(type: Test) {
     systemProperties = [tempDirPath: tempDirPath,
                         containerName: containerName,
                         imageName: imageName,
-                        "org.slf4j.simpleLogger.defaultLogLevel": "error"] // Shut logger up
+                        "org.slf4j.simpleLogger.defaultLogLevel": "error"]
     useJUnitPlatform {
         includeTags 'backend'
     }
