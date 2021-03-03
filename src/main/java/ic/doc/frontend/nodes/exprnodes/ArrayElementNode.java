@@ -173,13 +173,18 @@ public class ArrayElementNode extends ExprNode {
 
       /* address of value = address of first value + value of index * 4 */
       label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, new ImmediateOperand<>(true, 4)));
-      label.addToBody(
-          DataProcessing.SHIFTADD(
-              arrayReg,
-              arrayReg,
-              indexReg,
-              PreIndexedAddressOperand.ShiftTypes.LSL,
-              new ImmediateOperand<>(true, 2)));
+      Type internalType = ((ArrayType) (array.identNode.getType())).getInternalType();
+      if (internalType.getVarSize() == 1) {
+        label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, indexReg));
+      } else {
+        label.addToBody(
+            DataProcessing.SHIFTADD(
+                arrayReg,
+                arrayReg,
+                indexReg,
+                PreIndexedAddressOperand.ShiftTypes.LSL,
+                new ImmediateOperand<>(true, 2)));
+      }
     }
     context.freeRegister(indexReg.getValue());
     return arrayReg;
@@ -195,8 +200,7 @@ public class ArrayElementNode extends ExprNode {
         .addToBody(
             SingleDataTransfer.LDR(
                 arrayRegister,
-                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(
-                    arrayRegister)));
+                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(arrayRegister)));
   }
 
   @Override
