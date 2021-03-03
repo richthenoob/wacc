@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class ValidExpressionsTest extends AbstractBackendTest {
 
@@ -20,7 +21,8 @@ public class ValidExpressionsTest extends AbstractBackendTest {
   @Tag("backend")
   @Tag("expressions")
   @ParameterizedTest
-  @MethodSource("getTestNames")
+//  @MethodSource("getTestNames")
+  @ValueSource(strings = {"negBothMod.wacc"})
   public void validExpressionsTests(String testName) {
     backendTestFile(groupTestPath + testName);
   }

@@ -29,6 +29,7 @@ public class DataProcessing extends Instruction {
     operands.add(rdHi); // most significant bits
     operands.add(rm); // operand 1 to be multiplied
     operands.add(rs); // operand 2 to be multiplied
+    this.operation = Operation.SMULL;
   }
 
   // All other operations
