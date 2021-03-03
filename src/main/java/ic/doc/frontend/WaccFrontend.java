@@ -12,8 +12,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -79,12 +77,8 @@ public class WaccFrontend {
       try {
         ProgNode rootNode = parse(inputStream);
         String output = WaccBackend.generateCode(rootNode);
-
         /* Strips .wacc file extension and adds .s before writing to file. */
-        Path p = Paths.get(filename);
-        String outputFileName = p.getFileName().toString().replaceFirst("[.][^.]+$", "");;
-        WaccBackend.writeToFile(outputFileName + ".s", output);
-
+        WaccBackend.writeToFile(filename.substring(0, filename.lastIndexOf('.')) + ".s", output);
         System.out.println(output);
       } catch (SyntaxException e) {
         System.err.println(e.toString());
