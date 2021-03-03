@@ -17,13 +17,12 @@ public class ValidNestedFunctionTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-//  @Disabled
+  @Disabled
   @Tag("backend")
   @Tag("function")
   @Tag("nested")
   @ParameterizedTest
   @MethodSource("getTestNames")
-//  @ValueSource(strings = {"fibonacciRecursive.wacc"})
   public void validNestedFunctionTests(String testName) {
 
     if (testName.equals("printInputTriangle.wacc")) {
