@@ -37,6 +37,10 @@ public class SymbolTable {
     tableSizeInBytes += sizeOfVarOnStack;
   }
 
+  public void decrementTableSizeInBytes(int size) {
+    tableSizeInBytes -= size;
+  }
+
   public void incrementOffset(int offset) {
     for (Identifier obj : dictionary.values()) {
       if (obj instanceof VariableIdentifier && ((VariableIdentifier) obj).isActivated()) {
