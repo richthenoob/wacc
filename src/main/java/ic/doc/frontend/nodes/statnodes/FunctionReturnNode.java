@@ -58,9 +58,12 @@ public class FunctionReturnNode extends StatNode {
     /* Correctly restore scope to function symbol table so that we can
      * properly add to the stack pointer to correctly account for temporary
      * variables declared within the function scope. */
-    SymbolTable funcSymbolTable = context.getFunctionTables().get(functionName);
-    context.setScope(funcSymbolTable);
-    context.restoreScope();
+    for (SymbolTable currTable = context.getCurrentSymbolTable();
+        currTable.getParentSymbolTable() != null;
+        currTable = currTable.getParentSymbolTable()) {
+      context.setScope(currTable);
+      context.restoreScope();
+    }
     context.addToCurrentLabel(POP(RegisterOperand.PC));
   }
 }
