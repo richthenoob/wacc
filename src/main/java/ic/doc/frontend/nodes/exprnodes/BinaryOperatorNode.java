@@ -183,7 +183,7 @@ public class BinaryOperatorNode extends ExprNode {
       /* Comparison operators. */
       case GT:
         addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BGT,
-            Condition.BLE);
+            Condition.BLEQ);
         break;
       case GTE:
         addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BGE,
@@ -194,7 +194,7 @@ public class BinaryOperatorNode extends ExprNode {
             Condition.BGE);
         break;
       case LTE:
-        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BLE,
+        addComparisonAssembly(curr, lReg, rReg, dstReg, Condition.BLEQ,
             Condition.BGT);
         break;
 
