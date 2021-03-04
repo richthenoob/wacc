@@ -89,9 +89,9 @@ public class ArrayLiteralNode extends LiteralNode {
       label.addToBody(
           SingleDataTransfer.STR(
               value.getRegister(),
-              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  new RegisterOperand(firstRegisterNum),
-                  new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
+              new PreIndexedAddressOperand(
+                  new RegisterOperand(firstRegisterNum))
+                  .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
       offset += sizeOfVarOnStack;
       context.freeRegister(value.getRegister().getValue());
     }
@@ -104,8 +104,7 @@ public class ArrayLiteralNode extends LiteralNode {
         .addToBody(
             SingleDataTransfer.STR(
                 new RegisterOperand(secondRegisterNum),
-                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(
-                    new RegisterOperand(firstRegisterNum))));
+                new PreIndexedAddressOperand(new RegisterOperand(firstRegisterNum))));
     context.freeRegister(secondRegisterNum);
   }
 

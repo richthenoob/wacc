@@ -3,7 +3,6 @@ package ic.doc.frontend.nodes.exprnodes;
 import static ic.doc.backend.Instructions.Branch.BL;
 import static ic.doc.backend.Instructions.Move.MOV;
 import static ic.doc.backend.Instructions.SingleDataTransfer.STR;
-import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressFixedOffsetJump;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Instructions.DataProcessing;
@@ -121,9 +120,10 @@ public class CallNode extends ExprNode {
 
       /* Store argument onto stack for the function to use. */
       RegisterOperand reg = arg.getRegister();
-      PreIndexedAddressOperand shiftStack = PreIndexedAddressFixedOffsetJump(
-          RegisterOperand.SP,
-          new ImmediateOperand<>(-offset).withPrefixSymbol("#"));
+      PreIndexedAddressOperand shiftStack = new PreIndexedAddressOperand(
+          RegisterOperand.SP)
+          .withExpr(new ImmediateOperand<>(-offset).withPrefixSymbol("#"))
+          .withJump();
       context.addToCurrentLabel(STR(shiftCond, reg, shiftStack));
 
       /* Free register used for loading. */

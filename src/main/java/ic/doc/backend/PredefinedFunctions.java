@@ -15,9 +15,6 @@ import static ic.doc.backend.Instructions.Move.MOV;
 import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
 import static ic.doc.backend.Instructions.Stack.PUSH;
 import static ic.doc.backend.Instructions.Stack.POP;
-import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressFixedOffset;
-import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressZeroOffset;
-
 
 public class PredefinedFunctions {
 
@@ -87,7 +84,7 @@ public class PredefinedFunctions {
         .addToBody(PUSH(RegisterOperand.LR));
     // Operand.R0 needs to be [Operand.R0]
     printStringLabel.addToBody(LDR(RegisterOperand.R1,
-        PreIndexedAddressZeroOffset(RegisterOperand.R0)));
+        new PreIndexedAddressOperand(RegisterOperand.R0)));
     printStringLabel.addToBody(ADD(new RegisterOperand(2), RegisterOperand.R0,
         new ImmediateOperand<>(4).withPrefixSymbol("#")));
 
@@ -272,7 +269,7 @@ public class PredefinedFunctions {
         new LabelAddressOperand(arrayOutOfBoundsNegativeLabelStr)));
     checkArrayBoundsLabel.addToBody(BLLT(THROW_RUNTIME_ERROR_FUNC));
     checkArrayBoundsLabel.addToBody(LDR(RegisterOperand.R1,
-        PreIndexedAddressZeroOffset(RegisterOperand.R1)));
+        new PreIndexedAddressOperand(RegisterOperand.R1)));
 
     checkArrayBoundsLabel
         .addToBody(CMP(RegisterOperand.R0, RegisterOperand.R1));
@@ -382,13 +379,13 @@ public class PredefinedFunctions {
     freePairFuncLabel
         .addToBody(PUSH(RegisterOperand.R0));
     freePairFuncLabel.addToBody(LDR(RegisterOperand.R0,
-        PreIndexedAddressZeroOffset(RegisterOperand.R0)));
+        new PreIndexedAddressOperand(RegisterOperand.R0)));
     freePairFuncLabel.addToBody(BL("free"));
     freePairFuncLabel.addToBody(LDR(RegisterOperand.R0,
-        PreIndexedAddressZeroOffset(RegisterOperand.SP)));
+        new PreIndexedAddressOperand(RegisterOperand.SP)));
     freePairFuncLabel.addToBody(
-        LDR(RegisterOperand.R0, PreIndexedAddressFixedOffset(RegisterOperand.R0,
-            new ImmediateOperand<>(4).withPrefixSymbol("#"))));
+        LDR(RegisterOperand.R0, new PreIndexedAddressOperand(RegisterOperand.R0)
+            .withExpr(new ImmediateOperand<>(4).withPrefixSymbol("#"))));
     freePairFuncLabel.addToBody(BL("free"));
     freePairFuncLabel
         .addToBody(POP(RegisterOperand.R0));

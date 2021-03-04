@@ -18,8 +18,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import static ic.doc.backend.Instructions.Branch.BL;
 import static ic.doc.backend.Instructions.Move.MOV;
-import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
-import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressZeroOffset;
 
 public class MemoryFreeNode extends StatNode {
 

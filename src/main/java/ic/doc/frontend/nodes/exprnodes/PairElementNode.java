@@ -22,8 +22,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import static ic.doc.backend.Instructions.Branch.BL;
 import static ic.doc.backend.Instructions.Move.MOV;
 import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
-import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressFixedOffset;
-import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressZeroOffset;
 
 public class PairElementNode extends ExprNode {
 
@@ -97,8 +95,9 @@ public class PairElementNode extends ExprNode {
 
     PredefinedFunctions.addCheckNullPointerFunction(context);
     curr.addToBody(BL("p_check_null_pointer"));
-    curr.addToBody(LDR(reg, PreIndexedAddressFixedOffset(reg,
-        new ImmediateOperand<>(val).withPrefixSymbol("#"))));
+    curr.addToBody(LDR(reg,
+        new PreIndexedAddressOperand(reg)
+        .withExpr(new ImmediateOperand<>(val).withPrefixSymbol("#"))));
 //    curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
   }
 }

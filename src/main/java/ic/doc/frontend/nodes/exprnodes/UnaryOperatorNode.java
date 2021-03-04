@@ -1,9 +1,9 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
@@ -13,14 +13,12 @@ import ic.doc.frontend.types.CharType;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.IntType;
 import ic.doc.frontend.types.Type;
-import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import static ic.doc.backend.Instructions.Branch.BLVS;
 import static ic.doc.backend.Instructions.DataProcessing.EOR;
 import static ic.doc.backend.Instructions.DataProcessing.RSBS;
 import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
-import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressZeroOffset;
 import static ic.doc.backend.PredefinedFunctions.addCheckIntegerOverflowFunction;
 import static ic.doc.backend.PredefinedFunctions.addThrowRuntimeErrorFunction;
 
@@ -144,7 +142,7 @@ public class UnaryOperatorNode extends ExprNode {
         curr.addToBody(BLVS("p_throw_overflow_error"));
         break;
       case LEN:
-        curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
+        curr.addToBody(LDR(reg, new PreIndexedAddressOperand(reg)));
         break;
       case ORD:
         // Do nothing, expr is translated

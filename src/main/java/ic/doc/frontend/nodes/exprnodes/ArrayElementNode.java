@@ -159,13 +159,13 @@ public class ArrayElementNode extends ExprNode {
         label.addToBody(
             SingleDataTransfer.LDR(
                 indexReg,
-                PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                    RegisterOperand.SP(), new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
+                new PreIndexedAddressOperand(RegisterOperand.SP())
+                    .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
       }
       /* load array */
       label.addToBody(
           SingleDataTransfer.LDR(
-              arrayReg, PreIndexedAddressOperand.PreIndexedAddressZeroOffset(arrayReg)));
+              arrayReg, new PreIndexedAddressOperand(arrayReg)));
 
       /* Move values into correct registers to call predefined function */
       label.addToBody(Move.MOV(new RegisterOperand(0), indexReg));
@@ -209,7 +209,7 @@ public class ArrayElementNode extends ExprNode {
             SingleDataTransfer.LDR(
                 cond,
                 arrayRegister,
-                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(arrayRegister)));
+                new PreIndexedAddressOperand(arrayRegister)));
   }
 
   @Override
