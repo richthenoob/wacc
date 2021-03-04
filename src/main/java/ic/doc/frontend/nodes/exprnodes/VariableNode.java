@@ -55,7 +55,7 @@ public class VariableNode extends ExprNode {
               "SB",
               register,
               new PreIndexedAddressOperand(
-                  RegisterOperand.SP())
+                  RegisterOperand.SP)
                   .withExpr(new ImmediateOperand<>(
                       id.getOffsetStack(context.getCurrentSymbolTable(), key))
                       .withPrefixSymbol("#"))));
@@ -64,7 +64,7 @@ public class VariableNode extends ExprNode {
           SingleDataTransfer.LDR(
               register,
               new PreIndexedAddressOperand(
-                  RegisterOperand.SP())
+                  RegisterOperand.SP)
                   .withExpr(
                       new ImmediateOperand<>(
                       id.getOffsetStack(context.getCurrentSymbolTable(), key))

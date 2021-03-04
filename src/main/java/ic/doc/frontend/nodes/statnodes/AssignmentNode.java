@@ -132,7 +132,7 @@ public class AssignmentNode extends StatNode {
   public void translate(Context context) {
     int offset;
     SingleDataTransfer storeInstr;
-    RegisterOperand base = RegisterOperand.SP();
+    RegisterOperand base = RegisterOperand.SP;
     if (lhs instanceof ArrayElementNode) {
       base = translateArrayElementNode(context);
       offset = 0;
@@ -258,8 +258,8 @@ public class AssignmentNode extends StatNode {
      * space for our new variable. */
     context.addToCurrentLabel(
         DataProcessing.SUB(
-            RegisterOperand.SP(),
-            RegisterOperand.SP(),
+            RegisterOperand.SP,
+            RegisterOperand.SP,
             new ImmediateOperand<>(sizeOfVarOnStack).withPrefixSymbol("#")));
 
     return 0;
