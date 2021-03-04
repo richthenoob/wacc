@@ -35,7 +35,7 @@ public class Move extends Instruction {
   }
 
   public static Move MOVLE(Operand dst, Operand src) {
-    return new Move(dst, src, Condition.BLE);
+    return new Move(dst, src, Condition.BLEQ);
   }
 
   public static Move MOV(Operand dst, Operand src) {
@@ -56,7 +56,7 @@ public class Move extends Instruction {
         return "MOVLT " + dst.toString() + ", " + src.toString();
       case BGT:
         return "MOVGT " + dst.toString() + ", " + src.toString();
-      case BLE:
+      case BLEQ:
         return "MOVLE " + dst.toString() + ", " + src.toString();
       default:
         return "MOV " + dst.toString() + ", " + src.toString();

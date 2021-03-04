@@ -207,9 +207,9 @@ public class ArrayElementNode extends ExprNode {
         .getCurrentLabel()
         .addToBody(
             SingleDataTransfer.LDR(
-                cond,
                 arrayRegister,
-                new PreIndexedAddressOperand(arrayRegister)));
+                new PreIndexedAddressOperand(arrayRegister))
+                .withCond(cond));
   }
 
   @Override

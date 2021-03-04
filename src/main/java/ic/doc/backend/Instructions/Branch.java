@@ -30,10 +30,6 @@ public class Branch extends Instruction {
     return new Branch(Condition.BGT, label);
   }
 
-  public static Branch BLE(String label) {
-    return new Branch(Condition.BLE, label);
-  }
-
   public static Branch BLEQ(String label) {
     return new Branch(Condition.BLEQ, label);
   }

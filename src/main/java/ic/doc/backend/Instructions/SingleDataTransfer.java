@@ -5,7 +5,7 @@ import ic.doc.frontend.types.*;
 
 public class SingleDataTransfer extends Instruction {
   private final boolean loadFlag;
-  private final String cond; // for conditional returns
+  private String cond; // for conditional returns
   private final Operand dst;
   private final Operand expr;
 
@@ -20,16 +20,13 @@ public class SingleDataTransfer extends Instruction {
     return new SingleDataTransfer("", true, dst, expr);
   }
 
-  public static SingleDataTransfer LDR(String cond, Operand dst, Operand expr) {
-    return new SingleDataTransfer(cond, true, dst, expr);
-  }
-
   public static SingleDataTransfer STR(Operand dst, Operand expr) {
     return new SingleDataTransfer("", false, dst, expr);
   }
 
-  public static SingleDataTransfer STR(String cond, Operand dst, Operand expr) {
-    return new SingleDataTransfer(cond, false, dst, expr);
+  public SingleDataTransfer withCond(String cond) {
+    this.cond = cond;
+    return this;
   }
 
   @Override

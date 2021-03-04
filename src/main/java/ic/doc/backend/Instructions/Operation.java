@@ -10,9 +10,6 @@ public enum Operation {
     ORR,
     TST,
     CMP,
-    MOV,
-    MOVEQ,
-    MOVNE,
     RSBS,
     EOR
 }
