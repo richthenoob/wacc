@@ -116,6 +116,7 @@ public class CallNode extends ExprNode {
        * increment the function table so that if we access anything in the stack
        * in subsequent parameters, this push is accounted for. */
       currentSymbolTable.incrementOffset(offset);
+      currentSymbolTable.incrementTableSizeInBytes(offset);
       counter += offset;
 
       /* Store argument onto stack for the function to use. */
@@ -134,6 +135,7 @@ public class CallNode extends ExprNode {
      * after the call. This ensures that the function symbol table is exactly
      * the same as when we entered the call. */
     currentSymbolTable.decrementOffset(counter);
+    currentSymbolTable.decrementTableSizeInBytes(counter);
 
     /* Call the function then restore to previous scope.
      * Also restore any stack space used by parameters to the function. */
