@@ -11,7 +11,6 @@ import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.Operand;
 import ic.doc.backend.Instructions.operands.PostIndexedAddressOperand;
-import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.ShiftTypes;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.backend.PredefinedFunctions;

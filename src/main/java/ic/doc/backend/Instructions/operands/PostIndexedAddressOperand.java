@@ -1,7 +1,5 @@
 package ic.doc.backend.Instructions.operands;
 
-import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.ShiftTypes;
-
 /* Adapted from the ARM specification.
  * [Rn], <#expression>]        offset of <expression> bytes
  * [Rn],{+/-}Rm {,<shift>}     offset of +/- contents of index register,

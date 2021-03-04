@@ -7,14 +7,6 @@ package ic.doc.backend.Instructions.operands;
  *                            shifted by <shift> */
 public class PreIndexedAddressOperand extends AddressOperand {
 
-  public enum ShiftTypes {
-    LSL, /* Left shift logical     */
-    ASL, /* Arithmetic left shift  */
-    RSL, /* Right shift logical    */
-    ASR, /* Arithmetic right shift */
-    NONE;
-  }
-
   private final RegisterOperand rn;
   private final ImmediateOperand expr;
   private final RegisterOperand rm;
