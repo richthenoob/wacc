@@ -1,7 +1,6 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
@@ -9,7 +8,6 @@ import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.PairType;
-import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class PairNode extends ExprNode {
@@ -43,37 +41,40 @@ public class PairNode extends ExprNode {
     int firstRegisterNum = context.getFreeRegister();
     label
         .addToBody(
-            SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(bytesToAllocate)))
+            SingleDataTransfer.LDR(new RegisterOperand(0),
+                new ImmediateOperand<>(bytesToAllocate).withPrefixSymbol("=")))
         .addToBody(Branch.BL("malloc"))
         .addToBody(
             new Move(new RegisterOperand(firstRegisterNum), new RegisterOperand(0), Condition.B));
     fst.translate(context);
     label
-        .addToBody(SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(4)))
+        .addToBody(SingleDataTransfer.LDR(new RegisterOperand(0),
+            new ImmediateOperand<>(4).withPrefixSymbol("=")))
         .addToBody(Branch.BL("malloc"))
         .addToBody(
             SingleDataTransfer.STR(
                 fst.getRegister(),
-                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(new RegisterOperand(0))))
+                new PreIndexedAddressOperand(new RegisterOperand(0))))
         .addToBody(
             SingleDataTransfer.STR(
                 new RegisterOperand(0),
-                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(
-                    new RegisterOperand(firstRegisterNum))));
+                new PreIndexedAddressOperand(new RegisterOperand(firstRegisterNum))));
     context.freeRegister(fst.getRegister().getValue());
     snd.translate(context);
     label
-        .addToBody(SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(4)))
+        .addToBody(SingleDataTransfer.LDR(new RegisterOperand(0),
+            new ImmediateOperand<>(4).withPrefixSymbol("=")))
         .addToBody(Branch.BL("malloc"))
         .addToBody(
             SingleDataTransfer.STR(
                 snd.getRegister(),
-                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(new RegisterOperand(0))))
+                new PreIndexedAddressOperand(new RegisterOperand(0))))
         .addToBody(
             SingleDataTransfer.STR(
                 new RegisterOperand(0),
-                PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                    new RegisterOperand(firstRegisterNum), new ImmediateOperand(true,4))));
+                new PreIndexedAddressOperand(
+                    new RegisterOperand(firstRegisterNum))
+                    .withExpr(new ImmediateOperand<>(4).withPrefixSymbol("#"))));
     context.freeRegister(snd.getRegister().getValue());
     setRegister(new RegisterOperand(firstRegisterNum));
   }

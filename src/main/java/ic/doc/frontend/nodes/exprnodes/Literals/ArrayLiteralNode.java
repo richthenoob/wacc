@@ -77,7 +77,8 @@ public class ArrayLiteralNode extends LiteralNode {
 
     label
         .addToBody(
-            SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(bytesToAllocate)))
+            SingleDataTransfer.LDR(new RegisterOperand(0),
+                new ImmediateOperand<>(bytesToAllocate).withPrefixSymbol("=")))
         .addToBody(Branch.BL("malloc"))
         .addToBody(
             new Move(new RegisterOperand(firstRegisterNum), new RegisterOperand(0), Condition.B));
@@ -88,8 +89,9 @@ public class ArrayLiteralNode extends LiteralNode {
       label.addToBody(
           SingleDataTransfer.STR(
               value.getRegister(),
-              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  new RegisterOperand(firstRegisterNum), new ImmediateOperand<>(true, offset))));
+              new PreIndexedAddressOperand(
+                  new RegisterOperand(firstRegisterNum))
+                  .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
       offset += sizeOfVarOnStack;
       context.freeRegister(value.getRegister().getValue());
     }
@@ -97,12 +99,12 @@ public class ArrayLiteralNode extends LiteralNode {
     label
         .addToBody(
             SingleDataTransfer.LDR(
-                new RegisterOperand(secondRegisterNum), new ImmediateOperand<>(values.size())))
+                new RegisterOperand(secondRegisterNum),
+                new ImmediateOperand<>(values.size()).withPrefixSymbol("=")))
         .addToBody(
             SingleDataTransfer.STR(
                 new RegisterOperand(secondRegisterNum),
-                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(
-                    new RegisterOperand(firstRegisterNum))));
+                new PreIndexedAddressOperand(new RegisterOperand(firstRegisterNum))));
     context.freeRegister(secondRegisterNum);
   }
 

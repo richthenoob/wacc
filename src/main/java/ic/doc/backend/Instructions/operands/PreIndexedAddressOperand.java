@@ -7,77 +7,48 @@ package ic.doc.backend.Instructions.operands;
  *                            shifted by <shift> */
 public class PreIndexedAddressOperand extends AddressOperand {
 
-  public enum ShiftTypes {
-    LSL, /* Left shift logical     */
-    ASL, /* Arithmetic left shift  */
-    RSL, /* Right shift logical    */
-    ASR, /* Arithmetic right shift */
-    NONE;
-  }
+  private RegisterOperand rn;
+  private ImmediateOperand expr;
+  private RegisterOperand rm;
+  private boolean isNegativeRm;
+  private ShiftTypes shift;
+  private boolean jump;
 
-  private final RegisterOperand rn;
-  private final ImmediateOperand expr;
-  private final RegisterOperand rm;
-  private final boolean isNegativeRm;
-  private final ShiftTypes shift;
-  private final boolean jump;
-
-  private PreIndexedAddressOperand(
-      RegisterOperand rn,
-      ImmediateOperand expr,
-      RegisterOperand rm, boolean isNegativeRm, ShiftTypes shift,
-      boolean jump) {
+  public PreIndexedAddressOperand(RegisterOperand rn) {
     this.rn = rn;
-    this.expr = expr;
+    this.isNegativeRm = false;
+    this.shift = ShiftTypes.NONE;
+    this.jump = false;
+  }
+
+  public PreIndexedAddressOperand withRN(RegisterOperand rn) {
+    this.rn = rn;
+    return this;
+  }
+
+  public PreIndexedAddressOperand withRM(RegisterOperand rm) {
     this.rm = rm;
-    this.isNegativeRm = isNegativeRm;
+    return this;
+  }
+
+  public PreIndexedAddressOperand withNegative() {
+    this.isNegativeRm = true;
+    return this;
+  }
+
+  public PreIndexedAddressOperand withShift(ShiftTypes shift) {
     this.shift = shift;
-    this.jump = jump;
+    return this;
   }
 
-  /* Public constructor for operands like
-   * [r0] Access memory of address stored in r0
-   * [sp] Access memory of address stored in sp */
-  public static PreIndexedAddressOperand PreIndexedAddressZeroOffset(
-      RegisterOperand rn) {
-    return new PreIndexedAddressOperand(rn, null, null,
-        false, ShiftTypes.NONE, false);
+  public PreIndexedAddressOperand withExpr(ImmediateOperand expr) {
+    this.expr = expr;
+    return this;
   }
 
-  /* Public constructor for operands like
-   * [r0, #5]   Access memory at address stored in r0 + 5
-   * [sp, #-16] Access memory at address stored in sp - 16 */
-  public static PreIndexedAddressOperand PreIndexedAddressFixedOffset(
-      RegisterOperand rn, ImmediateOperand expr) {
-    return new PreIndexedAddressOperand(rn, expr, null,
-        false, ShiftTypes.NONE, false);
-  }
-
-  /* Public constructor for operands like
-   * [r0, #5]!   Access memory at address stored in r0 + 5
-   * [sp, #-16]! Access memory at address stored in sp - 16 */
-  public static PreIndexedAddressOperand PreIndexedAddressFixedOffsetJump(
-      RegisterOperand rn, ImmediateOperand expr) {
-    return new PreIndexedAddressOperand(rn, expr, null,
-        false, ShiftTypes.NONE, true);
-  }
-
-  /* Public constructor for operands like
-   * [r0, r1]   Access memory at address stored in r0 + address stored in r1
-   * [sp, -r0]  Access memory at address [sp] - [r0]  */
-  public static PreIndexedAddressOperand PreIndexedAddressByRegister(
-      RegisterOperand rn, RegisterOperand rm, boolean isNegativeRm) {
-    return new PreIndexedAddressOperand(rn, null, rm, isNegativeRm,
-        ShiftTypes.NONE, false);
-  }
-
-  /* Public constructor for operands like
-   * [r0, r1, LSL #2] Access memory at address r0 + r1 * 4
-   */
-  public static PreIndexedAddressOperand PreIndexedAddressShiftRegister(
-      RegisterOperand rn, RegisterOperand rm, boolean isNegativeRm,
-      ShiftTypes shift) {
-    return new PreIndexedAddressOperand(rn, null, rm, isNegativeRm, shift, false);
+  public PreIndexedAddressOperand withJump() {
+    this.jump = true;
+    return this;
   }
 
   @Override

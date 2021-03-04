@@ -1,9 +1,9 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
 import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
+import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
@@ -13,14 +13,12 @@ import ic.doc.frontend.types.CharType;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.IntType;
 import ic.doc.frontend.types.Type;
-import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import static ic.doc.backend.Instructions.Branch.BLVS;
 import static ic.doc.backend.Instructions.DataProcessing.EOR;
 import static ic.doc.backend.Instructions.DataProcessing.RSBS;
 import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
-import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressZeroOffset;
 import static ic.doc.backend.PredefinedFunctions.addCheckIntegerOverflowFunction;
 import static ic.doc.backend.PredefinedFunctions.addThrowRuntimeErrorFunction;
 
@@ -134,17 +132,17 @@ public class UnaryOperatorNode extends ExprNode {
         // Need to EOR with IMM 1
         // MOV r4, #0
         // EOR r4, r4, #1
-        curr.addToBody(EOR(reg, reg, new ImmediateOperand(true,1)));
+        curr.addToBody(EOR(reg, reg, new ImmediateOperand<>(1).withPrefixSymbol("#")));
         break;
       case MATH_NEGATION:
         // Add RSBS instr
-        curr.addToBody(RSBS(reg, reg, new ImmediateOperand(true,0)));
+        curr.addToBody(RSBS(reg, reg, new ImmediateOperand<>(0).withPrefixSymbol("#")));
         addCheckIntegerOverflowFunction(context);
         addThrowRuntimeErrorFunction(context);
         curr.addToBody(BLVS("p_throw_overflow_error"));
         break;
       case LEN:
-        curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
+        curr.addToBody(LDR(reg, new PreIndexedAddressOperand(reg)));
         break;
       case ORD:
         // Do nothing, expr is translated

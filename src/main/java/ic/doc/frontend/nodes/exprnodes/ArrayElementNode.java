@@ -138,14 +138,16 @@ public class ArrayElementNode extends ExprNode {
       if (i == 0) {
         label.addToBody(
             DataProcessing.ADD(
-                arrayReg, RegisterOperand.SP(), new ImmediateOperand<>(true, offsetArray)));
+                arrayReg, RegisterOperand.SP(),
+                new ImmediateOperand<>(offsetArray).withPrefixSymbol("#")));
       }
       if (arrays.get(i) instanceof IntLiteralNode) {
         label.addToBody(
             SingleDataTransfer.LDR(
                 indexReg,
                 new ImmediateOperand<>(
-                    ((IntLiteralNode) arrays.get(i)).getValue().intValue()))); // Load index literal
+                    ((IntLiteralNode) arrays.get(i)).getValue().intValue())
+                    .withPrefixSymbol("="))); // Load index literal
       } else {
         /* find offset of index pointer if its a variable */
         String indexVarName = arrays.get(i).getInput();
@@ -157,13 +159,13 @@ public class ArrayElementNode extends ExprNode {
         label.addToBody(
             SingleDataTransfer.LDR(
                 indexReg,
-                PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                    RegisterOperand.SP(), new ImmediateOperand<>(true, offset))));
+                new PreIndexedAddressOperand(RegisterOperand.SP())
+                    .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
       }
       /* load array */
       label.addToBody(
           SingleDataTransfer.LDR(
-              arrayReg, PreIndexedAddressOperand.PreIndexedAddressZeroOffset(arrayReg)));
+              arrayReg, new PreIndexedAddressOperand(arrayReg)));
 
       /* Move values into correct registers to call predefined function */
       label.addToBody(Move.MOV(new RegisterOperand(0), indexReg));
@@ -172,7 +174,8 @@ public class ArrayElementNode extends ExprNode {
       label.addToBody(Branch.BL(PredefinedFunctions.CHECK_ARRAY_BOUNDS_FUNC));
 
       /* address of value = address of first value + value of index * 4 */
-      label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, new ImmediateOperand<>(true, 4)));
+      label.addToBody(DataProcessing.ADD(arrayReg, arrayReg,
+          new ImmediateOperand<>(4).withPrefixSymbol("#")));
       Type internalType = ((ArrayType) (array.identNode.getType())).getInternalType();
       if (internalType.getVarSize() == 1) {
         label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, indexReg));
@@ -183,7 +186,7 @@ public class ArrayElementNode extends ExprNode {
                 arrayReg,
                 indexReg,
                 PreIndexedAddressOperand.ShiftTypes.LSL,
-                new ImmediateOperand<>(true, 2)));
+                new ImmediateOperand<>(2).withPrefixSymbol("#")));
       }
     }
     context.freeRegister(indexReg.getValue());
@@ -206,7 +209,7 @@ public class ArrayElementNode extends ExprNode {
             SingleDataTransfer.LDR(
                 cond,
                 arrayRegister,
-                PreIndexedAddressOperand.PreIndexedAddressZeroOffset(arrayRegister)));
+                new PreIndexedAddressOperand(arrayRegister)));
   }
 
   @Override

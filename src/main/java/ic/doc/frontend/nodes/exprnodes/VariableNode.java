@@ -54,18 +54,21 @@ public class VariableNode extends ExprNode {
           SingleDataTransfer.LDR(
               "SB",
               register,
-              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  RegisterOperand.SP(),
-                  new ImmediateOperand<>(
-                      true, id.getOffsetStack(context.getCurrentSymbolTable(), key)))));
+              new PreIndexedAddressOperand(
+                  RegisterOperand.SP())
+                  .withExpr(new ImmediateOperand<>(
+                      id.getOffsetStack(context.getCurrentSymbolTable(), key))
+                      .withPrefixSymbol("#"))));
     } else {
       context.addToCurrentLabel(
           SingleDataTransfer.LDR(
               register,
-              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  RegisterOperand.SP(),
-                  new ImmediateOperand<>(
-                      true, id.getOffsetStack(context.getCurrentSymbolTable(), key)))));
+              new PreIndexedAddressOperand(
+                  RegisterOperand.SP())
+                  .withExpr(
+                      new ImmediateOperand<>(
+                      id.getOffsetStack(context.getCurrentSymbolTable(), key))
+                      .withPrefixSymbol("#"))));
     }
   }
 }

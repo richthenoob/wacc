@@ -10,7 +10,7 @@ import ic.doc.backend.Context;
 import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.Operand;
-import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.ShiftTypes;
+import ic.doc.backend.Instructions.operands.PostIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.backend.PredefinedFunctions;
@@ -147,8 +147,10 @@ public class BinaryOperatorNode extends ExprNode {
 
         // checking for overflow
         curr.addToBody(CMP(new RegisterOperand(12),
-            PostIndexedShiftRegister(dstReg, ShiftTypes.ASR,
-                new ImmediateOperand<>(true, OVERFLOW_SHIFT_AMOUNT))));
+            new PostIndexedAddressOperand()
+                .withRM(dstReg)
+                .withShift(ShiftTypes.ASR)
+                .withExpr(new ImmediateOperand<>(OVERFLOW_SHIFT_AMOUNT).withPrefixSymbol("#"))));
 
         curr.addToBody(BLNE(OVERFLOW_CHECK));
         PredefinedFunctions.addCheckIntegerOverflowFunction(context);
@@ -225,9 +227,9 @@ public class BinaryOperatorNode extends ExprNode {
     // CMP
     curr.addToBody(CMP(lReg, rReg));
     // left expr
-    curr.addToBody(new Move(dstReg, new ImmediateOperand<>(true,1), lCond));
+    curr.addToBody(new Move(dstReg, new ImmediateOperand<>(1).withPrefixSymbol("#"), lCond));
     // right expr
-    curr.addToBody(new Move(dstReg, new ImmediateOperand<>(true,0), rCond));
+    curr.addToBody(new Move(dstReg, new ImmediateOperand<>(0).withPrefixSymbol("#"), rCond));
   }
 
   /* Given two expression nodes and a list of valid types,

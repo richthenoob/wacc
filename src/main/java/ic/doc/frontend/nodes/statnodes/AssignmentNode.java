@@ -23,7 +23,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import static ic.doc.backend.Instructions.Branch.BL;
 import static ic.doc.backend.Instructions.Move.MOV;
 import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
-import static ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.PreIndexedAddressZeroOffset;
 
 public class AssignmentNode extends StatNode {
 
@@ -152,7 +151,8 @@ public class AssignmentNode extends StatNode {
     }
 
     if(rhs instanceof PairElementNode){
-      context.addToCurrentLabel(LDR(rhs.getRegister(), PreIndexedAddressZeroOffset(rhs.getRegister())));
+      context.addToCurrentLabel(LDR(rhs.getRegister(),
+          new PreIndexedAddressOperand(rhs.getRegister())));
     }
 
     if (lhs.getType().getVarSize() == 1) {
@@ -160,14 +160,14 @@ public class AssignmentNode extends StatNode {
           SingleDataTransfer.STR(
               "B",
               rhs.getRegister(),
-              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  base, new ImmediateOperand<>(true, offset)));
+              new PreIndexedAddressOperand(base)
+                  .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#")));
     } else {
       storeInstr =
           SingleDataTransfer.STR(
               rhs.getRegister(),
-              PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  base, new ImmediateOperand<>(true, offset)));
+              new PreIndexedAddressOperand(base)
+                  .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#")));
     }
 
     context.addToCurrentLabel(storeInstr);
@@ -188,8 +188,8 @@ public class AssignmentNode extends StatNode {
     context.addToCurrentLabel(
         LDR(
             tempReg,
-            PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                base, new ImmediateOperand<>(true, offset))));
+            new PreIndexedAddressOperand(base)
+                .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
 
     /* CHECK WHETHER THE ADDRESS OF THE PAIR POINTS TO A NULL VALUE */
     context.addToCurrentLabel(MOV(RegisterOperand.R0, tempReg));
@@ -200,19 +200,19 @@ public class AssignmentNode extends StatNode {
     context.addToCurrentLabel(
         LDR(
             tempReg,
-            PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                tempReg, new ImmediateOperand<>(true, isFst ? 0 : 4))));
+            new PreIndexedAddressOperand(tempReg)
+                .withExpr(new ImmediateOperand<>(isFst ? 0 : 4).withPrefixSymbol("#"))));
 
     if (lhs.getType().getVarSize() == 1) {
       storeInstr =
           SingleDataTransfer.STR(
               "B",
               rhs.getRegister(),
-              PreIndexedAddressOperand.PreIndexedAddressZeroOffset(tempReg));
+              new PreIndexedAddressOperand(tempReg));
     } else {
       storeInstr =
           SingleDataTransfer.STR(
-              rhs.getRegister(), PreIndexedAddressOperand.PreIndexedAddressZeroOffset(tempReg));
+              rhs.getRegister(), new PreIndexedAddressOperand(tempReg));
     }
 
     context.addToCurrentLabel(storeInstr);
@@ -260,7 +260,7 @@ public class AssignmentNode extends StatNode {
         DataProcessing.SUB(
             RegisterOperand.SP(),
             RegisterOperand.SP(),
-            new ImmediateOperand<>(true, sizeOfVarOnStack)));
+            new ImmediateOperand<>(sizeOfVarOnStack).withPrefixSymbol("#")));
 
     return 0;
   }
