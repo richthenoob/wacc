@@ -115,9 +115,9 @@ public class PredefinedFunctions {
     String falseLabelStr = getDataLabel(ctx, FALSE_PLACEHOLDER);
 
     printBoolLabel.addToBody(
-        LDR("NE", RegisterOperand.R0, new LabelAddressOperand(trueLabelStr)));
+        LDR(RegisterOperand.R0, new LabelAddressOperand(trueLabelStr)).withCond("NE"));
     printBoolLabel.addToBody(
-        LDR("EQ", RegisterOperand.R0, new LabelAddressOperand(falseLabelStr)));
+        LDR(RegisterOperand.R0, new LabelAddressOperand(falseLabelStr)).withCond("EQ"));
 
     addCommonPrintInstructions(printBoolLabel, ctx.getCurrentSymbolTable());
 
@@ -215,8 +215,9 @@ public class PredefinedFunctions {
         ErrorMessage.NULL_REFERENCE);
     /* */
 
-    checkNullPointerLabel.addToBody(LDR("EQ", RegisterOperand.R0,
-        new LabelAddressOperand(nullReferenceErrorLabelStr)));
+    checkNullPointerLabel.addToBody(LDR(RegisterOperand.R0,
+        new LabelAddressOperand(nullReferenceErrorLabelStr))
+        .withCond("EQ"));
 
     addThrowRuntimeErrorFunction(ctx);
     checkNullPointerLabel.addToBody(BLEQ(THROW_RUNTIME_ERROR_FUNC));
@@ -265,16 +266,18 @@ public class PredefinedFunctions {
     String arrayOutOfBoundsLargeLabelStr = getDataLabel(ctx,
         ErrorMessage.ARRAY_IDX_OUT_OF_BOUNDS_LARGE);
 
-    checkArrayBoundsLabel.addToBody(LDR("LT", RegisterOperand.R0,
-        new LabelAddressOperand(arrayOutOfBoundsNegativeLabelStr)));
+    checkArrayBoundsLabel.addToBody(LDR(RegisterOperand.R0,
+        new LabelAddressOperand(arrayOutOfBoundsNegativeLabelStr))
+        .withCond("LT"));
     checkArrayBoundsLabel.addToBody(BLLT(THROW_RUNTIME_ERROR_FUNC));
     checkArrayBoundsLabel.addToBody(LDR(RegisterOperand.R1,
         new PreIndexedAddressOperand(RegisterOperand.R1)));
 
     checkArrayBoundsLabel
         .addToBody(CMP(RegisterOperand.R0, RegisterOperand.R1));
-    checkArrayBoundsLabel.addToBody(LDR("CS", RegisterOperand.R0,
-        new LabelAddressOperand(arrayOutOfBoundsLargeLabelStr)));
+    checkArrayBoundsLabel.addToBody(LDR(RegisterOperand.R0,
+        new LabelAddressOperand(arrayOutOfBoundsLargeLabelStr))
+        .withCond("CS"));
 
     checkArrayBoundsLabel.addToBody(BLCS(THROW_RUNTIME_ERROR_FUNC));
 
@@ -302,8 +305,8 @@ public class PredefinedFunctions {
     String divideByZeroLabelStr = getDataLabel(ctx,
         ErrorMessage.DIVIDE_BY_ZERO);
 
-    checkDivideByZeroLabel.addToBody(LDR("EQ", RegisterOperand.R0,
-        new LabelAddressOperand(divideByZeroLabelStr)));
+    checkDivideByZeroLabel.addToBody(LDR(RegisterOperand.R0,
+        new LabelAddressOperand(divideByZeroLabelStr)).withCond("EQ"));
 
     addThrowRuntimeErrorFunction(ctx);
     checkDivideByZeroLabel.addToBody(BLEQ(THROW_RUNTIME_ERROR_FUNC));
@@ -345,8 +348,8 @@ public class PredefinedFunctions {
         ErrorMessage.NULL_REFERENCE);
     /* */
 
-    instrLabel.addToBody(LDR("EQ", RegisterOperand.R0,
-        new LabelAddressOperand(nullReferenceErrorLabelStr)));
+    instrLabel.addToBody(LDR(RegisterOperand.R0,
+        new LabelAddressOperand(nullReferenceErrorLabelStr)).withCond("EQ"));
 
     addThrowRuntimeErrorFunction(ctx);
     instrLabel.addToBody(BEQ(THROW_RUNTIME_ERROR_FUNC));

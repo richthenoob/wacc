@@ -52,13 +52,13 @@ public class VariableNode extends ExprNode {
     if (id.getType().getVarSize() == 1) {
       context.addToCurrentLabel(
           SingleDataTransfer.LDR(
-              "SB",
               register,
               new PreIndexedAddressOperand(
                   RegisterOperand.SP)
                   .withExpr(new ImmediateOperand<>(
                       id.getOffsetStack(context.getCurrentSymbolTable(), key))
-                      .withPrefixSymbol("#"))));
+                      .withPrefixSymbol("#")))
+              .withCond("SB"));
     } else {
       context.addToCurrentLabel(
           SingleDataTransfer.LDR(

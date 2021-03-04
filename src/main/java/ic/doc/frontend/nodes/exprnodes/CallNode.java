@@ -125,7 +125,7 @@ public class CallNode extends ExprNode {
           RegisterOperand.SP)
           .withExpr(new ImmediateOperand<>(-offset).withPrefixSymbol("#"))
           .withJump();
-      context.addToCurrentLabel(STR(shiftCond, reg, shiftStack));
+      context.addToCurrentLabel(STR(reg, shiftStack).withCond(shiftCond));
 
       /* Free register used for loading. */
       context.freeRegister(reg.getValue());

@@ -158,10 +158,10 @@ public class AssignmentNode extends StatNode {
     if (lhs.getType().getVarSize() == 1) {
       storeInstr =
           SingleDataTransfer.STR(
-              "B",
               rhs.getRegister(),
               new PreIndexedAddressOperand(base)
-                  .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#")));
+                  .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#")))
+              .withCond("B");
     } else {
       storeInstr =
           SingleDataTransfer.STR(
@@ -206,9 +206,9 @@ public class AssignmentNode extends StatNode {
     if (lhs.getType().getVarSize() == 1) {
       storeInstr =
           SingleDataTransfer.STR(
-              "B",
               rhs.getRegister(),
-              new PreIndexedAddressOperand(tempReg));
+              new PreIndexedAddressOperand(tempReg))
+              .withCond("B");
     } else {
       storeInstr =
           SingleDataTransfer.STR(
