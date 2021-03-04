@@ -266,23 +266,24 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   Checks if function is non-main and creates a function return node*/
   @Override
   public Node visitReturn(BasicParser.ReturnContext ctx) {
-    boolean main = false;
+    String functionName = "";
     ParserRuleContext curr = ctx;
     while (!(curr.getParent() instanceof BasicParser.FuncContext)) {
       curr = curr.getParent();
       if (curr instanceof BasicParser.ProgContext) {
-        main = true;
+        functionName = "main";
         break;
       }
     }
 
     Type type = null;
-    if (!main) {
+    if (functionName.equals("")) {
+      functionName = ((FuncContext) curr.getParent()).IDENT().getText();
       Node functionType = visit(((BasicParser.FuncContext) curr.getParent()).type());
       type = ((TypeNode) functionType).getType();
     }
 
-    FunctionReturnNode node = new FunctionReturnNode((ExprNode) visit(ctx.expr()), main, type);
+    FunctionReturnNode node = new FunctionReturnNode((ExprNode) visit(ctx.expr()), functionName, type);
     node.check(this, ctx);
     return node;
   }

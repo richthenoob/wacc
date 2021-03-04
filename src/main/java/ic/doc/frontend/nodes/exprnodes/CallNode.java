@@ -87,7 +87,7 @@ public class CallNode extends ExprNode {
 
     /* Save the previous symbol table so that we can restore it
      * after the function call. */
-    SymbolTable previousSymbolTable = context.getCurrentSymbolTable();
+    SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
 
     /* Look up function symbol table from func name. Use counter to track
      * the size of parameters that have been pushed onto the stack, ensuring
@@ -116,7 +116,7 @@ public class CallNode extends ExprNode {
       /* Because there is a push instruction here, we must temporarily
        * increment the function table so that if we access anything in the stack
        * in subsequent parameters, this push is accounted for. */
-      funcTable.incrementOffset(offset);
+      currentSymbolTable.incrementOffset(offset);
       counter += offset;
 
       /* Store argument onto stack for the function to use. */
@@ -133,12 +133,11 @@ public class CallNode extends ExprNode {
     /* Finally, restore the changes we have made to the function symbol table
      * after the call. This ensures that the function symbol table is exactly
      * the same as when we entered the call. */
-    funcTable.decrementOffset(counter);
+    currentSymbolTable.decrementOffset(counter);
 
     /* Call the function then restore to previous scope.
      * Also restore any stack space used by parameters to the function. */
     context.addToCurrentLabel(BL("f_" + identifier));
-    context.setScope(previousSymbolTable);
     context.addToCurrentLabel(DataProcessing
         .ADD(RegisterOperand.SP(), RegisterOperand.SP(),
             new ImmediateOperand<>(true,

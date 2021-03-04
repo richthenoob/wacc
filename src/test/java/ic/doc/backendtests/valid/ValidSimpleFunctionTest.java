@@ -16,7 +16,6 @@ public class ValidSimpleFunctionTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled("functionManyArguments not passing locally, but passing on labts")
   @Tag("backend")
   @Tag("simple")
   @Tag("function")
