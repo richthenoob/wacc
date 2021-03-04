@@ -1,5 +1,6 @@
 package ic.doc.backend.Instructions;
 
+import ic.doc.backend.Instructions.operands.AddressOperand.ShiftTypes;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.Operand;
 import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
@@ -15,25 +16,7 @@ public class DataProcessing extends Instruction {
   private PreIndexedAddressOperand.ShiftTypes shift = null;
   private ImmediateOperand<Integer> multiplier = null;
 
-  // CMP
-  private DataProcessing(Operand operand1, Operand operand2) {
-    operands = new ArrayList<>();
-    operands.add(operand1);
-    operands.add(operand2);
-    this.operation = Operation.CMP;
-  }
-
-  // SMULL
-  private DataProcessing(Operand rdLo, Operand rdHi, Operand rm, Operand rs) {
-    operands = new ArrayList<>();
-    operands.add(rdLo); // least significant bits
-    operands.add(rdHi); // most significant bits
-    operands.add(rm); // operand 1 to be multiplied
-    operands.add(rs); // operand 2 to be multiplied
-    this.operation = Operation.SMULL;
-  }
-
-  // All other operations
+  // All operations except for CMP and SMULL
   private DataProcessing(Operand dst, Operand lhs, Operand rhs, Operation operation) {
     operands = new ArrayList<>();
     operands.add(dst);
@@ -42,12 +25,26 @@ public class DataProcessing extends Instruction {
     this.operation = operation;
   }
 
+  // For CMP and SMULL
+  private DataProcessing(Operation operation) {
+    operands = new ArrayList<>();
+    this.operation = operation;
+  }
+
   public static DataProcessing CMP(Operand operand1, Operand operand2) {
-    return new DataProcessing(operand1, operand2);
+    DataProcessing cmp = new DataProcessing(Operation.CMP);
+    cmp.operands.add(operand1);
+    cmp.operands.add(operand2);
+    return cmp;
   }
 
   public static DataProcessing SMULL(Operand rdLo, Operand rdHi, Operand rm, Operand rs) {
-    return new DataProcessing(rdLo, rdHi, rm, rs);
+    DataProcessing smull = new DataProcessing(Operation.SMULL);
+    smull.operands.add(rdLo); // least significant bits
+    smull.operands.add(rdHi); // most significant bits
+    smull.operands.add(rm); // operand 1 to be multiplied
+    smull.operands.add(rs); // operand 2 to be multiplied
+    return smull;
   }
 
   public static DataProcessing ADD(Operand dst, Operand lhs, Operand rhs) {
@@ -62,7 +59,7 @@ public class DataProcessing extends Instruction {
       Operand dst,
       Operand lhs,
       Operand rhs,
-      PreIndexedAddressOperand.ShiftTypes shift,
+      ShiftTypes shift,
       ImmediateOperand<Integer> multiplier) {
     DataProcessing ret = new DataProcessing(dst, lhs, rhs, Operation.ADD);
     ret.shift = shift;
@@ -96,7 +93,6 @@ public class DataProcessing extends Instruction {
 
   @Override
   public String toAssembly() {
-    // TODO: tostring for operation enum?
     StringBuilder assembly = new StringBuilder();
     assembly.append(operation.toString());
     assembly.append(" ");
