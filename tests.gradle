@@ -19,7 +19,7 @@ task dockerStopAndRemove(type: Exec) {
     finalizedBy(dockerRemoveContainer)
 }
 
-/* Frontend tests */
+/* Run all tests */
 test {
     systemProperties = [tempDirPath: tempDirPath,
                         containerName: containerName,
