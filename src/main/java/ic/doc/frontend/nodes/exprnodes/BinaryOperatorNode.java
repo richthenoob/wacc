@@ -10,6 +10,7 @@ import ic.doc.backend.Context;
 import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.Operand;
+import ic.doc.backend.Instructions.operands.PostIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.ShiftTypes;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
@@ -147,8 +148,10 @@ public class BinaryOperatorNode extends ExprNode {
 
         // checking for overflow
         curr.addToBody(CMP(new RegisterOperand(12),
-            PostIndexedShiftRegister(dstReg, ShiftTypes.ASR,
-                new ImmediateOperand<>(OVERFLOW_SHIFT_AMOUNT).withPrefixSymbol("#"))));
+            new PostIndexedAddressOperand()
+                .withRM(dstReg)
+                .withShift(ShiftTypes.ASR)
+                .withExpr(new ImmediateOperand<>(OVERFLOW_SHIFT_AMOUNT).withPrefixSymbol("#"))));
 
         curr.addToBody(BLNE(OVERFLOW_CHECK));
         PredefinedFunctions.addCheckIntegerOverflowFunction(context);

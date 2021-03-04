@@ -8,56 +8,39 @@ import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand.ShiftTypes;
  *                             shifted by <shift> */
 public class PostIndexedAddressOperand extends AddressOperand {
 
-  private final RegisterOperand rn;
-  private final RegisterOperand rm;
-  private final boolean isNegativeRm;
-  private final ShiftTypes shift;
-  private final ImmediateOperand expr; // Doubles as value shifted by
+  private RegisterOperand rn;
+  private RegisterOperand rm;
+  private boolean isNegativeRm;
+  private ShiftTypes shift;
+  private ImmediateOperand expr; // Doubles as value shifted by
 
-  private PostIndexedAddressOperand(
-      RegisterOperand rn,
-      ImmediateOperand expr,
-      RegisterOperand rm, boolean isNegativeRm,
-      ShiftTypes shift) {
+  public PostIndexedAddressOperand() {
+    isNegativeRm = false;
+  }
+
+  public PostIndexedAddressOperand withRN(RegisterOperand rn) {
     this.rn = rn;
+    return this;
+  }
+
+  public PostIndexedAddressOperand withRM(RegisterOperand rm) {
     this.rm = rm;
-    this.isNegativeRm = isNegativeRm;
+    return this;
+  }
+
+  public PostIndexedAddressOperand withNegative() {
+    this.isNegativeRm = true;
+    return this;
+  }
+
+  public PostIndexedAddressOperand withShift(ShiftTypes shift) {
     this.shift = shift;
+    return this;
+  }
+
+  public PostIndexedAddressOperand withExpr(ImmediateOperand expr) {
     this.expr = expr;
-  }
-
-  /* Public constructor for operands like
-   * [r0], #5   Access memory at address, r0, then set r0 = r0 + 5 */
-  public static PostIndexedAddressOperand PostIndexedAddressFixedOffset(
-      RegisterOperand rn, ImmediateOperand expr) {
-    return new PostIndexedAddressOperand(rn, expr,
-        null, false, ShiftTypes.NONE);
-  }
-
-  /* Public constructor for operands like
-   * [r2], r4   Access memory at address, R2, then write back R2+R4 to R2 */
-  public static PostIndexedAddressOperand PostIndexedAddressByRegister(
-      RegisterOperand rn, RegisterOperand rm, boolean isNegativeRm) {
-    return new PostIndexedAddressOperand(rn, null, rm, isNegativeRm,
-        ShiftTypes.NONE);
-  }
-
-  /* Public constructor for operands like
-   * [r0], r1, LSL #2 Access memory at address r0, then set r0 = r0 + r1 * 4
-   */
-  public static PostIndexedAddressOperand PostIndexedAddressShiftRegister(
-      RegisterOperand rn, RegisterOperand rm, boolean isNegativeRm,
-      ShiftTypes shift) {
-    return new PostIndexedAddressOperand(rn, null, rm, isNegativeRm, shift);
-  }
-
-  /* Public constructor for operands like
-   * r1, LSL #2 Access r1 * 4
-   */
-  public static PostIndexedAddressOperand PostIndexedShiftRegister(
-      RegisterOperand rm, ShiftTypes shift, ImmediateOperand expr) {
-    return new PostIndexedAddressOperand(null,
-        expr, rm, false, shift);
+    return this;
   }
 
   @Override
