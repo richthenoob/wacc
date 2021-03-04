@@ -67,5 +67,6 @@ public class MemoryFreeNode extends StatNode {
       PredefinedFunctions.addFreeArrayFunction(context);
       curr.addToBody(BL(PredefinedFunctions.FREE_ARRAY_FUNC));
     }
+    context.freeRegister(reg.getValue());
   }
 }

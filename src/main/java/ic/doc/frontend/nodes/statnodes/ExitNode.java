@@ -49,5 +49,6 @@ public class ExitNode extends StatNode {
         .get(instructionLabels.size() - 1)
         .addToBody(move)
         .addToBody(branch);
+    context.freeRegister(exprNode.getRegister().getValue());
   }
 }

@@ -111,5 +111,6 @@ public class ReadNode extends StatNode {
       PredefinedFunctions.addReadTypeFunction(context, "int");
       curr.addToBody(BL(READ_INT_FUNC));
     }
+    context.freeRegister(reg.getValue());
   }
 }
