@@ -148,7 +148,7 @@ public class BinaryOperatorNode extends ExprNode {
         // checking for overflow
         curr.addToBody(CMP(new RegisterOperand(12),
             PostIndexedShiftRegister(dstReg, ShiftTypes.ASR,
-                new ImmediateOperand<>(true, OVERFLOW_SHIFT_AMOUNT))));
+                new ImmediateOperand<>(OVERFLOW_SHIFT_AMOUNT).withPrefixSymbol("#"))));
 
         curr.addToBody(BLNE(OVERFLOW_CHECK));
         PredefinedFunctions.addCheckIntegerOverflowFunction(context);
@@ -225,9 +225,9 @@ public class BinaryOperatorNode extends ExprNode {
     // CMP
     curr.addToBody(CMP(lReg, rReg));
     // left expr
-    curr.addToBody(new Move(dstReg, new ImmediateOperand<>(true,1), lCond));
+    curr.addToBody(new Move(dstReg, new ImmediateOperand<>(1).withPrefixSymbol("#"), lCond));
     // right expr
-    curr.addToBody(new Move(dstReg, new ImmediateOperand<>(true,0), rCond));
+    curr.addToBody(new Move(dstReg, new ImmediateOperand<>(0).withPrefixSymbol("#"), rCond));
   }
 
   /* Given two expression nodes and a list of valid types,

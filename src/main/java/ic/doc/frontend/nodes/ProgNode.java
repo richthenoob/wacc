@@ -63,7 +63,7 @@ public class ProgNode extends Node {
     /* Pass control back to kernel code that called it. */
     context.restoreScope();
     context.addToCurrentLabel(SingleDataTransfer.LDR(RegisterOperand.R0, new
-        ImmediateOperand<>(0)));
+        ImmediateOperand<>(0).withPrefixSymbol("=")));
     context.addToCurrentLabel(Stack.POP(RegisterOperand.PC));
     context.addToCurrentLabel(new LoadLiterals());
   }

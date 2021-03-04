@@ -34,7 +34,7 @@ public class PairLiteralNode extends LiteralNode {
   @Override
   public void translate(Context context) {
     RegisterOperand reg = new RegisterOperand(context.getFreeRegister());
-    context.addToCurrentLabel(MOV(reg,new ImmediateOperand(true,0)));
+    context.addToCurrentLabel(MOV(reg,new ImmediateOperand<>(0).withPrefixSymbol("#")));
     setRegister(reg);
   }
 

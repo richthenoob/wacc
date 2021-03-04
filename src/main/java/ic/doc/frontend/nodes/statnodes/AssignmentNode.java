@@ -161,13 +161,13 @@ public class AssignmentNode extends StatNode {
               "B",
               rhs.getRegister(),
               PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  base, new ImmediateOperand<>(true, offset)));
+                  base, new ImmediateOperand<>(offset).withPrefixSymbol("#")));
     } else {
       storeInstr =
           SingleDataTransfer.STR(
               rhs.getRegister(),
               PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                  base, new ImmediateOperand<>(true, offset)));
+                  base, new ImmediateOperand<>(offset).withPrefixSymbol("#")));
     }
 
     context.addToCurrentLabel(storeInstr);
@@ -189,7 +189,7 @@ public class AssignmentNode extends StatNode {
         LDR(
             tempReg,
             PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                base, new ImmediateOperand<>(true, offset))));
+                base, new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
 
     /* CHECK WHETHER THE ADDRESS OF THE PAIR POINTS TO A NULL VALUE */
     context.addToCurrentLabel(MOV(RegisterOperand.R0, tempReg));
@@ -201,7 +201,7 @@ public class AssignmentNode extends StatNode {
         LDR(
             tempReg,
             PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                tempReg, new ImmediateOperand<>(true, isFst ? 0 : 4))));
+                tempReg, new ImmediateOperand<>(isFst ? 0 : 4).withPrefixSymbol("#"))));
 
     if (lhs.getType().getVarSize() == 1) {
       storeInstr =
@@ -260,7 +260,7 @@ public class AssignmentNode extends StatNode {
         DataProcessing.SUB(
             RegisterOperand.SP(),
             RegisterOperand.SP(),
-            new ImmediateOperand<>(true, sizeOfVarOnStack)));
+            new ImmediateOperand<>(sizeOfVarOnStack).withPrefixSymbol("#")));
 
     return 0;
   }

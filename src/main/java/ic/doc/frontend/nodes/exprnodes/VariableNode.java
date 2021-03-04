@@ -57,7 +57,8 @@ public class VariableNode extends ExprNode {
               PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
                   RegisterOperand.SP(),
                   new ImmediateOperand<>(
-                      true, id.getOffsetStack(context.getCurrentSymbolTable(), key)))));
+                      id.getOffsetStack(context.getCurrentSymbolTable(), key))
+                      .withPrefixSymbol("#"))));
     } else {
       context.addToCurrentLabel(
           SingleDataTransfer.LDR(
@@ -65,7 +66,8 @@ public class VariableNode extends ExprNode {
               PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
                   RegisterOperand.SP(),
                   new ImmediateOperand<>(
-                      true, id.getOffsetStack(context.getCurrentSymbolTable(), key)))));
+                      id.getOffsetStack(context.getCurrentSymbolTable(), key))
+                      .withPrefixSymbol("#"))));
     }
   }
 }

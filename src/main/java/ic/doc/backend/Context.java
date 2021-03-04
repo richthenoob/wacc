@@ -135,8 +135,8 @@ public class Context {
         DataProcessing restoreStackPtrInstr = DataProcessing
             .ADD(RegisterOperand.SP,
                 RegisterOperand.SP,
-                new ImmediateOperand<>(true,
-                    Integer.min(tableSize, MAX_CONSTANT)));
+                new ImmediateOperand<>(Integer.min(tableSize, MAX_CONSTANT))
+                    .withPrefixSymbol("#"));
         tableSize -= MAX_CONSTANT;
         addToCurrentLabel(restoreStackPtrInstr);
       } while (tableSize > 0);

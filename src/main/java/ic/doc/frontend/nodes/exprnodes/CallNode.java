@@ -123,7 +123,7 @@ public class CallNode extends ExprNode {
       RegisterOperand reg = arg.getRegister();
       PreIndexedAddressOperand shiftStack = PreIndexedAddressFixedOffsetJump(
           RegisterOperand.SP,
-          new ImmediateOperand<>(true, -offset));
+          new ImmediateOperand<>(-offset).withPrefixSymbol("#"));
       context.addToCurrentLabel(STR(shiftCond, reg, shiftStack));
 
       /* Free register used for loading. */
@@ -140,8 +140,8 @@ public class CallNode extends ExprNode {
     context.addToCurrentLabel(BL("f_" + identifier));
     context.addToCurrentLabel(DataProcessing
         .ADD(RegisterOperand.SP(), RegisterOperand.SP(),
-            new ImmediateOperand<>(true,
-                funcTable.getFunctionParametersSizeInBytes())));
+            new ImmediateOperand<>(funcTable.getFunctionParametersSizeInBytes())
+                .withPrefixSymbol("#")));
 
     /* Move result of function call from R0 to free register */
     setRegister(new RegisterOperand(context.getFreeRegister()));

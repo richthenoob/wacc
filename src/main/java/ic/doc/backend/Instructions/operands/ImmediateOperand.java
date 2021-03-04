@@ -4,28 +4,22 @@ package ic.doc.backend.Instructions.operands;
 public class ImmediateOperand<T> extends Operand {
 
   private final T value;
-  private boolean hashSymbol = false;
+  private String prefixSymbol;
 
   public ImmediateOperand(T value) {
     this.value = value;
   }
 
-  public ImmediateOperand(boolean hashSymbol, T value) {
-    this.value = value;
-    this.hashSymbol = true;
+  public ImmediateOperand withPrefixSymbol(String prefixSymbol) {
+    this.prefixSymbol = prefixSymbol;
+    return this;
   }
 
   @Override
   public String toString() {
     if (value instanceof Character) {
-      if (hashSymbol) {
-        return "#" + "'" + value + "'";
-      }
-      return "=" + "'" + value + "'";
+      return prefixSymbol + "'" + value + "'";
     }
-    if (hashSymbol) {
-      return "#" + value;
-    }
-    return "=" + value;
+    return (prefixSymbol + value);
   }
 }

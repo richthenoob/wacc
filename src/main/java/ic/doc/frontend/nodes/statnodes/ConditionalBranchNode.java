@@ -79,7 +79,8 @@ public class ConditionalBranchNode extends StatNode {
     context.freeRegister(register.getValue());
 
     /* Test boolean condition. */
-    context.addToCurrentLabel(DataProcessing.CMP(register, new ImmediateOperand(true,0)));
+    context.addToCurrentLabel(DataProcessing.CMP(register,
+        new ImmediateOperand<>(0).withPrefixSymbol("#")));
     context.addToCurrentLabel(Branch.BEQ(falseBodyName));
 
     /* Make sure that the symbol tables were well formed in front end.*/

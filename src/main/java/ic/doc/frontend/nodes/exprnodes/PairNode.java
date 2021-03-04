@@ -43,13 +43,15 @@ public class PairNode extends ExprNode {
     int firstRegisterNum = context.getFreeRegister();
     label
         .addToBody(
-            SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(bytesToAllocate)))
+            SingleDataTransfer.LDR(new RegisterOperand(0),
+                new ImmediateOperand<>(bytesToAllocate).withPrefixSymbol("=")))
         .addToBody(Branch.BL("malloc"))
         .addToBody(
             new Move(new RegisterOperand(firstRegisterNum), new RegisterOperand(0), Condition.B));
     fst.translate(context);
     label
-        .addToBody(SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(4)))
+        .addToBody(SingleDataTransfer.LDR(new RegisterOperand(0),
+            new ImmediateOperand<>(4).withPrefixSymbol("=")))
         .addToBody(Branch.BL("malloc"))
         .addToBody(
             SingleDataTransfer.STR(
@@ -63,7 +65,8 @@ public class PairNode extends ExprNode {
     context.freeRegister(fst.getRegister().getValue());
     snd.translate(context);
     label
-        .addToBody(SingleDataTransfer.LDR(new RegisterOperand(0), new ImmediateOperand(4)))
+        .addToBody(SingleDataTransfer.LDR(new RegisterOperand(0),
+            new ImmediateOperand<>(4).withPrefixSymbol("=")))
         .addToBody(Branch.BL("malloc"))
         .addToBody(
             SingleDataTransfer.STR(
@@ -73,7 +76,8 @@ public class PairNode extends ExprNode {
             SingleDataTransfer.STR(
                 new RegisterOperand(0),
                 PreIndexedAddressOperand.PreIndexedAddressFixedOffset(
-                    new RegisterOperand(firstRegisterNum), new ImmediateOperand(true,4))));
+                    new RegisterOperand(firstRegisterNum),
+                    new ImmediateOperand<>(4).withPrefixSymbol("#"))));
     context.freeRegister(snd.getRegister().getValue());
     setRegister(new RegisterOperand(firstRegisterNum));
   }

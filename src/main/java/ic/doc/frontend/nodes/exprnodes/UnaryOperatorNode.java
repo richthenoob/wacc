@@ -134,11 +134,11 @@ public class UnaryOperatorNode extends ExprNode {
         // Need to EOR with IMM 1
         // MOV r4, #0
         // EOR r4, r4, #1
-        curr.addToBody(EOR(reg, reg, new ImmediateOperand(true,1)));
+        curr.addToBody(EOR(reg, reg, new ImmediateOperand<>(1).withPrefixSymbol("#")));
         break;
       case MATH_NEGATION:
         // Add RSBS instr
-        curr.addToBody(RSBS(reg, reg, new ImmediateOperand(true,0)));
+        curr.addToBody(RSBS(reg, reg, new ImmediateOperand<>(0).withPrefixSymbol("#")));
         addCheckIntegerOverflowFunction(context);
         addThrowRuntimeErrorFunction(context);
         curr.addToBody(BLVS("p_throw_overflow_error"));
