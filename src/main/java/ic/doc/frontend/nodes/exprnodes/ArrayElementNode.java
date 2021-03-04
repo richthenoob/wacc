@@ -138,7 +138,7 @@ public class ArrayElementNode extends ExprNode {
       if (i == 0) {
         label.addToBody(
             DataProcessing.ADD(
-                arrayReg, RegisterOperand.SP(),
+                arrayReg, RegisterOperand.SP,
                 new ImmediateOperand<>(offsetArray).withPrefixSymbol("#")));
       }
       if (arrays.get(i) instanceof IntLiteralNode) {
@@ -159,7 +159,7 @@ public class ArrayElementNode extends ExprNode {
         label.addToBody(
             SingleDataTransfer.LDR(
                 indexReg,
-                new PreIndexedAddressOperand(RegisterOperand.SP())
+                new PreIndexedAddressOperand(RegisterOperand.SP)
                     .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
       }
       /* load array */

@@ -141,7 +141,7 @@ public class CallNode extends ExprNode {
      * Also restore any stack space used by parameters to the function. */
     context.addToCurrentLabel(BL("f_" + identifier));
     context.addToCurrentLabel(DataProcessing
-        .ADD(RegisterOperand.SP(), RegisterOperand.SP(),
+        .ADD(RegisterOperand.SP, RegisterOperand.SP,
             new ImmediateOperand<>(funcTable.getFunctionParametersSizeInBytes())
                 .withPrefixSymbol("#")));
 
