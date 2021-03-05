@@ -95,6 +95,7 @@ public class FunctionNode extends Node {
     context.addToCurrentLabel(new LoadLiterals());
   }
 
+  /* Translates parameters of function. Called when translating program node. */
   public void translateParameters(Context context) {
     context.setScope(funcSymbolTable);
     paramListNode.translate(context);
