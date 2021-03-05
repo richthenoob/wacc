@@ -49,6 +49,8 @@ public class FunctionReturnNode extends StatNode {
 
   @Override
   public void translate(Context context) {
+    SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
+
     /* Evaluate expression and place into Register R0, the register to return
      * values from functions from. */
     exprNode.translate(context);
@@ -65,5 +67,7 @@ public class FunctionReturnNode extends StatNode {
       context.restoreScope();
     }
     context.addToCurrentLabel(POP(RegisterOperand.PC));
+
+    context.setScope(currentSymbolTable);
   }
 }
