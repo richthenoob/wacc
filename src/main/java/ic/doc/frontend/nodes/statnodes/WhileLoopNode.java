@@ -79,7 +79,7 @@ public class WhileLoopNode extends StatNode {
 
     /* Only jump back to while body if boolean was evaluated to be true. */
     DataProcessing compareInst = DataProcessing
-        .CMP(cond.getRegister(), new ImmediateOperand(1).withPrefixSymbol("#"));
+        .CMP(cond.getRegister(), new ImmediateOperand<>(1).withPrefixSymbol("#"));
     Branch jumpToBodyInst = Branch.BEQ(bodyName);
     boolCondLabel.addToBody(compareInst);
     boolCondLabel.addToBody(jumpToBodyInst);
