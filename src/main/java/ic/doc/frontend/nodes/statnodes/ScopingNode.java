@@ -26,8 +26,11 @@ public class ScopingNode extends StatNode {
 
   @Override
   public void translate(Context context) {
+    /* Set scope to corresponding symbol table before translating statements within scope. */
     context.setScope(symbolTable);
     statNode.translate(context);
+
+    /* Restore scope. */
     context.restoreScope();
   }
 }

@@ -1,5 +1,8 @@
 package ic.doc.frontend.nodes.statnodes;
 
+import static ic.doc.backend.Instructions.Branch.B;
+import static ic.doc.backend.Instructions.Move.MOV;
+
 import ic.doc.backend.Context;
 import ic.doc.backend.Instructions.Instruction;
 import ic.doc.backend.Instructions.Move;
@@ -41,14 +44,15 @@ public class ExitNode extends StatNode {
   public void translate(Context context) {
     exprNode.translate(context);
 
+    /* Get last label added to instruction labels. */
     List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
-    Move move = Move.MOV(RegisterOperand.R0, exprNode.getRegister());
-    Branch branch = Branch.B("exit");
-
-    context.getInstructionLabels()
+    instructionLabels
         .get(instructionLabels.size() - 1)
-        .addToBody(move)
-        .addToBody(branch);
+        /* Move contents of register for expression in exit node to R0 */
+        .addToBody(MOV(RegisterOperand.R0, exprNode.getRegister()))
+        /* Branch to exit. */
+        .addToBody(B("exit"));
+
     context.freeRegister(exprNode.getRegister().getValue());
   }
 }

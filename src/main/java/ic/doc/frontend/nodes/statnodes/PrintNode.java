@@ -35,16 +35,20 @@ public class PrintNode extends StatNode {
 
   @Override
   public void translate(Context context) {
+    Label<Instruction> curr = context.getCurrentLabel();
     exprNode.translate(context);
     RegisterOperand reg = exprNode.getRegister();
-    Label<Instruction> curr = context.getCurrentLabel();
 
+    /* Predefined functions need contents of register to be moved into R0. */
     curr.addToBody(MOV(RegisterOperand.R0, reg));
+
+    /* Branch to appropriate printing functions according to type of expression. */
     Type exprType = exprNode.getType();
 
     if (exprType instanceof StringType ||
-        (exprType instanceof ArrayType && ((ArrayType) exprType)
-            .getInternalType() instanceof CharType)) {
+        (exprType instanceof ArrayType &&
+            ((ArrayType) exprType).getInternalType() instanceof CharType)) {
+      /* If expression is a string, or if expression is an array of chars */
       addPrintStringFunction(context);
       curr.addToBody(BL(PRINT_STR_FUNC));
     } else if (exprType instanceof IntType) {
@@ -60,6 +64,7 @@ public class PrintNode extends StatNode {
       curr.addToBody(BL(PRINT_REFERENCE_FUNC));
     }
 
+    /* Branches to new line printing function if necessary. */
     if (newLine) {
       curr.addToBody(BL(PRINT_LN_FUNC));
       addPrintLnFunction(context);
