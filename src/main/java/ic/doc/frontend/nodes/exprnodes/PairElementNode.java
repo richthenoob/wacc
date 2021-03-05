@@ -90,7 +90,7 @@ public class PairElementNode extends ExprNode {
     curr.addToBody(BL("p_check_null_pointer"));
 
     /* Retrieve value of element from memory at offset according to position in pair */
-    int offset = pos.equals(PairPosition.FST) ? 0 : 4;
+    int offset = pos.equals(PairPosition.FST) ? 0 : Context.SIZE_OF_ADDRESS;
     curr.addToBody(LDR(reg,
         new PreIndexedAddressOperand(reg)
         .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));

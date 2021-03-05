@@ -176,7 +176,7 @@ public class ArrayElementNode extends ExprNode {
       /* Address of arrayelem  = address of first element + index * 4 */
       label.addToBody(
           DataProcessing.ADD(arrayReg, arrayReg,
-              new ImmediateOperand<>(4).withPrefixSymbol("#")));
+              new ImmediateOperand<>(Context.SIZE_OF_ADDRESS).withPrefixSymbol("#")));
       Type internalType = ((ArrayType) (array.identNode.getType()))
           .getInternalType();
       if (internalType.getVarSize() == 1) {

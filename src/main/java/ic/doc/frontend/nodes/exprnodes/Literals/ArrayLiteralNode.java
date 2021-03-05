@@ -70,8 +70,8 @@ public class ArrayLiteralNode extends LiteralNode {
   @Override
   public void translate(Context context) {
     Label<Instruction> label = context.getCurrentLabel();
-    int sizeOfVarOnStack = values.isEmpty() ? 4 : values.get(0).getType().getVarSize();
-    int bytesToAllocate = values.size() * sizeOfVarOnStack + 4;
+    int sizeOfVarOnStack = values.isEmpty() ? Context.SIZE_OF_ADDRESS : values.get(0).getType().getVarSize();
+    int bytesToAllocate = values.size() * sizeOfVarOnStack + Context.SIZE_OF_ADDRESS;
     int firstRegisterNum = context.getFreeRegister();
     setRegister(new RegisterOperand(firstRegisterNum));
 
@@ -85,7 +85,7 @@ public class ArrayLiteralNode extends LiteralNode {
         .addToBody(
             new Move(new RegisterOperand(firstRegisterNum), new RegisterOperand(0), Condition.B));
     /* Offset required to make space for pointer */
-    int offset = 4;
+    int offset = Context.SIZE_OF_ADDRESS;
 
     /* Call translate on each array element and store the result in correct offset on stack */
     for (ExprNode value : values) {

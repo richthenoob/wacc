@@ -54,18 +54,6 @@ public class FunctionNode extends Node {
     return funcName;
   }
 
-  public Type getDeclaredReturnType() {
-    return returnType;
-  }
-
-  public ParamListNode getParamList() {
-    return paramListNode;
-  }
-
-  public StatNode getFunctionBody() {
-    return functionBody;
-  }
-
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     /* Last stat should end with return or exit */
@@ -87,7 +75,7 @@ public class FunctionNode extends Node {
     /* Set up function routine. */
     context.setScope(funcSymbolTable);
     context.addToCurrentLabel(PUSH(RegisterOperand.LR));
-    funcSymbolTable.incrementOffset(4);
+    funcSymbolTable.incrementOffset(Context.SIZE_OF_ADDRESS);
 
     /* Translate body of function and pop back to main */
     functionBody.translate(context);
