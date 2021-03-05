@@ -52,12 +52,14 @@ public class MemoryFreeNode extends StatNode {
     exprNode.translate(context);
     RegisterOperand reg = exprNode.getRegister();
     Label<Instruction> curr = context.getCurrentLabel();
-//    curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(RegisterOperand.SP)));
+
+    /* Move previous contents of register to R0. */
     curr.addToBody(MOV(RegisterOperand.R0, reg));
 
     PredefinedFunctions.addThrowRuntimeErrorFunction(context);
 
     Type exprType = exprNode.getType();
+    /* Branch to predefined functions according to type of expr. */
     if(exprType instanceof PairType){
       PredefinedFunctions.addFreePairFunction(context);
       curr.addToBody(BL(PredefinedFunctions.FREE_PAIR_FUNC));
@@ -65,6 +67,8 @@ public class MemoryFreeNode extends StatNode {
       PredefinedFunctions.addFreeArrayFunction(context);
       curr.addToBody(BL(PredefinedFunctions.FREE_ARRAY_FUNC));
     }
+
+    /* Register occupied by expression is freed. */
     context.freeRegister(reg.getValue());
   }
 }
