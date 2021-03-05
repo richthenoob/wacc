@@ -94,7 +94,7 @@ public class CallNode extends ExprNode {
     SymbolTable funcTable = context.getFunctionTables().get(identifier);
     int counter = 0;
 
-    for (int i = 0; i < args.getNumParas(); i++) {
+    for (int i = args.getParams().size() - 1; i >= 0; i--) {
       ExprNode arg = args.getParams().get(i);
 
       int offset;
