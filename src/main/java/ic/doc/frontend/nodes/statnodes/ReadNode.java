@@ -36,22 +36,6 @@ public class ReadNode extends StatNode {
     return expr;
   }
 
-  /* Notes */
-//  Readnode is either an IDENT or pairelem/arrayelem
-//  If it is an ident, then we need to find the dudes location in the ST
-//  (VariableNode) expr
-//
-//
-//
-//
-//
-//        VariableNode lhsVar = ((ArrayElementNode) lhs).getIdentNode();
-//      String name = lhsVar.getName();
-//      SymbolKey key = new SymbolKey(name, false);
-//      VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-//      int indexOffset = ((ArrayElementNode) lhs).getIndex(0);
-//      offset = new ImmediateOperand<>(true, id.getOffsetStack() + indexOffset);
-
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     Type type = expr.getType();
