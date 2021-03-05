@@ -1,10 +1,10 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Instructions.*;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.*;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.Visitor;
@@ -70,8 +70,8 @@ public class ArrayLiteralNode extends LiteralNode {
   @Override
   public void translate(Context context) {
     Label<Instruction> label = context.getCurrentLabel();
-    int sizeOfVarOnStack = values.isEmpty() ? 4 : values.get(0).getType().getVarSize();
-    int bytesToAllocate = values.size() * sizeOfVarOnStack + 4;
+    int sizeOfVarOnStack = values.isEmpty() ? Context.SIZE_OF_ADDRESS : values.get(0).getType().getVarSize();
+    int bytesToAllocate = values.size() * sizeOfVarOnStack + Context.SIZE_OF_ADDRESS;
     int firstRegisterNum = context.getFreeRegister();
     setRegister(new RegisterOperand(firstRegisterNum));
 
@@ -85,7 +85,7 @@ public class ArrayLiteralNode extends LiteralNode {
         .addToBody(
             new Move(new RegisterOperand(firstRegisterNum), new RegisterOperand(0), Condition.B));
     /* Offset required to make space for pointer */
-    int offset = 4;
+    int offset = Context.SIZE_OF_ADDRESS;
 
     /* Call translate on each array element and store the result in correct offset on stack */
     for (ExprNode value : values) {

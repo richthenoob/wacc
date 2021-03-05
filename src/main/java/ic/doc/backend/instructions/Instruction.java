@@ -1,4 +1,4 @@
-package ic.doc.backend.Instructions;
+package ic.doc.backend.instructions;
 
 public abstract class Instruction {
 

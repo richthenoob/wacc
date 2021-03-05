@@ -1,11 +1,10 @@
-package ic.doc.backend.Instructions;
+package ic.doc.backend.instructions;
 
-import ic.doc.backend.Instructions.operands.Operand;
-import ic.doc.frontend.types.*;
+import ic.doc.backend.instructions.operands.Operand;
 
 public class SingleDataTransfer extends Instruction {
   private final boolean loadFlag;
-  private String cond; // for conditional returns
+  private String cond; /* For conditional returns */
   private final Operand dst;
   private final Operand expr;
 

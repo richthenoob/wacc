@@ -1,11 +1,9 @@
 package ic.doc.backend;
 
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.Instruction;
+import ic.doc.backend.instructions.Instruction;
 import ic.doc.frontend.nodes.ProgNode;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class WaccBackend {
@@ -44,6 +42,7 @@ public class WaccBackend {
       }
     }
 
+    /* Build predefined functions at the very end. */
     for (Label<Instruction> endLabel: context.getEndFunctions()) {
       outputString.append(endLabel.toString());
       outputString.append(":\n");

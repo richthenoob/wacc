@@ -1,7 +1,6 @@
 package ic.doc.frontend.nodes.exprnodes;
 
-import ic.doc.backend.Instructions.operands.Operand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.frontend.nodes.Node;
 import ic.doc.frontend.types.Type;
 

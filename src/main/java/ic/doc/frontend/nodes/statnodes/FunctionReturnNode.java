@@ -1,10 +1,10 @@
 package ic.doc.frontend.nodes.statnodes;
 
-import static ic.doc.backend.Instructions.Move.MOV;
-import static ic.doc.backend.Instructions.Stack.POP;
+import static ic.doc.backend.instructions.Move.MOV;
+import static ic.doc.backend.instructions.Stack.POP;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;

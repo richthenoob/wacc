@@ -1,27 +1,22 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.Instruction;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.backend.PredefinedFunctions;
-import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.Literals.PairLiteralNode;
-import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.PairType;
 
-import java.lang.reflect.Array;
-import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import static ic.doc.backend.Instructions.Branch.BL;
-import static ic.doc.backend.Instructions.Move.MOV;
-import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
+import static ic.doc.backend.instructions.Branch.BL;
+import static ic.doc.backend.instructions.Move.MOV;
+import static ic.doc.backend.instructions.SingleDataTransfer.LDR;
 
 public class PairElementNode extends ExprNode {
 
@@ -59,7 +54,7 @@ public class PairElementNode extends ExprNode {
       return;
     }
 
-    /* Must be identifier with type pair. */
+    /* Must be identifier or array elem with type pair. */
     if (!(expr instanceof VariableNode || expr instanceof ArrayElementNode) || !(expr.getType() instanceof PairType)) {
       visitor
           .getSemanticErrorList()
@@ -95,7 +90,7 @@ public class PairElementNode extends ExprNode {
     curr.addToBody(BL("p_check_null_pointer"));
 
     /* Retrieve value of element from memory at offset according to position in pair */
-    int offset = pos.equals(PairPosition.FST) ? 0 : 4;
+    int offset = pos.equals(PairPosition.FST) ? 0 : Context.SIZE_OF_ADDRESS;
     curr.addToBody(LDR(reg,
         new PreIndexedAddressOperand(reg)
         .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));

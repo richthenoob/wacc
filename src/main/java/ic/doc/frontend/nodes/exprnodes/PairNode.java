@@ -1,10 +1,10 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Instructions.*;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.*;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.PairType;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -36,7 +36,7 @@ public class PairNode extends ExprNode {
   @Override
   public void translate(Context context) {
     /* Allocate 4 bytes for each element of pair */
-    int bytesToAllocate = 4 * 2;
+    int bytesToAllocate = Context.SIZE_OF_ADDRESS * 2;
     int firstRegisterNum = context.getFreeRegister();
 
     /* Move value into r0 for call to malloc */
@@ -54,7 +54,7 @@ public class PairNode extends ExprNode {
 
     translatePair(context, snd,
         new PreIndexedAddressOperand(new RegisterOperand(firstRegisterNum))
-            .withExpr(new ImmediateOperand<>(4).withPrefixSymbol("#")));
+            .withExpr(new ImmediateOperand<>(Context.SIZE_OF_ADDRESS).withPrefixSymbol("#")));
 
     setRegister(new RegisterOperand(firstRegisterNum));
   }
@@ -66,7 +66,7 @@ public class PairNode extends ExprNode {
     context.getCurrentLabel()
         /* Mallocs space for element */
         .addToBody(SingleDataTransfer.LDR(new RegisterOperand(0),
-            new ImmediateOperand<>(4).withPrefixSymbol("=")))
+            new ImmediateOperand<>(Context.SIZE_OF_ADDRESS).withPrefixSymbol("=")))
         .addToBody(Branch.BL("malloc"))
         .addToBody(
             SingleDataTransfer.STR(

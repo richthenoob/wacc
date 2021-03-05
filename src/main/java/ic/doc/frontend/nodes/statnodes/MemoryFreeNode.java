@@ -1,23 +1,20 @@
 package ic.doc.frontend.nodes.statnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.Instruction;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.backend.PredefinedFunctions;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ArrayType;
 import ic.doc.frontend.types.PairType;
-import java.util.List;
 
 import ic.doc.frontend.types.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import static ic.doc.backend.Instructions.Branch.BL;
-import static ic.doc.backend.Instructions.Move.MOV;
+import static ic.doc.backend.instructions.Branch.BL;
+import static ic.doc.backend.instructions.Move.MOV;
 
 public class MemoryFreeNode extends StatNode {
 

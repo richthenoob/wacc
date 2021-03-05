@@ -1,14 +1,14 @@
 package ic.doc.frontend.nodes.exprnodes;
 
-import static ic.doc.backend.Instructions.Branch.BL;
-import static ic.doc.backend.Instructions.Move.MOV;
-import static ic.doc.backend.Instructions.SingleDataTransfer.STR;
+import static ic.doc.backend.instructions.Branch.BL;
+import static ic.doc.backend.instructions.Move.MOV;
+import static ic.doc.backend.instructions.SingleDataTransfer.STR;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Instructions.DataProcessing;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.DataProcessing;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.frontend.identifiers.FunctionIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.nodes.ArgListNode;

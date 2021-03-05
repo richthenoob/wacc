@@ -1,11 +1,11 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.SingleDataTransfer;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.LabelAddressOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.Data;
+import ic.doc.backend.instructions.SingleDataTransfer;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.LabelAddressOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.CharType;
@@ -30,7 +30,8 @@ public class CharacterLiteralNode extends LiteralNode {
   public void check(Visitor visitor, ParserRuleContext ctx) {
     /* Checks that input character tokens are valid */
     if (!CharType.isValidChar(getValue())) {
-      visitor.getSemanticErrorList().addException(ctx, "Invalid character token at " + value);
+      visitor.getSemanticErrorList()
+          .addException(ctx, "Invalid character token at " + value);
     }
   }
 
@@ -39,15 +40,19 @@ public class CharacterLiteralNode extends LiteralNode {
     RegisterOperand register = new RegisterOperand(context.getFreeRegister());
     setRegister(register);
     Label<Data> label = context.getSpecificLabel(value.toString());
-    /* If label dosnt exist, just load the value as it is non declaration*/
+    /* If label doesnt exist, just load the value as it is non declaration. */
     if (label == null) {
-      ImmediateOperand operand = new ImmediateOperand<>(value).withPrefixSymbol("=");
-      context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
+      ImmediateOperand operand = new ImmediateOperand<>(value)
+          .withPrefixSymbol("=");
+      context.getCurrentLabel()
+          .addToBody(SingleDataTransfer.LDR(register, operand));
     }
     /* If label is found, it means it was part of a declaration and need to load the label name eg LDR r4 ,=msg_1 */
     else {
-      LabelAddressOperand operand = new LabelAddressOperand(label.getFunctionLabel());
-      context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
+      LabelAddressOperand operand = new LabelAddressOperand(
+          label.getFunctionLabel());
+      context.getCurrentLabel()
+          .addToBody(SingleDataTransfer.LDR(register, operand));
     }
   }
 

@@ -1,11 +1,11 @@
 package ic.doc.frontend.nodes.statnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.*;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.Data;
+import ic.doc.backend.instructions.*;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.backend.PredefinedFunctions;
 import ic.doc.frontend.identifiers.VariableIdentifier;
@@ -20,9 +20,9 @@ import ic.doc.frontend.types.*;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import static ic.doc.backend.Instructions.Branch.BL;
-import static ic.doc.backend.Instructions.Move.MOV;
-import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
+import static ic.doc.backend.instructions.Branch.BL;
+import static ic.doc.backend.instructions.Move.MOV;
+import static ic.doc.backend.instructions.SingleDataTransfer.LDR;
 
 public class AssignmentNode extends StatNode {
 
@@ -104,14 +104,14 @@ public class AssignmentNode extends StatNode {
       String suggestion =
           suggest
               ? ("Did you mean "
-                  + firstApostrophe
-                  + rhs.getInput()
-                  + firstApostrophe
-                  + " instead of "
-                  + secondApostrophe
-                  + rhs.getInput()
-                  + secondApostrophe
-                  + "?")
+              + firstApostrophe
+              + rhs.getInput()
+              + firstApostrophe
+              + " instead of "
+              + secondApostrophe
+              + rhs.getInput()
+              + secondApostrophe
+              + "?")
               : "";
 
       /* Prints out error message with suggestions
@@ -133,10 +133,13 @@ public class AssignmentNode extends StatNode {
     int offset;
     SingleDataTransfer storeInstr;
     RegisterOperand base = RegisterOperand.SP;
+
     if (lhs instanceof ArrayElementNode) {
+      /* Special case when lhs is an arrayElementNode */
       base = translateArrayElementNode(context);
       offset = 0;
     } else {
+      /* Need to distinguish between declarative statement and non declarative statement */
       if (isDeclaration) {
         offset = translateLHSDeclaration(context);
       } else {
@@ -145,79 +148,72 @@ public class AssignmentNode extends StatNode {
     }
     rhs.translate(context);
 
-    if (rhs instanceof PairElementNode){
-      context.addToCurrentLabel(LDR(rhs.getRegister(),
-          new PreIndexedAddressOperand(rhs.getRegister())));
+    if (rhs instanceof PairElementNode) {
+      /* Load address of pair element to rhs */
+      context.addToCurrentLabel(
+          LDR(rhs.getRegister(), new PreIndexedAddressOperand(rhs.getRegister())));
     }
 
-    if(lhs instanceof PairElementNode){
+    if (lhs instanceof PairElementNode) {
+      /* Loads pair element address to a free register */
       translatePairElementNode(base, offset, context);
       return;
     }
-    if (lhs.getType().getVarSize() == 1) {
-      storeInstr =
-          SingleDataTransfer.STR(
-              rhs.getRegister(),
-              new PreIndexedAddressOperand(base)
-                  .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#")))
-              .withCond("B");
-    } else {
-      storeInstr =
-          SingleDataTransfer.STR(
-              rhs.getRegister(),
-              new PreIndexedAddressOperand(base)
-                  .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#")));
-    }
 
-    context.addToCurrentLabel(storeInstr);
+    /* Stores 1 byte if char or bool with STRB, and 4 bytes otherwise with STR */
+    String strCond = lhs.getType().getVarSize() == 1 ? "B" : "";
+    context.addToCurrentLabel(
+        SingleDataTransfer.STR(
+            rhs.getRegister(),
+            new PreIndexedAddressOperand(base)
+                .withExpr(new ImmediateOperand<>(offset)
+                    .withPrefixSymbol("#")))
+            .withCond(strCond));
+
+    /* Frees unused registers after assignment */
     context.freeRegister(rhs.getRegister().getValue());
+    /* Only frees base register for arrayElementNode as it is SP for other cases */
     if (lhs instanceof ArrayElementNode) {
       context.freeRegister(base.getValue());
     }
   }
 
-  /* Ugly helper method for translate pair element node */
+  /* Helper method for translating pair element node */
   private void translatePairElementNode(RegisterOperand base, int offset, Context context) {
     SingleDataTransfer storeInstr;
     PairElementNode pairElementNode = (PairElementNode) lhs;
     boolean isFst = pairElementNode.getPos().equals(PairElementNode.PairPosition.FST);
     RegisterOperand tempReg = new RegisterOperand(context.getFreeRegister());
 
-    /* LOAD MEM ADDRESS OF THE PAIR INTO TEMPREG */
+    /* Load memory address of the pair into a temporary register */
     context.addToCurrentLabel(
-        LDR(
-            tempReg,
+        LDR(tempReg,
             new PreIndexedAddressOperand(base)
                 .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
 
-    /* CHECK WHETHER THE ADDRESS OF THE PAIR POINTS TO A NULL VALUE */
+    /* Check whether the address of the pair points to a null value */
     context.addToCurrentLabel(MOV(RegisterOperand.R0, tempReg));
     PredefinedFunctions.addCheckNullPointerFunction(context);
     context.addToCurrentLabel(BL(PredefinedFunctions.CHECK_NULL_POINTER_FUNC));
 
-    /* LOAD MEM ADDRESS OF THE PAIR ELEMENT INTO TEMPREG*/
+    /* Load memory address of the pair element into a temporary register */
     context.addToCurrentLabel(
-        LDR(
-            tempReg,
+        LDR(tempReg,
             new PreIndexedAddressOperand(tempReg)
                 .withExpr(new ImmediateOperand<>(isFst ? 0 : 4).withPrefixSymbol("#"))));
 
-    if (lhs.getType().getVarSize() == 1) {
-      storeInstr =
-          SingleDataTransfer.STR(
-              rhs.getRegister(),
-              new PreIndexedAddressOperand(tempReg))
-              .withCond("B");
-    } else {
-      storeInstr =
-          SingleDataTransfer.STR(
-              rhs.getRegister(), new PreIndexedAddressOperand(tempReg));
-    }
+    /* Stores 1 byte if char or bool with STRB, and 4 bytes otherwise with STR */
+    String strCond = lhs.getType().getVarSize() == 1 ? "B" : "";
+    context.addToCurrentLabel(
+        SingleDataTransfer.STR(
+            rhs.getRegister(),
+            new PreIndexedAddressOperand(tempReg))
+            .withCond(strCond));
 
-    context.addToCurrentLabel(storeInstr);
     context.freeRegister(tempReg.getValue());
     context.freeRegister(rhs.getRegister().getValue());
   }
+
   /* New declaration, e.g. int i = 5
    * Returns the offset from the SP at which the RHS shd be moved into.
    * (Should always return 0 since we are always pushing into SP directly) */
@@ -233,17 +229,6 @@ public class AssignmentNode extends StatNode {
     String name = lhsVar.getName();
     SymbolKey key = new SymbolKey(name, false);
     VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-
-    /* Special case of char type declaration on lhs. In this case,
-     * we need to add the char to the dataLabels list. */
-    if (lhs.getType() instanceof CharType) {
-      int length = id.toString().length();
-
-      String dataLabelName = context.getNextDataLabelString();
-      Label<Data> newLabel = new Label<>(dataLabelName);
-      newLabel.addToBody(new Data(length, name));
-      context.addToDataLabels(newLabel);
-    }
 
     /* Regardless of type, we need to increment offsets in this scope,
      * since we are going to be storing a new item on the stack. */
@@ -263,12 +248,14 @@ public class AssignmentNode extends StatNode {
     return 0;
   }
 
+  /* Helper method for translating array element node */
   private RegisterOperand translateArrayElementNode(Context context) {
     ArrayElementNode arrayElementNode = (ArrayElementNode) lhs;
     return ArrayElementNode.translateArray(context, arrayElementNode);
   }
 
-  /* e.g. i = 5 where i has already been pre-defined */
+  /* Helper method for translating assignments into variables previously defined
+   * e.g. i = 5 where i has already been pre-defined */
   private int translateLHSNonDeclaration(Context context) {
 
     /* FST p = 5 where p is a predefined pair where the first element is of
@@ -279,9 +266,6 @@ public class AssignmentNode extends StatNode {
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, false);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-      /* No need for this because we want the address of the pair only */
-      //      int positionOffset =
-      //          ((PairElementNode) lhs).getPos().equals(PairElementNode.PairPosition.FST) ? 0 : 4;
       return id.getOffsetStack(symbolTable, key);
     }
 

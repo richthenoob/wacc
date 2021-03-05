@@ -1,4 +1,4 @@
-package ic.doc.backend.Instructions.operands;
+package ic.doc.backend.instructions.operands;
 
 /* e.g. =5, =-16 */
 public class ImmediateOperand<T> extends Operand {
@@ -10,7 +10,7 @@ public class ImmediateOperand<T> extends Operand {
     this.value = value;
   }
 
-  public ImmediateOperand withPrefixSymbol(String prefixSymbol) {
+  public ImmediateOperand<T> withPrefixSymbol(String prefixSymbol) {
     this.prefixSymbol = prefixSymbol;
     return this;
   }
