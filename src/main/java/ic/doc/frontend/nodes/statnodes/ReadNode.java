@@ -84,15 +84,9 @@ public class ReadNode extends StatNode {
     RegisterOperand reg = expr.getRegister();
     Label<Instruction> curr = context.getCurrentLabel();
 
-//    if(expr instanceof PairElementNode){
-//      PairElementNode.PairPosition pos = ((PairElementNode) expr).getPos();
-//      /* SND is always at an offset of 4, regardless of type (according to ref compiler) */
-//      curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
-//    } else if(expr instanceof ArrayElementNode){
-//      curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
-    /* When expr is translated */
     if(expr instanceof VariableNode) {
-      /* Variable node here !*/
+      /* If expression is a variable, get stack offset corresponding to variable from symbol table
+       * and move stack pointer accordingly. */
       String varName = ((VariableNode) expr).getName();
       SymbolKey key = new SymbolKey(varName, false);
       VariableIdentifier id = (VariableIdentifier) context.getCurrentSymbolTable().lookupAll(key);
@@ -100,7 +94,9 @@ public class ReadNode extends StatNode {
       curr.addToBody(ADD(reg, RegisterOperand.SP, new ImmediateOperand<>(offset).withPrefixSymbol("#")));
     }
 
+    /* Predefined read functions need contents of register to be moved to R0. */
     curr.addToBody(MOV(RegisterOperand.R0, reg));
+    /* Branch to appropriate predefined functions based on type. */
     if(exprType instanceof CharType){
       PredefinedFunctions.addReadTypeFunction(context, "char");
       curr.addToBody(BL(READ_CHAR_FUNC));
@@ -108,6 +104,7 @@ public class ReadNode extends StatNode {
       PredefinedFunctions.addReadTypeFunction(context, "int");
       curr.addToBody(BL(READ_INT_FUNC));
     }
+
     context.freeRegister(reg.getValue());
   }
 }

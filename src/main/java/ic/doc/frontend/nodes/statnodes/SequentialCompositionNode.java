@@ -30,6 +30,7 @@ public class SequentialCompositionNode extends StatNode {
   @Override
   public void translate(Context context) {
     for (StatNode node : statements) {
+      /* Translates each individual statement */
       node.translate(context);
     }
   }

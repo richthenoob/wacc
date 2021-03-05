@@ -83,7 +83,7 @@ public class PairElementNode extends ExprNode {
 
   @Override
   public void translate(Context context) {
-    /* Get register corresponding to expression, and set it as the register of this node. */
+    /* Get register in which expression valued is stored, and set it as the register of this node. */
     expr.translate(context);
     RegisterOperand reg = expr.getRegister();
     setRegister(reg);
