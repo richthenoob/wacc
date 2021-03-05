@@ -54,7 +54,7 @@ public class PairElementNode extends ExprNode {
       return;
     }
 
-    /* Must be identifier with type pair. */
+    /* Must be identifier or array elem with type pair. */
     if (!(expr instanceof VariableNode || expr instanceof ArrayElementNode) || !(expr.getType() instanceof PairType)) {
       visitor
           .getSemanticErrorList()
