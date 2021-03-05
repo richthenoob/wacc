@@ -145,16 +145,15 @@ public class AssignmentNode extends StatNode {
     }
     rhs.translate(context);
 
-    if(lhs instanceof PairElementNode){
-      translatePairElementNode(base, offset, context);
-      return;
-    }
-
-    if(rhs instanceof PairElementNode){
+    if (rhs instanceof PairElementNode){
       context.addToCurrentLabel(LDR(rhs.getRegister(),
           new PreIndexedAddressOperand(rhs.getRegister())));
     }
 
+    if(lhs instanceof PairElementNode){
+      translatePairElementNode(base, offset, context);
+      return;
+    }
     if (lhs.getType().getVarSize() == 1) {
       storeInstr =
           SingleDataTransfer.STR(
