@@ -35,7 +35,6 @@ public class ProgNode extends Node {
 
   @Override
   public void translate(Context context) {
-
     /* Add all function labels and evaluate its parameters first. This
      * ensures that any recursive definitions can properly resolve
      * a function's parameters. */

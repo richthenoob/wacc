@@ -41,16 +41,14 @@ public class ParamListNode extends Node {
 
   @Override
   public void translate(Context context) {
-
     SymbolTable funcSymbolTable = context.getCurrentSymbolTable();
     for (int i = 0; i < params.size(); i++) {
+      /* Look up each parameter in function symbol table。 */
       ParamNode param = params.get(i);
-
-      /* Look up each parameter in function symbol table and increment
-       * offsets in symbol table accordingly. */
       VariableIdentifier id = (VariableIdentifier) funcSymbolTable
           .getIdentifier(i);
 
+      /* Increment offsets in symbol table accordingly.*/
       int sizeOfVarOnStack = param.getType().getVarSize();
       funcSymbolTable.incrementOffset(sizeOfVarOnStack);
       funcSymbolTable.incrementFunctionParametersSize(sizeOfVarOnStack);
