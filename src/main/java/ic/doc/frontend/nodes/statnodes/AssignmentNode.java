@@ -239,11 +239,10 @@ public class AssignmentNode extends StatNode {
      * we need to add the char to the dataLabels list. */
     if (lhs.getType() instanceof CharType) {
       int length = id.toString().length();
-      String str = id.toString();
 
       String dataLabelName = context.getNextDataLabelString();
       Label<Data> newLabel = new Label<>(dataLabelName);
-      newLabel.addToBody(new Data(length, str));
+      newLabel.addToBody(new Data(length, name));
       context.addToDataLabels(newLabel);
     }
 
