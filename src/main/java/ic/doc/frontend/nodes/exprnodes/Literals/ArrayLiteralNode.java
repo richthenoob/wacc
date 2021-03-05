@@ -84,7 +84,8 @@ public class ArrayLiteralNode extends LiteralNode {
         .addToBody(Branch.BL("malloc"))
         .addToBody(
             new Move(new RegisterOperand(firstRegisterNum), new RegisterOperand(0), Condition.B));
-    int offset = 4; // space for pointer
+    /* Offset required to make space for pointer */
+    int offset = 4;
 
     /* Call translate on each array element and store the result in correct offset on stack */
     for (ExprNode value : values) {
