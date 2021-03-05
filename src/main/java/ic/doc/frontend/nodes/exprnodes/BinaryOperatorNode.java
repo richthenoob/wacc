@@ -133,7 +133,10 @@ public class BinaryOperatorNode extends ExprNode {
     RegisterOperand dstReg = lReg;
 
     if (lReg.getValue() == rReg.getValue()) {
-      //both registers are 10 i.e. all registers are occupied
+      /* If both registers are 10 i.e. all registers are occupied,
+       * this means that the value of the left operand has been stored on the stack.
+       * We need to pop the latest value on the stack onto register 11
+       * and set that as the left reg. */
       lReg = new RegisterOperand(11);
       curr.addToBody(
           POP(new RegisterOperand(11)));
@@ -143,10 +146,10 @@ public class BinaryOperatorNode extends ExprNode {
     switch (binaryOperator) {
       /* Arithmetic operators. */
       case MUL:
-        curr.addToBody(SMULL(dstReg, new RegisterOperand(12), lReg, rReg));
+        curr.addToBody(SMULL(dstReg, rReg, lReg, rReg));
 
-        // checking for overflow
-        curr.addToBody(CMP(new RegisterOperand(12),
+        /* Checking for overflow in result */
+        curr.addToBody(CMP(rReg,
             new PostIndexedAddressOperand()
                 .withRM(dstReg)
                 .withShift(ShiftTypes.ASR)
@@ -157,6 +160,8 @@ public class BinaryOperatorNode extends ExprNode {
         break;
       case DIV:
       case MOD:
+        /* Divide predefined function requires
+         * dividend to be stored in R0 and divisor to be stored in R1. */
         curr.addToBody(MOV(RegisterOperand.R0, lReg));
         curr.addToBody(MOV(RegisterOperand.R1, rReg));
         curr.addToBody(BL(DIVIDE_ZERO_CHECK));
@@ -166,6 +171,8 @@ public class BinaryOperatorNode extends ExprNode {
             DIVIDE_PFUNC : MOD_PFUNC;
         curr.addToBody(BL(divLabel));
 
+        /* Divide predefined function stores result in R0,
+         * mod predefined function stores result in R1. */
         Operand res = binaryOperator == BinaryOperators.DIV ?
             RegisterOperand.R0 : RegisterOperand.R1;
         curr.addToBody(MOV(dstReg, res));
@@ -221,14 +228,16 @@ public class BinaryOperatorNode extends ExprNode {
     context.freeRegister(rReg.getValue());
   }
 
+  /*  Takes in operands for binary ops that return booleans,
+   *  and adds the corresponding assembly code to the label */
   private void addComparisonAssembly(
       Label<Instruction> curr, Operand lReg, Operand rReg, Operand dstReg,
       Condition lCond, Condition rCond) {
-    // CMP
+    /* CMP */
     curr.addToBody(CMP(lReg, rReg));
-    // left expr
+    /* left expr */
     curr.addToBody(new Move(dstReg, new ImmediateOperand<>(1).withPrefixSymbol("#"), lCond));
-    // right expr
+    /* right expr */
     curr.addToBody(new Move(dstReg, new ImmediateOperand<>(0).withPrefixSymbol("#"), rCond));
   }
 

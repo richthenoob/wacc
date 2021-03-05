@@ -29,6 +29,7 @@ public class BooleanLiteralNode extends LiteralNode {
 
   @Override
   public void translate(Context context) {
+    /* Load int representation of bool into a register */
     int bool = value ? 1 : 0;
     ImmediateOperand operand = new ImmediateOperand<>(bool).withPrefixSymbol("=");
     RegisterOperand register = new RegisterOperand(context.getFreeRegister());

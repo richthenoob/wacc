@@ -39,12 +39,19 @@ public class StringLiteralNode extends LiteralNode {
 
   @Override
   public void translate(Context context) {
+    /* Always add to the data regardless of declaration or not */
     RegisterOperand register = new RegisterOperand(context.getFreeRegister());
     setRegister(register);
+
+    /* Special size function that ignores escape char */
     int size = strSize(value);
     List<Label<Data>> dataLabels = context.getDataLabels();
+
+    /* Find out next index of msg_ which corresponds to current size*/
     int newIndex = dataLabels.size();
     Label<Data> newLabel = new Label<>("msg_" + newIndex);
+
+    /* Adds the data labels and loads label to register */
     dataLabels.add(newIndex, newLabel);
     newLabel.addToBody(new Data(size, value));
     LabelAddressOperand operand = new LabelAddressOperand(newLabel.getFunctionLabel());

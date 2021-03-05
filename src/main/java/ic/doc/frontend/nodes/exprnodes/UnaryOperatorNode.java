@@ -129,26 +129,22 @@ public class UnaryOperatorNode extends ExprNode {
 
     switch (unaryOperator) {
       case LOGICAL_NOT:
-        // Need to EOR with IMM 1
-        // MOV r4, #0
-        // EOR r4, r4, #1
+        /* EOR operand with IMM #1 */
         curr.addToBody(EOR(reg, reg, new ImmediateOperand<>(1).withPrefixSymbol("#")));
         break;
       case MATH_NEGATION:
-        // Add RSBS instr
+        /* RSBS operand with IMM #0 */
         curr.addToBody(RSBS(reg, reg, new ImmediateOperand<>(0).withPrefixSymbol("#")));
         addCheckIntegerOverflowFunction(context);
-        addThrowRuntimeErrorFunction(context);
         curr.addToBody(BLVS("p_throw_overflow_error"));
         break;
       case LEN:
+        /* Load length of operand into reg */
         curr.addToBody(LDR(reg, new PreIndexedAddressOperand(reg)));
         break;
       case ORD:
-        // Do nothing, expr is translated
-        break;
       case CHR:
-        // Do nothing, expr is translated
+        /* Do nothing, expr is translated */
         break;
     }
   }
