@@ -5,7 +5,6 @@ import ic.doc.backend.Instructions.*;
 import ic.doc.backend.Instructions.operands.ImmediateOperand;
 import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.Instructions.operands.RegisterOperand;
-import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.PairType;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -40,6 +39,7 @@ public class PairNode extends ExprNode {
     int bytesToAllocate = 4 * 2;
     int firstRegisterNum = context.getFreeRegister();
 
+    /* Move value into r0 for call to malloc */
     context.getCurrentLabel()
         .addToBody(
             SingleDataTransfer.LDR(new RegisterOperand(0),
@@ -48,17 +48,19 @@ public class PairNode extends ExprNode {
         .addToBody(
             new Move(new RegisterOperand(firstRegisterNum), new RegisterOperand(0), Condition.B));
 
-    loadAndStoreElement(context, fst,
+    /* translate the two pair elements individually */
+    translatePair(context, fst,
         new PreIndexedAddressOperand(new RegisterOperand(firstRegisterNum)));
 
-    loadAndStoreElement(context, snd,
+    translatePair(context, snd,
         new PreIndexedAddressOperand(new RegisterOperand(firstRegisterNum))
             .withExpr(new ImmediateOperand<>(4).withPrefixSymbol("#")));
 
     setRegister(new RegisterOperand(firstRegisterNum));
   }
 
-  private void loadAndStoreElement(Context context, ExprNode elem, PreIndexedAddressOperand reg) {
+  /* Stores element value at address returned by malloc */
+  private void translatePair(Context context, ExprNode elem, PreIndexedAddressOperand reg) {
     elem.translate(context);
 
     context.getCurrentLabel()
