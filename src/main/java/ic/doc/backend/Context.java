@@ -1,11 +1,10 @@
 package ic.doc.backend;
 
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.DataProcessing;
-import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Instructions.Stack;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.DataProcessing;
+import ic.doc.backend.instructions.Instruction;
+import ic.doc.backend.instructions.Stack;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.frontend.semantics.SymbolTable;
 
 import java.util.*;

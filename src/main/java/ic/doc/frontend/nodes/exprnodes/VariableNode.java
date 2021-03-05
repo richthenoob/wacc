@@ -1,10 +1,10 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Instructions.SingleDataTransfer;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.SingleDataTransfer;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.semantics.SymbolKey;

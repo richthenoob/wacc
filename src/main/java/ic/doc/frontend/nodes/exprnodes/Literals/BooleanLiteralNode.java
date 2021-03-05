@@ -1,9 +1,9 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Instructions.SingleDataTransfer;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.SingleDataTransfer;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.BoolType;
 import org.antlr.v4.runtime.ParserRuleContext;

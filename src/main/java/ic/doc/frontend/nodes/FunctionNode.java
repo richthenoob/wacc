@@ -1,11 +1,11 @@
 package ic.doc.frontend.nodes;
 
-import static ic.doc.backend.Instructions.Stack.*;
+import static ic.doc.backend.instructions.Stack.*;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Instructions.LoadLiterals;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.Instruction;
+import ic.doc.backend.instructions.LoadLiterals;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.errors.SyntaxException;
 import ic.doc.frontend.nodes.statnodes.ConditionalBranchNode;

@@ -1,13 +1,9 @@
-package ic.doc.backend.Data;
+package ic.doc.backend;
 
 public class Data {
 
   private final int numChar;
   private final String content;
-
-  public int getNumChar() {
-    return numChar;
-  }
 
   public String getContent() {
     return content;

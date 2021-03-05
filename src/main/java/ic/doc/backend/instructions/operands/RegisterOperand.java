@@ -1,4 +1,4 @@
-package ic.doc.backend.Instructions.operands;
+package ic.doc.backend.instructions.operands;
 
 /* Class to hold registers, e.g. r0, r1, ... r12, sp, r, pc */
 public class RegisterOperand extends Operand {
@@ -10,7 +10,8 @@ public class RegisterOperand extends Operand {
   public static RegisterOperand LR = new RegisterOperand(14);
   public static RegisterOperand PC = new RegisterOperand(15);
 
-  private final int value; // register value
+  /* Integers 0-15 corresponding to registers 0-15. */
+  private final int value;
 
   public RegisterOperand(int value) {
     this.value = value;

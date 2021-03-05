@@ -1,12 +1,8 @@
 package ic.doc.frontend.nodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.Type;
-import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ParamNode extends Node {

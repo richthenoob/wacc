@@ -1,10 +1,10 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Instructions.*;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.*;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.Visitor;

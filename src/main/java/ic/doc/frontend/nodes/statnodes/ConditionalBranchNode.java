@@ -1,11 +1,11 @@
 package ic.doc.frontend.nodes.statnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Instructions.Branch;
-import ic.doc.backend.Instructions.DataProcessing;
-import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.Branch;
+import ic.doc.backend.instructions.DataProcessing;
+import ic.doc.backend.instructions.Instruction;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.SymbolTable;

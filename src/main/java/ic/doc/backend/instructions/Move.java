@@ -1,6 +1,6 @@
-package ic.doc.backend.Instructions;
+package ic.doc.backend.instructions;
 
-import ic.doc.backend.Instructions.operands.Operand;
+import ic.doc.backend.instructions.operands.Operand;
 
 public class Move extends Instruction {
 
