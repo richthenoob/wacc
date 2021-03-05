@@ -133,10 +133,13 @@ public class AssignmentNode extends StatNode {
     int offset;
     SingleDataTransfer storeInstr;
     RegisterOperand base = RegisterOperand.SP;
+
+    /* Special case when lhs is an arrayElementNode */
     if (lhs instanceof ArrayElementNode) {
       base = translateArrayElementNode(context);
       offset = 0;
     } else {
+      /* Need to distinguish between declaration statement and non declaration statement */
       if (isDeclaration) {
         offset = translateLHSDeclaration(context);
       } else {
@@ -145,21 +148,24 @@ public class AssignmentNode extends StatNode {
     }
     rhs.translate(context);
 
-    if (rhs instanceof PairElementNode){
-      context.addToCurrentLabel(LDR(rhs.getRegister(),
-          new PreIndexedAddressOperand(rhs.getRegister())));
+    /* Loads address of pair element */
+    if (rhs instanceof PairElementNode) {
+      context.addToCurrentLabel(
+          LDR(rhs.getRegister(), new PreIndexedAddressOperand(rhs.getRegister())));
     }
 
-    if(lhs instanceof PairElementNode){
+    /* Handles loading of pairelement address */
+    if (lhs instanceof PairElementNode) {
       translatePairElementNode(base, offset, context);
       return;
     }
     if (lhs.getType().getVarSize() == 1) {
+      /* Stores either 1 or 4 bytes depending on type of value */
       storeInstr =
           SingleDataTransfer.STR(
-              rhs.getRegister(),
-              new PreIndexedAddressOperand(base)
-                  .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#")))
+                  rhs.getRegister(),
+                  new PreIndexedAddressOperand(base)
+                      .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#")))
               .withCond("B");
     } else {
       storeInstr =
@@ -171,31 +177,33 @@ public class AssignmentNode extends StatNode {
 
     context.addToCurrentLabel(storeInstr);
     context.freeRegister(rhs.getRegister().getValue());
+
+    /* Only frees base register for arrayElementNode as it is SP for other cases */
     if (lhs instanceof ArrayElementNode) {
       context.freeRegister(base.getValue());
     }
   }
 
-  /* Ugly helper method for translate pair element node */
+  /* Helper method for translate pair element node */
   private void translatePairElementNode(RegisterOperand base, int offset, Context context) {
     SingleDataTransfer storeInstr;
     PairElementNode pairElementNode = (PairElementNode) lhs;
     boolean isFst = pairElementNode.getPos().equals(PairElementNode.PairPosition.FST);
     RegisterOperand tempReg = new RegisterOperand(context.getFreeRegister());
 
-    /* LOAD MEM ADDRESS OF THE PAIR INTO TEMPREG */
+    /* Load mem address of the pair into tempreg */
     context.addToCurrentLabel(
         LDR(
             tempReg,
             new PreIndexedAddressOperand(base)
                 .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
 
-    /* CHECK WHETHER THE ADDRESS OF THE PAIR POINTS TO A NULL VALUE */
+    /* Check whether the address of the pair points to a null value */
     context.addToCurrentLabel(MOV(RegisterOperand.R0, tempReg));
     PredefinedFunctions.addCheckNullPointerFunction(context);
     context.addToCurrentLabel(BL(PredefinedFunctions.CHECK_NULL_POINTER_FUNC));
 
-    /* LOAD MEM ADDRESS OF THE PAIR ELEMENT INTO TEMPREG*/
+    /* Load mem address of the pair element into tempreg */
     context.addToCurrentLabel(
         LDR(
             tempReg,
@@ -204,20 +212,17 @@ public class AssignmentNode extends StatNode {
 
     if (lhs.getType().getVarSize() == 1) {
       storeInstr =
-          SingleDataTransfer.STR(
-              rhs.getRegister(),
-              new PreIndexedAddressOperand(tempReg))
+          SingleDataTransfer.STR(rhs.getRegister(), new PreIndexedAddressOperand(tempReg))
               .withCond("B");
     } else {
-      storeInstr =
-          SingleDataTransfer.STR(
-              rhs.getRegister(), new PreIndexedAddressOperand(tempReg));
+      storeInstr = SingleDataTransfer.STR(rhs.getRegister(), new PreIndexedAddressOperand(tempReg));
     }
 
     context.addToCurrentLabel(storeInstr);
     context.freeRegister(tempReg.getValue());
     context.freeRegister(rhs.getRegister().getValue());
   }
+
   /* New declaration, e.g. int i = 5
    * Returns the offset from the SP at which the RHS shd be moved into.
    * (Should always return 0 since we are always pushing into SP directly) */
@@ -263,6 +268,7 @@ public class AssignmentNode extends StatNode {
     return 0;
   }
 
+  /* Helper method for translating array element node */
   private RegisterOperand translateArrayElementNode(Context context) {
     ArrayElementNode arrayElementNode = (ArrayElementNode) lhs;
     return ArrayElementNode.translateArray(context, arrayElementNode);
@@ -279,9 +285,9 @@ public class AssignmentNode extends StatNode {
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, false);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-      /* No need for this because we want the address of the pair only */
-      //      int positionOffset =
-      //          ((PairElementNode) lhs).getPos().equals(PairElementNode.PairPosition.FST) ? 0 : 4;
+
+      /* No need for this because we want the address of the pair only
+       * int positionOffset = ((PairElementNode) lhs).getPos().equals(PairElementNode.PairPosition.FST) ? 0 : 4; */
       return id.getOffsetStack(symbolTable, key);
     }
 
