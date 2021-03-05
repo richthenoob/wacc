@@ -40,15 +40,6 @@ public class ArrayElementNode extends ExprNode {
     this.identNode = identNode;
   }
 
-  public int getDimensions() {
-    return exprNodes.size();
-  }
-
-  public ExprNode getFirstIndex() {
-
-    return exprNodes.get(0);
-  }
-
   public VariableNode getIdentNode() {
     return identNode;
   }
@@ -186,7 +177,7 @@ public class ArrayElementNode extends ExprNode {
                 arrayReg,
                 indexReg,
                 PreIndexedAddressOperand.ShiftTypes.LSL,
-                new ImmediateOperand<>(2).withPrefixSymbol("#")));
+                    new ImmediateOperand<>(2).withPrefixSymbol("#")));
       }
     }
     context.freeRegister(indexReg.getValue());
