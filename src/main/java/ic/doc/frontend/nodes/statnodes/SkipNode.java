@@ -19,5 +19,6 @@ public class SkipNode extends StatNode {
 
   @Override
   public void translate(Context context) {
+    /* No translation needed. */
   }
 }
