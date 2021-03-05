@@ -44,6 +44,7 @@ public class IntLiteralNode extends LiteralNode {
 
   @Override
   public void translate(Context context) {
+    /* Load integer value into register */
     ImmediateOperand operand = new ImmediateOperand<>(value.intValue()).withPrefixSymbol("=");
     RegisterOperand register = new RegisterOperand(context.getFreeRegister());
     context.addToCurrentLabel(SingleDataTransfer.LDR(register, operand));
