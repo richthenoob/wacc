@@ -36,47 +36,45 @@ public class PairNode extends ExprNode {
 
   @Override
   public void translate(Context context) {
-    Label<Instruction> label = context.getCurrentLabel();
+    /* Allocate 4 bytes for each element of pair */
     int bytesToAllocate = 4 * 2;
     int firstRegisterNum = context.getFreeRegister();
-    label
+
+    context.getCurrentLabel()
         .addToBody(
             SingleDataTransfer.LDR(new RegisterOperand(0),
                 new ImmediateOperand<>(bytesToAllocate).withPrefixSymbol("=")))
         .addToBody(Branch.BL("malloc"))
         .addToBody(
             new Move(new RegisterOperand(firstRegisterNum), new RegisterOperand(0), Condition.B));
-    fst.translate(context);
-    label
-        .addToBody(SingleDataTransfer.LDR(new RegisterOperand(0),
-            new ImmediateOperand<>(4).withPrefixSymbol("=")))
-        .addToBody(Branch.BL("malloc"))
-        .addToBody(
-            SingleDataTransfer.STR(
-                fst.getRegister(),
-                new PreIndexedAddressOperand(new RegisterOperand(0))))
-        .addToBody(
-            SingleDataTransfer.STR(
-                new RegisterOperand(0),
-                new PreIndexedAddressOperand(new RegisterOperand(firstRegisterNum))));
-    context.freeRegister(fst.getRegister().getValue());
-    snd.translate(context);
-    label
-        .addToBody(SingleDataTransfer.LDR(new RegisterOperand(0),
-            new ImmediateOperand<>(4).withPrefixSymbol("=")))
-        .addToBody(Branch.BL("malloc"))
-        .addToBody(
-            SingleDataTransfer.STR(
-                snd.getRegister(),
-                new PreIndexedAddressOperand(new RegisterOperand(0))))
-        .addToBody(
-            SingleDataTransfer.STR(
-                new RegisterOperand(0),
-                new PreIndexedAddressOperand(
-                    new RegisterOperand(firstRegisterNum))
-                    .withExpr(new ImmediateOperand<>(4).withPrefixSymbol("#"))));
-    context.freeRegister(snd.getRegister().getValue());
+
+    loadAndStoreElement(context, fst,
+        new PreIndexedAddressOperand(new RegisterOperand(firstRegisterNum)));
+
+    loadAndStoreElement(context, snd,
+        new PreIndexedAddressOperand(new RegisterOperand(firstRegisterNum))
+            .withExpr(new ImmediateOperand<>(4).withPrefixSymbol("#")));
+
     setRegister(new RegisterOperand(firstRegisterNum));
+  }
+
+  private void loadAndStoreElement(Context context, ExprNode elem, PreIndexedAddressOperand reg) {
+    elem.translate(context);
+
+    context.getCurrentLabel()
+        /* Mallocs space for element */
+        .addToBody(SingleDataTransfer.LDR(new RegisterOperand(0),
+            new ImmediateOperand<>(4).withPrefixSymbol("=")))
+        .addToBody(Branch.BL("malloc"))
+        .addToBody(
+            SingleDataTransfer.STR(
+                elem.getRegister(),
+                new PreIndexedAddressOperand(new RegisterOperand(0))))
+        .addToBody(
+            SingleDataTransfer.STR(new RegisterOperand(0), reg));
+
+    /* Free register originally used for individual element */
+    context.freeRegister(elem.getRegister().getValue());
   }
 
   @Override

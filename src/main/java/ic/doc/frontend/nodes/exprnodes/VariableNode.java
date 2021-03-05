@@ -45,30 +45,26 @@ public class VariableNode extends ExprNode {
 
   @Override
   public void translate(Context context) {
-    SymbolKey key = new SymbolKey(getName(), false);
+    /* Get a free register to be used to store variable. */
     RegisterOperand register = new RegisterOperand(context.getFreeRegister());
     setRegister(register);
+
+    /* Obtain stack offset of value of variable from entry in symbol table. */
+    SymbolKey key = new SymbolKey(getName(), false);
     VariableIdentifier id = (VariableIdentifier) context.getCurrentSymbolTable().lookupAll(key);
-    if (id.getType().getVarSize() == 1) {
-      context.addToCurrentLabel(
-          SingleDataTransfer.LDR(
-              register,
-              new PreIndexedAddressOperand(
-                  RegisterOperand.SP)
-                  .withExpr(new ImmediateOperand<>(
-                      id.getOffsetStack(context.getCurrentSymbolTable(), key))
-                      .withPrefixSymbol("#")))
-              .withCond("SB"));
-    } else {
-      context.addToCurrentLabel(
-          SingleDataTransfer.LDR(
-              register,
-              new PreIndexedAddressOperand(
-                  RegisterOperand.SP)
-                  .withExpr(
-                      new ImmediateOperand<>(
-                      id.getOffsetStack(context.getCurrentSymbolTable(), key))
-                      .withPrefixSymbol("#"))));
-    }
+    int offset = id.getOffsetStack(context.getCurrentSymbolTable(), key);
+
+    /* If type of variable is Char or Bool, it only needs a stack size of 1.
+     * Then we need to use LDRSB to load it. */
+    String cond = id.getType().getVarSize() == 1 ? "SB" : "";
+
+    context.addToCurrentLabel(
+        SingleDataTransfer.LDR(
+            register,
+            new PreIndexedAddressOperand(
+                RegisterOperand.SP)
+                .withExpr(new ImmediateOperand<>(offset)
+                    .withPrefixSymbol("#")))
+            .withCond(cond));
   }
 }

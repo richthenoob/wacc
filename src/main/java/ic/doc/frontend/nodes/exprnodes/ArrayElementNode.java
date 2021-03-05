@@ -40,15 +40,6 @@ public class ArrayElementNode extends ExprNode {
     this.identNode = identNode;
   }
 
-  public int getDimensions() {
-    return exprNodes.size();
-  }
-
-  public ExprNode getFirstIndex() {
-
-    return exprNodes.get(0);
-  }
-
   public VariableNode getIdentNode() {
     return identNode;
   }
@@ -121,7 +112,7 @@ public class ArrayElementNode extends ExprNode {
     Label<Instruction> label = context.getCurrentLabel();
     SymbolTable symbolTable = context.getCurrentSymbolTable();
 
-    /* Find offset for array pointer */
+    /* Find stack offset for array pointer */
     VariableNode lhsVar = array.getIdentNode();
     String name = lhsVar.getName();
     SymbolKey key = new SymbolKey(name, false);
@@ -133,23 +124,26 @@ public class ArrayElementNode extends ExprNode {
     List<ExprNode> arrays = array.getExprNodes();
 
     for (int i = 0; i < arrays.size(); i++) {
-      /* Load location of array into ArrayReg, only needed for first layer as for nested arrays the
-      nested array will already be in arrayReg */
       if (i == 0) {
+        /* Load location of array into arrayReg.
+         * Only needed for first layer as for nested arrays the
+         * nested array will already be in arrayReg */
         label.addToBody(
             DataProcessing.ADD(
                 arrayReg, RegisterOperand.SP,
                 new ImmediateOperand<>(offsetArray).withPrefixSymbol("#")));
       }
+
       if (arrays.get(i) instanceof IntLiteralNode) {
+        /* Load index literal */
         label.addToBody(
             SingleDataTransfer.LDR(
                 indexReg,
                 new ImmediateOperand<>(
                     ((IntLiteralNode) arrays.get(i)).getValue().intValue())
-                    .withPrefixSymbol("="))); // Load index literal
+                    .withPrefixSymbol("=")));
       } else {
-        /* find offset of index pointer if its a variable */
+        /* Find offset of index pointer if its a variable */
         String indexVarName = arrays.get(i).getInput();
         SymbolKey indexVarkey = new SymbolKey(indexVarName, false);
         VariableIdentifier indexId = (VariableIdentifier) symbolTable.lookupAll(indexVarkey);
@@ -162,18 +156,19 @@ public class ArrayElementNode extends ExprNode {
                 new PreIndexedAddressOperand(RegisterOperand.SP)
                     .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
       }
-      /* load array */
+
+      /* Load array */
       label.addToBody(
           SingleDataTransfer.LDR(
               arrayReg, new PreIndexedAddressOperand(arrayReg)));
 
-      /* Move values into correct registers to call predefined function */
+      /* Move values into correct registers to call array bounds checking predefined function */
       label.addToBody(Move.MOV(new RegisterOperand(0), indexReg));
       label.addToBody(Move.MOV(new RegisterOperand(1), arrayReg));
       PredefinedFunctions.addCheckArrayBoundsFunction(context);
       label.addToBody(Branch.BL(PredefinedFunctions.CHECK_ARRAY_BOUNDS_FUNC));
 
-      /* address of value = address of first value + value of index * 4 */
+      /* Address of array = address of first element + index * 4 */
       label.addToBody(DataProcessing.ADD(arrayReg, arrayReg,
           new ImmediateOperand<>(4).withPrefixSymbol("#")));
       Type internalType = ((ArrayType) (array.identNode.getType())).getInternalType();
@@ -186,7 +181,7 @@ public class ArrayElementNode extends ExprNode {
                 arrayReg,
                 indexReg,
                 PreIndexedAddressOperand.ShiftTypes.LSL,
-                new ImmediateOperand<>(2).withPrefixSymbol("#")));
+                    new ImmediateOperand<>(2).withPrefixSymbol("#")));
       }
     }
     context.freeRegister(indexReg.getValue());
@@ -197,14 +192,15 @@ public class ArrayElementNode extends ExprNode {
   public void translate(Context context) {
     RegisterOperand arrayRegister = translateArray(context, this);
     setRegister(arrayRegister);
+
     /* Load value at memory location */
     Type internalType = ((ArrayType) (identNode.getType())).getInternalType();
-    String cond = "";
-    if (internalType.getVarSize() == 1) {
-      cond = "SB";
-    }
-    context
-        .getCurrentLabel()
+
+    /* If type of variable is Char or Bool, it only needs a stack size of 1.
+     * Then we need to use LDRSB to load it. Otherwise, we use LDR. */
+    String cond = internalType.getVarSize() == 1 ? "SB" : "";
+
+    context.getCurrentLabel()
         .addToBody(
             SingleDataTransfer.LDR(
                 arrayRegister,

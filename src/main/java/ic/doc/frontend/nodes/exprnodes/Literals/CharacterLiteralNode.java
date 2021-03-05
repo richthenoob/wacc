@@ -39,10 +39,13 @@ public class CharacterLiteralNode extends LiteralNode {
     RegisterOperand register = new RegisterOperand(context.getFreeRegister());
     setRegister(register);
     Label<Data> label = context.getSpecificLabel(value.toString());
+    /* If label dosnt exist, just load the value as it is non declaration*/
     if (label == null) {
       ImmediateOperand operand = new ImmediateOperand<>(value).withPrefixSymbol("=");
       context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
-    } else {
+    }
+    /* If label is found, it means it was part of a declaration and need to load the label name eg LDR r4 ,=msg_1 */
+    else {
       LabelAddressOperand operand = new LabelAddressOperand(label.getFunctionLabel());
       context.getCurrentLabel().addToBody(SingleDataTransfer.LDR(register, operand));
     }

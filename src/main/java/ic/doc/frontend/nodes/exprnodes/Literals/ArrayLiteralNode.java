@@ -75,26 +75,31 @@ public class ArrayLiteralNode extends LiteralNode {
     int firstRegisterNum = context.getFreeRegister();
     setRegister(new RegisterOperand(firstRegisterNum));
 
+    /* Set up registers for call to system call malloc */
     label
         .addToBody(
-            SingleDataTransfer.LDR(new RegisterOperand(0),
+            SingleDataTransfer.LDR(
+                new RegisterOperand(0),
                 new ImmediateOperand<>(bytesToAllocate).withPrefixSymbol("=")))
         .addToBody(Branch.BL("malloc"))
         .addToBody(
             new Move(new RegisterOperand(firstRegisterNum), new RegisterOperand(0), Condition.B));
-    int offset = 4; // space for pointer
+    /* Offset required to make space for pointer */
+    int offset = 4;
 
+    /* Call translate on each array element and store the result in correct offset on stack */
     for (ExprNode value : values) {
       value.translate(context);
       label.addToBody(
           SingleDataTransfer.STR(
               value.getRegister(),
-              new PreIndexedAddressOperand(
-                  new RegisterOperand(firstRegisterNum))
+              new PreIndexedAddressOperand(new RegisterOperand(firstRegisterNum))
                   .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
       offset += sizeOfVarOnStack;
       context.freeRegister(value.getRegister().getValue());
     }
+
+    /* Load the size of the array into location of array pointer */
     int secondRegisterNum = context.getFreeRegister();
     label
         .addToBody(

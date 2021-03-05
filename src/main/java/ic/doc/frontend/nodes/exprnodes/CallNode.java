@@ -98,8 +98,8 @@ public class CallNode extends ExprNode {
       ExprNode arg = args.getParams().get(i);
 
       int offset;
-      // calculate new stack pointer offset after storing each argument
-      // bool and char means +1 and not +4
+      /* Calculate new stack pointer offset after storing each argument.
+       * Bool and char require an offset of +1 and not +4. */
       String shiftCond = "";
       if (arg.getType() instanceof BoolType ||
           arg.getType() instanceof CharType) {

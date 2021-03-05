@@ -83,21 +83,21 @@ public class PairElementNode extends ExprNode {
 
   @Override
   public void translate(Context context) {
-    // Assuming that this is a variable node?
+    /* Get register corresponding to expression, and set it as the register of this node. */
     expr.translate(context);
     RegisterOperand reg = expr.getRegister();
     setRegister(reg);
     Label<Instruction> curr = context.getCurrentLabel();
 
+    /* Move expression to R0 for null pointer check */
     curr.addToBody(MOV(RegisterOperand.R0, reg));
-
-    int val = pos.equals(PairPosition.FST) ? 0 : 4;
-
     PredefinedFunctions.addCheckNullPointerFunction(context);
     curr.addToBody(BL("p_check_null_pointer"));
+
+    /* Retrieve value of element from memory at offset according to position in pair */
+    int offset = pos.equals(PairPosition.FST) ? 0 : 4;
     curr.addToBody(LDR(reg,
         new PreIndexedAddressOperand(reg)
-        .withExpr(new ImmediateOperand<>(val).withPrefixSymbol("#"))));
-//    curr.addToBody(LDR(reg, PreIndexedAddressZeroOffset(reg)));
+        .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
   }
 }
