@@ -1,20 +1,19 @@
 package ic.doc.backend;
 
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.*;
-import ic.doc.backend.Instructions.operands.*;
+import ic.doc.backend.instructions.*;
+import ic.doc.backend.instructions.operands.*;
 
 import ic.doc.frontend.semantics.SymbolTable;
 import java.util.Map;
 import java.util.Set;
 
-import static ic.doc.backend.Instructions.Branch.*;
-import static ic.doc.backend.Instructions.DataProcessing.ADD;
-import static ic.doc.backend.Instructions.DataProcessing.CMP;
-import static ic.doc.backend.Instructions.Move.MOV;
-import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
-import static ic.doc.backend.Instructions.Stack.PUSH;
-import static ic.doc.backend.Instructions.Stack.POP;
+import static ic.doc.backend.instructions.Branch.*;
+import static ic.doc.backend.instructions.DataProcessing.ADD;
+import static ic.doc.backend.instructions.DataProcessing.CMP;
+import static ic.doc.backend.instructions.Move.MOV;
+import static ic.doc.backend.instructions.SingleDataTransfer.LDR;
+import static ic.doc.backend.instructions.Stack.PUSH;
+import static ic.doc.backend.instructions.Stack.POP;
 
 public class PredefinedFunctions {
 

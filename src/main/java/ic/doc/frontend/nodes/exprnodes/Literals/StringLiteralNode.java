@@ -1,10 +1,10 @@
 package ic.doc.frontend.nodes.exprnodes.Literals;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.SingleDataTransfer;
-import ic.doc.backend.Instructions.operands.LabelAddressOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.Data;
+import ic.doc.backend.instructions.SingleDataTransfer;
+import ic.doc.backend.instructions.operands.LabelAddressOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.CharType;

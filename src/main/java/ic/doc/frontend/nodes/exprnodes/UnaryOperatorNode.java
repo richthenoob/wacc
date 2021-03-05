@@ -1,10 +1,10 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Instructions.*;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.PreIndexedAddressOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.*;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ArrayType;
@@ -15,12 +15,11 @@ import ic.doc.frontend.types.IntType;
 import ic.doc.frontend.types.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import static ic.doc.backend.Instructions.Branch.BLVS;
-import static ic.doc.backend.Instructions.DataProcessing.EOR;
-import static ic.doc.backend.Instructions.DataProcessing.RSBS;
-import static ic.doc.backend.Instructions.SingleDataTransfer.LDR;
+import static ic.doc.backend.instructions.Branch.BLVS;
+import static ic.doc.backend.instructions.DataProcessing.EOR;
+import static ic.doc.backend.instructions.DataProcessing.RSBS;
+import static ic.doc.backend.instructions.SingleDataTransfer.LDR;
 import static ic.doc.backend.PredefinedFunctions.addCheckIntegerOverflowFunction;
-import static ic.doc.backend.PredefinedFunctions.addThrowRuntimeErrorFunction;
 
 public class UnaryOperatorNode extends ExprNode {
 

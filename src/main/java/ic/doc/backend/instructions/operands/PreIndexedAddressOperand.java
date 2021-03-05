@@ -1,4 +1,4 @@
-package ic.doc.backend.Instructions.operands;
+package ic.doc.backend.instructions.operands;
 
 /* Adapted from the ARM specification.
  * [Rn]                       offset of zero

@@ -1,12 +1,12 @@
 package ic.doc.frontend.nodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Instructions.LoadLiterals;
-import ic.doc.backend.Instructions.SingleDataTransfer;
-import ic.doc.backend.Instructions.Stack;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.Instruction;
+import ic.doc.backend.instructions.LoadLiterals;
+import ic.doc.backend.instructions.SingleDataTransfer;
+import ic.doc.backend.instructions.Stack;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.statnodes.StatNode;
 import ic.doc.frontend.semantics.SymbolTable;

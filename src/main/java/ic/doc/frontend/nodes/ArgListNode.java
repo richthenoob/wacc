@@ -1,9 +1,6 @@
 package ic.doc.frontend.nodes;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Data.Data;
-import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.Type;

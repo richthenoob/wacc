@@ -1,4 +1,4 @@
-package ic.doc.backend.Instructions.operands;
+package ic.doc.backend.instructions.operands;
 
 public abstract class AddressOperand extends Operand {
 

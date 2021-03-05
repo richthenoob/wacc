@@ -1,6 +1,6 @@
-package ic.doc.backend.Instructions;
+package ic.doc.backend.instructions;
 
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 
 public class Stack extends Instruction {
   private final boolean pushFlag;

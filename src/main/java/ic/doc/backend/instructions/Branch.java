@@ -1,4 +1,4 @@
-package ic.doc.backend.Instructions;
+package ic.doc.backend.instructions;
 
 public class Branch extends Instruction {
 

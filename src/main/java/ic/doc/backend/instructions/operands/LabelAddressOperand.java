@@ -1,4 +1,4 @@
-package ic.doc.backend.Instructions.operands;
+package ic.doc.backend.instructions.operands;
 
 /* e.g. =msg_0 */
 public class LabelAddressOperand extends AddressOperand {

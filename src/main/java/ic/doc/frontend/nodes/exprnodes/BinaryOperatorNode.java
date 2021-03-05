@@ -1,17 +1,17 @@
 package ic.doc.frontend.nodes.exprnodes;
 
-import static ic.doc.backend.Instructions.Branch.*;
-import static ic.doc.backend.Instructions.DataProcessing.*;
-import static ic.doc.backend.Instructions.Move.*;
-import static ic.doc.backend.Instructions.Stack.*;
-import static ic.doc.backend.Instructions.operands.PostIndexedAddressOperand.*;
+import static ic.doc.backend.instructions.Branch.*;
+import static ic.doc.backend.instructions.DataProcessing.*;
+import static ic.doc.backend.instructions.Move.*;
+import static ic.doc.backend.instructions.Stack.*;
+import static ic.doc.backend.instructions.operands.PostIndexedAddressOperand.*;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Instructions.*;
-import ic.doc.backend.Instructions.operands.ImmediateOperand;
-import ic.doc.backend.Instructions.operands.Operand;
-import ic.doc.backend.Instructions.operands.PostIndexedAddressOperand;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.*;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.Operand;
+import ic.doc.backend.instructions.operands.PostIndexedAddressOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.backend.PredefinedFunctions;
 import ic.doc.frontend.semantics.Visitor;

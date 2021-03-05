@@ -1,13 +1,11 @@
 package ic.doc.frontend.nodes.statnodes;
 
-import static ic.doc.backend.Instructions.Branch.B;
-import static ic.doc.backend.Instructions.Move.MOV;
+import static ic.doc.backend.instructions.Branch.B;
+import static ic.doc.backend.instructions.Move.MOV;
 
 import ic.doc.backend.Context;
-import ic.doc.backend.Instructions.Instruction;
-import ic.doc.backend.Instructions.Move;
-import ic.doc.backend.Instructions.Branch;
-import ic.doc.backend.Instructions.operands.RegisterOperand;
+import ic.doc.backend.instructions.Instruction;
+import ic.doc.backend.instructions.operands.RegisterOperand;
 
 import ic.doc.backend.Label;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
