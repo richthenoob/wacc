@@ -40,8 +40,17 @@ public class Context {
   private Map<String, SymbolTable> functionTables = new HashMap<>();
 
   /* -------------------------------- End Functions -------------------------------- */
+  /* A set of predefined functions. Compared based on function name. Guaranteed to be unique so we can use a set
+  * to check whether certain functions have already been added to the set */
   private final Set<Label<Instruction>> endFunctions = new HashSet<>();
+
+  /* List of data labels e.g. msg_3 etc*/
   private final List<Label<Data>> dataLabels = new ArrayList<>();
+
+  /* Map of dataPlaceholders currently in dataLabels
+  *  Maps the msg data to the label
+  *  e.g. <"%.*s\\0", "msg_3">
+  * */
   private final Map<String, String> dataPlaceHolders = new HashMap<>();
 
 
@@ -111,6 +120,7 @@ public class Context {
     return endFunctions;
   }
 
+  /* */
   public Label<Data> getSpecificLabel(String content) {
     for (Label<Data> data : dataLabels) {
       if (data.getFunctionLabel().equals(content)) {
@@ -120,20 +130,25 @@ public class Context {
     return null;
   }
 
+  /* Returns list of dataLabels */
   public List<Label<Data>> getDataLabels() {
     /* Use getNextDataLabelString() and addToDataLabels instead of
      * manipulating the list directly! */
     return dataLabels;
   }
 
+  /* Generates the next data label to be used
+   * e.g. if msg_6 is the latest data label, it will return msg_7 */
   public String getNextDataLabelString() {
     return "msg_" + dataLabels.size();
   }
 
+  /* Adds a data label to the list of data labels */
   public void addToDataLabels(Label<Data> dataLabel) {
     dataLabels.add(dataLabel);
   }
 
+  /* Returns map of data placeholders */
   public Map<String, String> getDataPlaceHolders() {
     return dataPlaceHolders;
   }
