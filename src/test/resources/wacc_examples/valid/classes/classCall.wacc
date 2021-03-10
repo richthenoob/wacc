@@ -1,7 +1,7 @@
 # a simple class is declared, but not called
 
 # Output:
-# #empty#
+# 10
 
 # Program:
 
@@ -10,10 +10,11 @@ begin
     int t,
     char c
     int f() is
-        return 0
+        return 10
     end
   }
-  c class1 = new c() ;
-  int i = 4 ;
-  i = call class1.f()
+  c class1 = new c();
+  int i = 4;
+  i = call class1.f();
+  println x
 end
