@@ -66,7 +66,6 @@ INTEGER: ('0'..'9')+;
 //class
 CLASS: 'class';
 NEW: 'new';
-CLASS_OBJECT: IDENT DOT IDENT;
 
 //func
 BEGIN: 'begin';

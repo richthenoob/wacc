@@ -11,15 +11,15 @@ options {
 /* ------------------------- PROGRAMS, CLASSES AND FUNCTIONS ------------------------- */
 prog: BEGIN (class_)* (func)* stat END EOF;
 
-class_: CLASS IDENT OPEN_CURLY_BRACES classEntry* CLOSE_CURLY_BRACES;
-
-classEntry: param (COMMA param)* | func;
+class_: CLASS IDENT OPEN_CURLY_BRACES (paramList (func)*) CLOSE_CURLY_BRACES;
 
 func: type IDENT OPEN_PARENTHESES paramList CLOSE_PARENTHESES IS stat END;
 
 paramList: param (COMMA param)* | ();
 
 param: type IDENT;
+
+classObject: IDENT DOT IDENT;
 
 /* ----------------------------------- STATEMENTS ----------------------------------- */
 stat: SKP                                                         #skip
@@ -42,7 +42,7 @@ stat: SKP                                                         #skip
 assignLhs: IDENT
 | arrayElem
 | pairElem
-| CLASS_OBJECT
+| classObject
 ;
 
 assignRhs: expr                                               #exprDup
@@ -50,7 +50,7 @@ assignRhs: expr                                               #exprDup
 | NEWPAIR OPEN_PARENTHESES expr COMMA expr CLOSE_PARENTHESES  #newPair
 | pairElem                                                    #pairElemDup
 | CALL IDENT OPEN_PARENTHESES argList CLOSE_PARENTHESES       #call
-| CALL CLASS_OBJECT OPEN_PARENTHESES CLOSE_PARENTHESES         #callClassFunction
+| CALL classObject OPEN_PARENTHESES CLOSE_PARENTHESES         #callClassFunction
 ;
 
 argList: expr (COMMA expr)* | ();
@@ -94,7 +94,7 @@ expr: expr (MUL | DIV | MOD) expr                             #binOp1Application
 | arrayElem                                                   #arrayElemDup
 | (NOT | MINUS | LEN | ORD | CHR) expr                        #unOpApplication
 | OPEN_PARENTHESES expr CLOSE_PARENTHESES                     #brackets
-| CLASS_OBJECT                                                 #classVariable
+| classObject                                                 #classVariable
 ;
 
 /* Numbers */

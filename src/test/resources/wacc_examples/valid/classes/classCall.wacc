@@ -12,8 +12,8 @@ begin
     int f() is
         return 0
     end
-    bool b
   }
   c class1 = new c() ;
-  int i = class1.f()
+  int i = 4 ;
+  i = call class1.f()
 end
