@@ -283,7 +283,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       type = ((TypeNode) functionType).getType();
     }
 
-    FunctionReturnNode node = new FunctionReturnNode((ExprNode) visit(ctx.expr()), functionName, type);
+    FunctionReturnNode node =
+        new FunctionReturnNode((ExprNode) visit(ctx.expr()), functionName, type);
     node.check(this, ctx);
     return node;
   }
@@ -509,30 +510,43 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   @Override
   public Node visitUnOpApplication(BasicParser.UnOpApplicationContext ctx) {
 
+    ExprNode exprNode = (ExprNode) visit(ctx.expr());
+
     /* Determine operator. */
     UnaryOperators operator;
     TerminalNode typeNode = (TerminalNode) ctx.getChild(0);
     switch (typeNode.getSymbol().getType()) {
       case BasicLexer.NOT:
         operator = UnaryOperators.LOGICAL_NOT;
+        if (exprNode instanceof BooleanLiteralNode) {
+          return new BooleanLiteralNode(!((BooleanLiteralNode) exprNode).getValue());
+        }
         break;
       case BasicLexer.MINUS:
         operator = UnaryOperators.MATH_NEGATION;
+        if (exprNode instanceof IntLiteralNode) {
+          return new IntLiteralNode(((IntLiteralNode) exprNode).getValue() * -1);
+        }
         break;
       case BasicLexer.LEN:
         operator = UnaryOperators.LEN;
         break;
       case BasicLexer.ORD:
         operator = UnaryOperators.ORD;
+        if (exprNode instanceof CharacterLiteralNode) {
+          return new IntLiteralNode((long) ((int) ((CharacterLiteralNode) exprNode).getValue()));
+        }
         break;
       case BasicLexer.CHR:
         operator = UnaryOperators.CHR;
+        if (exprNode instanceof IntLiteralNode) {
+          return new CharacterLiteralNode((char) ((IntLiteralNode) exprNode).getValue().intValue());
+        }
         break;
       default:
         throw new IllegalStateException("Invalid operator passed to" + "Unary Operator context!");
     }
 
-    ExprNode exprNode = (ExprNode) visit(ctx.expr());
     UnaryOperatorNode unaryOperatorNode = new UnaryOperatorNode(operator, exprNode);
 
     unaryOperatorNode.check(this, ctx);
@@ -608,6 +622,21 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode leftExpr = (ExprNode) visit(ctx.expr(0));
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
+    // If both are literals, just evaluate immediately
+    if (leftExpr instanceof IntLiteralNode && rightExpr instanceof IntLiteralNode) {
+      switch (typeNode.getSymbol().getType()) {
+        case BasicLexer.MUL:
+          return new IntLiteralNode(
+              ((IntLiteralNode) leftExpr).getValue() * ((IntLiteralNode) rightExpr).getValue());
+        case BasicLexer.DIV:
+          return new IntLiteralNode(
+              ((IntLiteralNode) leftExpr).getValue() / ((IntLiteralNode) rightExpr).getValue());
+        default:
+          return new IntLiteralNode(
+              ((IntLiteralNode) leftExpr).getValue() % ((IntLiteralNode) rightExpr).getValue());
+      }
+    }
+
     BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator, leftExpr, rightExpr);
 
     binaryOperatorNode.check(this, ctx);
@@ -629,15 +658,22 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       case BasicLexer.MINUS:
         operator = BinaryOperators.MINUS;
         break;
-      case BasicLexer.MOD:
-        operator = BinaryOperators.MOD;
-        break;
       default:
         throw new IllegalStateException("Invalid operator passed to" + "binOp1 context!");
     }
 
     ExprNode leftExpr = (ExprNode) visit(ctx.expr(0));
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
+
+    // If both are literals, just evaluate immediately
+    if (leftExpr instanceof IntLiteralNode && rightExpr instanceof IntLiteralNode) {
+      if (typeNode.getSymbol().getType() == BasicLexer.PLUS) {
+        return new IntLiteralNode(
+            ((IntLiteralNode) leftExpr).getValue() + ((IntLiteralNode) rightExpr).getValue());
+      }
+      return new IntLiteralNode(
+          ((IntLiteralNode) leftExpr).getValue() - ((IntLiteralNode) rightExpr).getValue());
+    }
 
     BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator, leftExpr, rightExpr);
 
@@ -672,6 +708,46 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     ExprNode leftExpr = (ExprNode) visit(ctx.expr(0));
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
+
+    // If both are literals, just evaluate immediately
+    if (leftExpr instanceof IntLiteralNode && rightExpr instanceof IntLiteralNode) {
+      switch (typeNode.getSymbol().getType()) {
+        case BasicLexer.GT:
+          return new BooleanLiteralNode(
+              ((IntLiteralNode) leftExpr).getValue() > ((IntLiteralNode) rightExpr).getValue());
+        case BasicLexer.GTE:
+          return new BooleanLiteralNode(
+              ((IntLiteralNode) leftExpr).getValue() >= ((IntLiteralNode) rightExpr).getValue());
+        case BasicLexer.LT:
+          return new BooleanLiteralNode(
+              ((IntLiteralNode) leftExpr).getValue() < ((IntLiteralNode) rightExpr).getValue());
+        default:
+          return new BooleanLiteralNode(
+              ((IntLiteralNode) leftExpr).getValue() <= ((IntLiteralNode) rightExpr).getValue());
+      }
+    }
+
+    // If both are literals, just evaluate immediately
+    if (leftExpr instanceof CharacterLiteralNode && rightExpr instanceof CharacterLiteralNode) {
+      switch (typeNode.getSymbol().getType()) {
+        case BasicLexer.GT:
+          return new BooleanLiteralNode(
+              ((CharacterLiteralNode) leftExpr).getValue()
+                  > ((CharacterLiteralNode) rightExpr).getValue());
+        case BasicLexer.GTE:
+          return new BooleanLiteralNode(
+              ((CharacterLiteralNode) leftExpr).getValue()
+                  >= ((CharacterLiteralNode) rightExpr).getValue());
+        case BasicLexer.LT:
+          return new BooleanLiteralNode(
+              ((CharacterLiteralNode) leftExpr).getValue()
+                  < ((CharacterLiteralNode) rightExpr).getValue());
+        default:
+          return new BooleanLiteralNode(
+              ((CharacterLiteralNode) leftExpr).getValue()
+                  <= ((CharacterLiteralNode) rightExpr).getValue());
+      }
+    }
 
     BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator, leftExpr, rightExpr);
 
@@ -721,6 +797,13 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode leftExpr = (ExprNode) visit(ctx.expr(0));
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
+    // If both are literals, just evaluate immediately
+    if (leftExpr instanceof BooleanLiteralNode && rightExpr instanceof BooleanLiteralNode) {
+      return new BooleanLiteralNode(
+          ((BooleanLiteralNode) leftExpr).getValue()
+              && ((BooleanLiteralNode) rightExpr).getValue());
+    }
+
     BinaryOperatorNode binaryOperatorNode =
         new BinaryOperatorNode(BinaryOperators.AND, leftExpr, rightExpr);
 
@@ -733,7 +816,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   Creates a binary operator node*/
   @Override
   public Node visitBinOp6Application(BinOp6ApplicationContext ctx) {
-    /* Only one operator with precedence 5 : AND. */
+    /* Only one operator with precedence 6 : OR. */
     TerminalNode typeNode = (TerminalNode) ctx.getChild(1);
     if (typeNode.getSymbol().getType() != BasicLexer.OR) {
       throw new IllegalStateException("Invalid operator passed to" + "binOp1 context!");
@@ -741,6 +824,13 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     ExprNode leftExpr = (ExprNode) visit(ctx.expr(0));
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
+
+    // If both are literals, just evaluate immediately
+    if (leftExpr instanceof BooleanLiteralNode && rightExpr instanceof BooleanLiteralNode) {
+      return new BooleanLiteralNode(
+          ((BooleanLiteralNode) leftExpr).getValue()
+              || ((BooleanLiteralNode) rightExpr).getValue());
+    }
 
     BinaryOperatorNode binaryOperatorNode =
         new BinaryOperatorNode(BinaryOperators.OR, leftExpr, rightExpr);
