@@ -12,6 +12,7 @@ begin
     int f() is
         return 0
     end
+    bool b
   }
   skip
 end
