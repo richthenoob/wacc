@@ -1,4 +1,4 @@
-# a simple class is declared, but not called
+# a simple class is declared, instantiated, and reassigned
 
 # Output:
 # #empty#
@@ -7,11 +7,7 @@
 
 begin
   class c {
-    int t,
-    char c
-    int f() is
-        return 0
-    end
+    int t
   }
   c class1 = new c() ;
   c class2 = class1 ;
