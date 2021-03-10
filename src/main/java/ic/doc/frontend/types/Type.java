@@ -18,6 +18,11 @@ public abstract class Type {
       return true;
     }
 
+    if (t1 instanceof ClassType && t2 instanceof ClassType) {
+      return ((ClassType) t1).getClassName()
+          .equals(((ClassType) t2).getClassName());
+    }
+
     if (t1 instanceof ArrayType && t2 instanceof ArrayType) {
       ArrayType a1 = (ArrayType) t1;
       ArrayType a2 = (ArrayType) t2;
@@ -34,7 +39,8 @@ public abstract class Type {
     return t1.getClass().equals(t2.getClass());
   }
 
-  public static boolean checkTypeListCompatibility(List<Type> t1s, List<Type> t2s) {
+  public static boolean checkTypeListCompatibility(List<Type> t1s,
+      List<Type> t2s) {
     if (t1s.size() != t2s.size()) {
       return false;
     }
