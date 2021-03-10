@@ -1,0 +1,17 @@
+# a simple class is declared, but not called
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c
+    int f() is
+        return 0
+    end
+  }
+  skip
+end

@@ -1,0 +1,20 @@
+# a simple class is declared, but not called
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c
+    int f() is
+        return 0
+    end
+  }
+  c class1 = new c() ;
+  c class2 = class1 ;
+  c class3 = new c() ;
+  class3 = class1
+end
