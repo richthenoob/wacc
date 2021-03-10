@@ -22,35 +22,34 @@ public class WaccBackend {
 
     /* Peephole Optimization */
     for (Label<Instruction> instructionLabel : instructionLabels) {
-      List<Instruction> optimizedInstructions = new ArrayList<>();
-      Instruction prevInstruction = instructionLabel.getBody().get(0);
-      for (Instruction instruction : instructionLabel.getBody()) {
+      if (!instructionLabel.getBody().isEmpty()) {
+        List<Instruction> optimizedInstructions = new ArrayList<>();
+        Instruction prevInstruction = instructionLabel.getBody().get(0);
+        for (Instruction instruction : instructionLabel.getBody()) {
 
-        /* Remove redundant moves eg: MOV r1,r2 followed by MOV r2,r1 */
-        if (prevInstruction instanceof Move && instruction instanceof Move) {
-          /* If not optimizable then add to new List */
-          if (!((Move) instruction).optimizable((Move) prevInstruction)) {
+          /* Remove redundant moves eg: MOV r1,r2 followed by MOV r2,r1 */
+          if (prevInstruction instanceof Move && instruction instanceof Move) {
+            /* If not optimizable then add to new List */
+            if (!((Move) instruction).optimizable((Move) prevInstruction)) {
+              optimizedInstructions.add(instruction);
+            }
+          }
+          /* Remove redundant Load after Store eg STR r1, [sp] followed by LDR r1, [sp] */
+          else if (prevInstruction instanceof SingleDataTransfer
+              && instruction instanceof SingleDataTransfer) {
+            /* If not optimizable then add to new List */
+            if (!((SingleDataTransfer) instruction)
+                .optimizable((SingleDataTransfer) prevInstruction)) {
+              optimizedInstructions.add(instruction);
+            }
+          } else {
             optimizedInstructions.add(instruction);
           }
+          prevInstruction = instruction;
         }
-        /* Remove redundant Load after Store eg STR r1, [sp] followed by LDR r1, [sp] */
-        else if (prevInstruction instanceof SingleDataTransfer
-            && instruction instanceof SingleDataTransfer) {
-          /* If not optimizable then add to new List */
-          if (!((SingleDataTransfer) instruction)
-              .optimizable((SingleDataTransfer) prevInstruction)) {
-            optimizedInstructions.add(instruction);
-          }
-        }
-
-        else {
-          optimizedInstructions.add(instruction);
-        }
-        prevInstruction = instruction;
+        instructionLabel.setBody(optimizedInstructions);
       }
-      instructionLabel.setBody(optimizedInstructions);
     }
-
     /* Build .data section. */
     outputString.append(".data\n");
 
