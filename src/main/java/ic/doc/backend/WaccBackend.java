@@ -22,7 +22,7 @@ public class WaccBackend {
 
     /* Peephole Optimization */
     for (Label<Instruction> instructionLabel : instructionLabels) {
-      List<Instruction> optimizedInstructionLabels = new ArrayList<>();
+      List<Instruction> optimizedInstructions = new ArrayList<>();
       Instruction prevInstruction = instructionLabel.getBody().get(0);
       for (Instruction instruction : instructionLabel.getBody()) {
 
@@ -30,21 +30,25 @@ public class WaccBackend {
         if (prevInstruction instanceof Move && instruction instanceof Move) {
           /* If not optimizable then add to new List */
           if (!((Move) instruction).optimizable((Move) prevInstruction)) {
-            optimizedInstructionLabels.add(instruction);
+            optimizedInstructions.add(instruction);
           }
         }
         /* Remove redundant Load after Store eg STR r1, [sp] followed by LDR r1, [sp] */
-        if (prevInstruction instanceof SingleDataTransfer
+        else if (prevInstruction instanceof SingleDataTransfer
             && instruction instanceof SingleDataTransfer) {
           /* If not optimizable then add to new List */
           if (!((SingleDataTransfer) instruction)
               .optimizable((SingleDataTransfer) prevInstruction)) {
-            optimizedInstructionLabels.add(instruction);
+            optimizedInstructions.add(instruction);
           }
+        }
+
+        else {
+          optimizedInstructions.add(instruction);
         }
         prevInstruction = instruction;
       }
-      instructionLabel.setBody(optimizedInstructionLabels);
+      instructionLabel.setBody(optimizedInstructions);
     }
 
     /* Build .data section. */
