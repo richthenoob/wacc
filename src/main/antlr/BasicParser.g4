@@ -42,7 +42,7 @@ stat: SKP                                                         #skip
 assignLhs: IDENT
 | arrayElem
 | pairElem
-| classObject
+| CLASS_OBJECT
 ;
 
 assignRhs: expr                                               #exprDup
@@ -50,7 +50,7 @@ assignRhs: expr                                               #exprDup
 | NEWPAIR OPEN_PARENTHESES expr COMMA expr CLOSE_PARENTHESES  #newPair
 | pairElem                                                    #pairElemDup
 | CALL IDENT OPEN_PARENTHESES argList CLOSE_PARENTHESES       #call
-| CALL classObject OPEN_PARENTHESES CLOSE_PARENTHESES         #callClassFunction
+| CALL CLASS_OBJECT OPEN_PARENTHESES CLOSE_PARENTHESES         #callClassFunction
 ;
 
 argList: expr (COMMA expr)* | ();
@@ -58,8 +58,6 @@ argList: expr (COMMA expr)* | ();
 pairElem: FST expr #fstPairElem
 | SND expr         #sndPairElem
 ;
-
-classObject: IDENT DOT IDENT;
 
 /* ------------------------------------- TYPES ------------------------------------- */
 type: baseType                          #baseTypeDup
@@ -96,7 +94,7 @@ expr: expr (MUL | DIV | MOD) expr                             #binOp1Application
 | arrayElem                                                   #arrayElemDup
 | (NOT | MINUS | LEN | ORD | CHR) expr                        #unOpApplication
 | OPEN_PARENTHESES expr CLOSE_PARENTHESES                     #brackets
-| classObject                                                 #classVariable
+| CLASS_OBJECT                                                 #classVariable
 ;
 
 /* Numbers */
