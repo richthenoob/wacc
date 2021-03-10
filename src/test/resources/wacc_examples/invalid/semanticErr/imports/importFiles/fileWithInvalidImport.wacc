@@ -1,0 +1,4 @@
+begin
+    include "filenothere.wacc"
+    skip
+end
