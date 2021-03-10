@@ -777,6 +777,24 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode leftExpr = (ExprNode) visit(ctx.expr(0));
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
+    if (leftExpr instanceof PairLiteralNode && rightExpr instanceof PairLiteralNode) {
+      return new BooleanLiteralNode(true);
+    }
+
+    // If both are literals, just evaluate immediately
+    if (leftExpr instanceof BasicLiteralNode && rightExpr instanceof BasicLiteralNode) {
+      if (typeNode.getSymbol().getType() == BasicLexer.EQ) {
+        return new BooleanLiteralNode(
+            ((BasicLiteralNode) leftExpr)
+                .getValue()
+                .equals(((BasicLiteralNode) rightExpr).getValue()));
+      }
+      return new BooleanLiteralNode(
+          !(((BasicLiteralNode) leftExpr)
+              .getValue()
+              .equals(((BasicLiteralNode) rightExpr).getValue())));
+    }
+
     BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator, leftExpr, rightExpr);
 
     binaryOperatorNode.check(this, ctx);
