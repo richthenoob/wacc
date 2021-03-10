@@ -1,0 +1,4 @@
+begin
+    include test1.wacc
+    skip
+end

@@ -1,0 +1,4 @@
+begin
+    include "test1.wac"
+    skip
+end

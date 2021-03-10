@@ -74,7 +74,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         List<BasicParser.FuncContext> funcCtxs = magicallyParse(file);
         importFunctions.addAll(funcCtxs);
       } catch(IOException e){
-
+        semanticErrorList.addException(ctx, e.getMessage());
       }
     }
 

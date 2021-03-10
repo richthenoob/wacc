@@ -67,7 +67,7 @@ public abstract class AbstractFrontendTest {
         TestUtils.EXAMPLES_DIR + testFilepath);
 
     try {
-      rootNode = WaccFrontend.parse(inputStream);
+      rootNode = WaccFrontend.parse(testFilepath, inputStream);
     } catch (SyntaxException e) {
       rootNode = null;
       frontendExitCode = SYNTAX_EXIT_CODE;
