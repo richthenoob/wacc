@@ -43,6 +43,17 @@ public class Move extends Instruction {
     return new Move(dst, src, Condition.B);
   }
 
+  public boolean normalMOV() {
+    return condition.equals(Condition.B);
+  }
+
+  /* Used for optimization */
+  public boolean optimizable(Move prev) {
+    Operand fst = prev.dst;
+    Operand snd = prev.src;
+    return (fst.equals(this.src) && snd.equals(this.dst) && prev.normalMOV() && normalMOV());
+  }
+
   @Override
   public String toAssembly() {
     switch (condition) {
