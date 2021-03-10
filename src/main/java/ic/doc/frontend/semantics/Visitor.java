@@ -18,11 +18,15 @@ import ic.doc.frontend.nodes.statnodes.*;
 import ic.doc.frontend.types.*;
 
 import ic.doc.frontend.nodes.TypeNode;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
+
+import static ic.doc.frontend.nodes.ImportVisitorNode.magicallyParse;
 
 public class Visitor extends BasicParserBaseVisitor<Node> {
 
@@ -38,6 +42,12 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return semanticErrorList;
   }
 
+  String baseDirectory;
+
+  public Visitor(String baseDirectory){
+    this.baseDirectory = baseDirectory;
+  }
+
   /* Called once at the start of any program eg. begin FUNCTIONS STATEMENT end
   Initialises symbol table an semantic list */
   @Override
@@ -45,12 +55,42 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     currentSymbolTable = new SymbolTable(null);
     semanticErrorList =
         new SemanticErrorList(ctx.getStart().getInputStream().toString().split("\n"));
-
+    List<IncludeContext> includeCtxs = ctx.include();
     List<FuncContext> functionCtxs = ctx.func();
     List<FunctionNode> functionNodes = new ArrayList<>();
+
+    List<String> imports = new ArrayList<>();
+
+    for(IncludeContext i : includeCtxs){
+      ImportNode node = (ImportNode) visit(i);
+      String fileDirectory = baseDirectory + node.getFileName();
+      System.out.println(fileDirectory);
+      imports.add(fileDirectory);
+    }
+
+    List<FuncContext> importFunctions = new ArrayList<>();
+    for(String file : imports){
+      try {
+        List<BasicParser.FuncContext> funcCtxs = magicallyParse(file);
+        importFunctions.addAll(funcCtxs);
+      } catch(IOException e){
+
+      }
+    }
+
+    for (FuncContext f : importFunctions){
+      declareFunction(f);
+    }
+
     for (FuncContext f : functionCtxs) {
       declareFunction(f);
     }
+
+
+    for (FuncContext f : importFunctions){
+      functionNodes.add((FunctionNode) visit(f));
+    }
+
     for (FuncContext f : functionCtxs) {
       functionNodes.add((FunctionNode) visit(f));
     }
@@ -60,6 +100,13 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return new ProgNode(currentSymbolTable, functionNodes, statNode);
   }
 
+  @Override
+  public Node visitInclude(BasicParser.IncludeContext ctx) {
+    String fileName = ctx.FILE_NAME().getText();
+    /* Remove start and end quotes of file name */
+    fileName = fileName.substring(1, fileName.length() - 1);
+    return new ImportNode(fileName);
+  }
   /* Helper function to called to declare functions, adds to symbol table if function name is not already defined */
   private void declareFunction(BasicParser.FuncContext ctx) {
     if (!ctx.IDENT().getText().equals("main")) {

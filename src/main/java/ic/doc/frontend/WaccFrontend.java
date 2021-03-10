@@ -25,7 +25,7 @@ public class WaccFrontend {
   public static final Integer SYNTAX_EXIT_CODE = 100;
   public static final Integer SEMANTIC_EXIT_CODE = 200;
 
-  public static ProgNode parse(InputStream inputStream) throws IOException {
+  public static ProgNode parse(String baseFile, InputStream inputStream) throws IOException {
 
     CharStream charStream = CharStreams.fromStream(inputStream);
 
@@ -45,7 +45,21 @@ public class WaccFrontend {
     /* Begin parsing at prog rule */
     ParseTree tree = parser.prog();
 
-    Visitor visitor = new Visitor();
+    /* baseDirectory */
+    int idx = 0;
+    for(int i = baseFile.length() - 1; i >= 0; i--){
+      char c = baseFile.charAt(i);
+      if(c == '/'){
+        idx = i;
+        break;
+      }
+    }
+    /* idx + 1 because we want to include the / */
+    String baseDirectory = baseFile.substring(0, idx);
+    if(baseDirectory.length() != 0){
+      baseDirectory = baseDirectory + "/";
+    }
+    Visitor visitor = new Visitor(baseDirectory);
     ProgNode rootNode = (ProgNode) visitor.visit(tree);
 
     if (!visitor.getSemanticErrorList().getSemanticErrors().isEmpty()) {
@@ -74,11 +88,12 @@ public class WaccFrontend {
 
     /* Check file exists before passing filestream to our lexer and parser */
     String filename = args[0];
+    System.out.println(filename);
     File file = new File(filename);
     if (file.exists()) {
       InputStream inputStream = new FileInputStream(file);
       try {
-        ProgNode rootNode = parse(inputStream);
+        ProgNode rootNode = parse(filename, inputStream);
         String output = WaccBackend.generateCode(rootNode);
         /* Strips .wacc file extension and adds .s before writing to file. */
         Path p = Paths.get(filename);
