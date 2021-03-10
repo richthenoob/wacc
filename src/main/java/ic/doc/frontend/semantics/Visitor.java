@@ -629,8 +629,11 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
           return new IntLiteralNode(
               ((IntLiteralNode) leftExpr).getValue() * ((IntLiteralNode) rightExpr).getValue());
         case BasicLexer.DIV:
-          return new IntLiteralNode(
-              ((IntLiteralNode) leftExpr).getValue() / ((IntLiteralNode) rightExpr).getValue());
+          if (((IntLiteralNode) rightExpr).getValue() != 0) {
+            return new IntLiteralNode(
+                ((IntLiteralNode) leftExpr).getValue() / ((IntLiteralNode) rightExpr).getValue());
+          }
+          break;
         default:
           return new IntLiteralNode(
               ((IntLiteralNode) leftExpr).getValue() % ((IntLiteralNode) rightExpr).getValue());
