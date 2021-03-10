@@ -129,8 +129,50 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return new ParamNode(type, ctx.IDENT().getText());
   }
 
+  /* ---------------- CLASS RELATED VISITS START ---------------- */
+  @Override
+  public Node visitClass_(Class_Context ctx) {
+    // Add this class to parent symbol table (new class identifier)
+    // create new symbolTable for class, set currentSymbolTable to new symboltable
+    // Go through each classEntry in ctx and visit them;
+    // add nodes returned to classFields and classFunctions
+    // size of class should be calculated "automatically" when we visit
+    // paramlist node
+    // must we increment size of class when we add functions? >> depends on
+    // code generation probably
+    throw new IllegalStateException("visitClass_ not implemented");
+  }
+
+  /* Called when a new class declaration statement is reached,
+   * e.g. ClassA myInstance = new ClassA() */
+  @Override
+  public Node visitDeclareNewClass(DeclareNewClassContext ctx) {
+    // create 3x new ident nodes and visit them
+    throw new IllegalStateException("visitDeclareNewClass not implemented.");
+  }
+
+  @Override
+  public Node visitAssignNewClass(AssignNewClassContext ctx) {
+    // TODO: implement
+    throw new IllegalStateException("visitAssignNewClass not implemented.");
+  }
+
+  @Override
+  public Node visitCallClassFunction(CallClassFunctionContext ctx) {
+    // TODO: implement
+    throw new IllegalStateException("visitCallClassFunction not implemented.");
+  }
+
+  @Override
+  public Node visitClassVariable(ClassVariableContext ctx) {
+    // TODO: implement
+    throw new IllegalStateException("visitClassVariable not implemented.");
+  }
+
+  /* ---------------- CLASS RELATED VISITS END ---------------- */
+
   /* Called when declaring a variable while assigning it to a value. eg. int i = 5
-  Adds variable to symbol table if not already defined in current scope and creates an assignment node */
+    Adds variable to symbol table if not already defined in current scope and creates an assignment node */
   @Override
   public Node visitDeclarativeAssignment(BasicParser.DeclarativeAssignmentContext ctx) {
     Type type = ((TypeNode) visit(ctx.type())).getType();
