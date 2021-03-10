@@ -8,8 +8,10 @@ options {
   tokenVocab=BasicLexer;
 }
 
-/* ----------------------------- PROGRAMS AND FUNCTIONS ----------------------------- */
-prog: BEGIN (func)* stat END EOF;
+/* ----------------------------- PROGRAMS, IMPORTS AND FUNCTIONS ----------------------------- */
+prog: BEGIN (include)* (func)* stat END EOF;
+
+include: INCLUDE FILE_NAME;
 
 func: type IDENT OPEN_PARENTHESES paramList CLOSE_PARENTHESES IS stat END;
 
