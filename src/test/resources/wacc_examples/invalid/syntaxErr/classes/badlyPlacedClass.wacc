@@ -1,0 +1,15 @@
+# class placed after function
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  int f() is
+      return 42
+  end
+  class c {
+    int t
+  }
+end

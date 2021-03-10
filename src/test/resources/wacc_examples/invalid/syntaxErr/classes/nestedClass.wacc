@@ -1,0 +1,13 @@
+# second class declared inside first
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  class c {
+    class b {
+    }
+  }
+end

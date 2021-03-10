@@ -1,0 +1,13 @@
+# missing () at end of class initialization
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  class c {
+    int t
+  }
+  c class1 = new c
+end

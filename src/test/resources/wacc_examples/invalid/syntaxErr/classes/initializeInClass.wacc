@@ -1,0 +1,12 @@
+# variables should not be initialized in classes
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  class c {
+    int t = 5
+  }
+end
