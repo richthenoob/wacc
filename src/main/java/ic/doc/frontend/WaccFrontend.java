@@ -54,7 +54,7 @@ public class WaccFrontend {
         break;
       }
     }
-    /* idx + 1 because we want to include the / */
+
     String baseDirectory = baseFile.substring(0, idx);
     if(baseDirectory.length() != 0){
       baseDirectory = baseDirectory + "/";

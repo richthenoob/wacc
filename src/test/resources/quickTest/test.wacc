@@ -1,3 +1,5 @@
 begin
-  int i = 0
+  include "importFiles/hello.wacc"
+  int j = call foo();
+  println j
 end
