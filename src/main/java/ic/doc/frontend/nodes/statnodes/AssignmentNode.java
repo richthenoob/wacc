@@ -14,6 +14,7 @@ import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.nodes.exprnodes.PairElementNode;
 import ic.doc.frontend.nodes.exprnodes.VariableNode;
 import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.*;
@@ -53,7 +54,7 @@ public class AssignmentNode extends StatNode {
     if (isDeclaration) {
       VariableNode lhsVar = (VariableNode) lhs;
       String name = lhsVar.getName();
-      SymbolKey key = new SymbolKey(name, false);
+      SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
       /* If node corresponds to declarative assignment,
       variable must not have been already defined earlier */
       if (symbolTable.lookup(key) != null) {
@@ -227,7 +228,7 @@ public class AssignmentNode extends StatNode {
      * the AST. */
     VariableNode lhsVar = (VariableNode) lhs;
     String name = lhsVar.getName();
-    SymbolKey key = new SymbolKey(name, false);
+    SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
     VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
 
     /* Regardless of type, we need to increment offsets in this scope,
@@ -264,7 +265,7 @@ public class AssignmentNode extends StatNode {
     if (lhs instanceof PairElementNode) {
       VariableNode lhsVar = (VariableNode) ((PairElementNode) lhs).getExpr();
       String name = lhsVar.getName();
-      SymbolKey key = new SymbolKey(name, false);
+      SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
       return id.getOffsetStack(symbolTable, key);
     }
@@ -273,7 +274,7 @@ public class AssignmentNode extends StatNode {
      * this variable on the stack. */
     VariableNode lhsVar = (VariableNode) lhs;
     String name = lhsVar.getName();
-    SymbolKey key = new SymbolKey(name, false);
+    SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
     VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
     return id.getOffsetStack(context.getCurrentSymbolTable(), key);
   }

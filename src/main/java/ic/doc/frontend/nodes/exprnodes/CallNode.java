@@ -13,6 +13,7 @@ import ic.doc.frontend.identifiers.FunctionIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.nodes.ArgListNode;
 import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.BoolType;
@@ -35,7 +36,7 @@ public class CallNode extends ExprNode {
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     String functionName = identifier;
-    SymbolKey key = new SymbolKey(functionName, true);
+    SymbolKey key = new SymbolKey(functionName, KeyTypes.FUNCTION);
     Identifier id = visitor.getCurrentSymbolTable().lookupAll(key);
 
     if (id == null) {

@@ -8,6 +8,7 @@ import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ErrorType;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -31,7 +32,7 @@ public class VariableNode extends ExprNode {
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-    SymbolKey key = new SymbolKey(getName(), false);
+    SymbolKey key = new SymbolKey(getName(), KeyTypes.VARIABLE);
     /* Checks if name was defined in symbol table */
     Identifier id = visitor.getCurrentSymbolTable().lookupAll(key);
     if (id == null) {
@@ -50,7 +51,7 @@ public class VariableNode extends ExprNode {
     setRegister(register);
 
     /* Obtain stack offset of value of variable from entry in symbol table. */
-    SymbolKey key = new SymbolKey(getName(), false);
+    SymbolKey key = new SymbolKey(getName(), KeyTypes.VARIABLE);
     VariableIdentifier id = (VariableIdentifier) context.getCurrentSymbolTable().lookupAll(key);
     int offset = id.getOffsetStack(context.getCurrentSymbolTable(), key);
 

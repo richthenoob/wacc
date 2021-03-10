@@ -11,6 +11,7 @@ import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.Literals.IntLiteralNode;
 import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ArrayType;
@@ -54,7 +55,7 @@ public class ArrayElementNode extends ExprNode {
     }
 
     /* Identifier checks. */
-    SymbolKey key = new SymbolKey(identNode.getName(), false);
+    SymbolKey key = new SymbolKey(identNode.getName(), KeyTypes.VARIABLE);
     Identifier entry = visitor.getCurrentSymbolTable().lookupAll(key);
     if (entry == null) {
       isErrored = true;
@@ -118,7 +119,7 @@ public class ArrayElementNode extends ExprNode {
     /* Find stack offset for array pointer */
     VariableNode lhsVar = array.getIdentNode();
     String name = lhsVar.getName();
-    SymbolKey key = new SymbolKey(name, false);
+    SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
     VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
     int offsetArray = id.getOffsetStack(symbolTable, key);
 
@@ -149,7 +150,7 @@ public class ArrayElementNode extends ExprNode {
       } else {
         /* Find offset of index pointer if its a variable */
         String indexVarName = arrays.get(i).getInput();
-        SymbolKey indexVarkey = new SymbolKey(indexVarName, false);
+        SymbolKey indexVarkey = new SymbolKey(indexVarName, KeyTypes.VARIABLE);
         VariableIdentifier indexId = (VariableIdentifier) symbolTable
             .lookupAll(indexVarkey);
         int offset = indexId.getOffsetStack(symbolTable, indexVarkey);

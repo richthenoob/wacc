@@ -15,6 +15,7 @@ import ic.doc.frontend.nodes.exprnodes.UnaryOperatorNode.UnaryOperators;
 import ic.doc.frontend.identifiers.*;
 import ic.doc.frontend.nodes.*;
 import ic.doc.frontend.nodes.statnodes.*;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.types.*;
 
 import ic.doc.frontend.nodes.TypeNode;
@@ -68,7 +69,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
       ParamListNode paramList = (ParamListNode) visit(ctx.paramList());
 
-      SymbolKey key = new SymbolKey(funcName, true);
+      SymbolKey key = new SymbolKey(funcName, KeyTypes.FUNCTION);
       if (currentSymbolTable.lookup(key) == null) {
         FunctionIdentifier id = new FunctionIdentifier(returnType, paramList.getType());
         currentSymbolTable.add(key, id);
@@ -95,7 +96,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       for (ParamNode p : params) {
         String name = p.getInput();
         Type type = p.getType();
-        SymbolKey key = new SymbolKey(name, false);
+        SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
         currentSymbolTable.add(key, new VariableIdentifier(type));
       }
       StatNode stat = (StatNode) visit(ctx.stat());
