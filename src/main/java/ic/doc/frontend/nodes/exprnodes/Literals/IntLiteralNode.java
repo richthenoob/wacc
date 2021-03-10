@@ -11,7 +11,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Consists of a sequence of decimal digits, optionally preceded
  * by a '+' or a '-' symbol. */
-public class IntLiteralNode extends LiteralNode {
+public class IntLiteralNode extends BasicLiteralNode {
 
   /* Store a larger value than the WACC specification, in case we are passed in
    * a very large value. */
