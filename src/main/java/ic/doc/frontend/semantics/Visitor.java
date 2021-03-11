@@ -159,6 +159,12 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       if (currentSymbolTable.lookup(classKey) == null) {
         ClassIdentifier classIdentifier = new ClassIdentifier(className);
         currentSymbolTable.add(classKey, classIdentifier);
+
+        /* Pre-declare functions in this class. */
+        for (FuncContext func : ctx.func()) {
+          declareFunction(func);
+        }
+
       } else {
         semanticErrorList
             .addScopeException(ctx, true, "Class", "'" + className + "'");
@@ -174,11 +180,6 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     /* Go through declared functions and visit each of them; adding them
      * to a list so that the classNode contains this information. */
     List<FunctionNode> classFunctions = new ArrayList<>();
-
-    /* Pre-declare functions first  */
-    for (FuncContext func : ctx.func()) {
-      declareFunction(func);
-    }
 
     for (FuncContext func : ctx.func()) {
       classFunctions.add((FunctionNode) visit(func));
