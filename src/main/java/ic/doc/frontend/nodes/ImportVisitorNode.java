@@ -39,11 +39,10 @@ public class ImportVisitorNode extends Node {
     funcCtxs.add(ctx);
   }
 
-  public static List<BasicParser.FuncContext> magicallyParse(String filename) throws IOException {
-    System.out.println(filename);
+  public static List<BasicParser.FuncContext> magicallyParse(String filename) throws IOException, IllegalArgumentException {
     File file = new File(filename);
     if (!file.exists()){
-      throw new IOException(filename + "not found.");
+      throw new IllegalArgumentException(filename + "not found.");
     }
     InputStream inputStream = new FileInputStream(file);
     CharStream charStream = CharStreams.fromStream(inputStream);
@@ -73,13 +72,14 @@ public class ImportVisitorNode extends Node {
         break;
       }
     }
-    /* idx + 1 because we want to include the / */
+
     String baseDirectory = filename.substring(0, idx);
     if(baseDirectory.length() != 0){
       baseDirectory = baseDirectory + "/";
     }
     ImportVisitor visitor = new ImportVisitor(baseDirectory);
     ImportVisitorNode rootNode = (ImportVisitorNode) visitor.visit(tree);
+
     return rootNode.getFuncCtxs();
   }
 

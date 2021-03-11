@@ -20,7 +20,7 @@ public class ImportVisitor extends BasicParserBaseVisitor<Node> {
   }
 
   @Override
-  public Node visitProg(BasicParser.ProgContext ctx) {
+  public Node visitProg(BasicParser.ProgContext ctx) throws IllegalArgumentException {
     List<BasicParser.IncludeContext> includeCtxs = ctx.include();
     List<BasicParser.FuncContext> functionCtxs = ctx.func();
 
@@ -42,7 +42,7 @@ public class ImportVisitor extends BasicParserBaseVisitor<Node> {
           node.addFuncCtx(funcCtx);
         }
       } catch(IOException e){
-
+        throw new IllegalArgumentException("File not found");
       }
     }
 

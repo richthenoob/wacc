@@ -73,8 +73,10 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       try {
         List<BasicParser.FuncContext> funcCtxs = magicallyParse(file);
         importFunctions.addAll(funcCtxs);
-      } catch(IOException e){
+      } catch(IllegalArgumentException e){
         semanticErrorList.addException(ctx, e.getMessage());
+      } catch(IOException e){
+        // idk what to do here bro
       }
     }
 

@@ -20,7 +20,7 @@ public class InvalidSemanticImportsTest extends AbstractFrontendTest {
   @Tag("imports")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSemanticIfTests(String testName) {
+  public void invalidSemanticImportsTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }
