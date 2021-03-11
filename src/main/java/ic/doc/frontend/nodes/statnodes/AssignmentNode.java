@@ -48,6 +48,10 @@ public class AssignmentNode extends StatNode {
     return rhs;
   }
 
+  public SymbolTable getSymbolTable() {
+    return symbolTable;
+  }
+
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
 

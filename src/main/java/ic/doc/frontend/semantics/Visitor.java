@@ -179,24 +179,27 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   /* Called when a new class declaration statement is reached,
    * e.g. ClassA myInstance = new ClassA();
    *        |         |              |
-   *    classIdent classInstance  classIdent2  */
+   *    classIdentLHS classInstance  classIdentRHS  */
   @Override
   public Node visitDeclareNewClass(DeclareNewClassContext ctx) {
-    // create 3x new variable nodes and call check on classIdent and class Ident2
-    // no need to call check on myInstance since we don't want to check that it
-    // already exists
-    //
-    // add classInstance to current symbol table
-    //
-    // (do checks in ClassAssignmentNode, but they're just here for now)
-    // check typeof ident1 == typeof ident2 (look up symboltable and cmp type)
-    // check classInstance has not be declared before in symbol table
-    // (lookup once only, not lookupall)
-    //
-    // create ClassAssignmentNode, pass in
-    // "lhs" as classInstance, "rhs" as classIdent2,
-    // "isDeclaration" as true, "symbolTable" as the current symbol table,
-    // "classIdent" as classIdent
+    ClassVariableNode classIdentLHS =
+        new ClassVariableNode(ctx.IDENT(0).getText());
+    VariableNode classInstance = new VariableNode(ctx.IDENT(1).getText());
+    ClassVariableNode classIdentRHS =
+        new ClassVariableNode(ctx.IDENT(2).getText());
+
+    /* Ensures that these classes have been declared before. */
+    classIdentLHS.check(this, ctx);
+    classIdentRHS.check(this, ctx);
+
+    /* Construct ClassAssignmentNode and check that LHS and RHS refer to the
+     * same class, and that classInstance hasn't been declared before. */
+    ClassAssignmentNode classAssignmentNode =
+        new ClassAssignmentNode(classInstance, classIdentRHS, true,
+            getCurrentSymbolTable(), classIdentLHS);
+
+    classAssignmentNode.check(this, ctx);
+
     throw new IllegalStateException("visitDeclareNewClass not implemented.");
   }
 
