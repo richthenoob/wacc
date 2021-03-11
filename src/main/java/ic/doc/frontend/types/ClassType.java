@@ -21,6 +21,6 @@ public class ClassType extends Type {
 
   @Override
   public String toString() {
-    return CLASS_NAME + className;
+    return CLASS_NAME + " " + className;
   }
 }

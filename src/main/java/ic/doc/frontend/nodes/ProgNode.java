@@ -19,12 +19,15 @@ public class ProgNode extends Node {
 
   private final SymbolTable symbolTable;
   private final List<FunctionNode> functions;
+  private final List<ClassNode> classes;
   private final StatNode stat;
 
   public ProgNode(SymbolTable symbolTable,
-      List<FunctionNode> functions, StatNode stat) {
+      List<FunctionNode> functions,
+      List<ClassNode> classes, StatNode stat) {
     this.symbolTable = symbolTable;
     this.functions = functions;
+    this.classes = classes;
     this.stat = stat;
   }
 

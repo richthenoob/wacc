@@ -20,11 +20,8 @@ import ic.doc.frontend.types.*;
 
 import ic.doc.frontend.nodes.TypeNode;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import java.util.Map;
-import java.util.function.Function;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -42,8 +39,9 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return semanticErrorList;
   }
 
-  /* Called once at the start of any program eg. begin FUNCTIONS STATEMENT end
-  Initialises symbol table an semantic list */
+  /* Called once at the start of any program
+   * eg. begin CLASSES FUNCTIONS STATEMENT end
+   * Initialises symbol table an semantic list */
   @Override
   public Node visitProg(BasicParser.ProgContext ctx) {
     currentSymbolTable = new SymbolTable(null);
@@ -51,18 +49,30 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         new SemanticErrorList(
             ctx.getStart().getInputStream().toString().split("\n"));
 
+    /* First pre-declare any classes and functions in case there are
+     * mutually recursive classes/functions before actually visiting them. */
+    List<Class_Context> classContexts = ctx.class_();
     List<FuncContext> functionCtxs = ctx.func();
+    List<ClassNode> classNodes = new ArrayList<>();
+    for (Class_Context classContext : classContexts) {
+      declareClass(classContext);
+    }
     List<FunctionNode> functionNodes = new ArrayList<>();
     for (FuncContext f : functionCtxs) {
       declareFunction(f);
     }
+
+    /* Actually visit classes and functions */
     for (FuncContext f : functionCtxs) {
       functionNodes.add((FunctionNode) visit(f));
+    }
+    for (Class_Context classContext : classContexts) {
+      classNodes.add((ClassNode) visit(classContext));
     }
 
     StatNode statNode = (StatNode) visit(ctx.stat());
 
-    return new ProgNode(currentSymbolTable, functionNodes, statNode);
+    return new ProgNode(currentSymbolTable, functionNodes, classNodes, statNode);
   }
 
   /* Helper function to called to declare functions, adds to symbol table if function name is not already defined */
@@ -137,6 +147,24 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   }
 
   /* ---------------- CLASS RELATED VISITS START ---------------- */
+
+  private void declareClass(BasicParser.Class_Context ctx) {
+      String className = ctx.IDENT().toString();
+
+    /* Add class to the current symbol table. This symbol table
+     * should be the top level symbol table. */
+    assert(currentSymbolTable.getParentSymbolTable() == null);
+
+    SymbolKey classKey = new SymbolKey(className, KeyTypes.CLASS);
+      if (currentSymbolTable.lookup(classKey) == null) {
+        ClassIdentifier classIdentifier = new ClassIdentifier(className);
+        currentSymbolTable.add(classKey, classIdentifier);
+      } else {
+        semanticErrorList
+            .addScopeException(ctx, true, "Class", "'" + className + "'");
+      }
+  }
+
   @Override
   public Node visitClass_(Class_Context ctx) {
     /* Create new symbol table to store class information. */
@@ -144,34 +172,30 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     currentSymbolTable = classSymbolTable;
 
     /* Go through declared functions and visit each of them; adding them
-     * to a set so that the classNode contains this information. */
-    Map<String, FunctionNode> classFunctions = new HashMap<>();
+     * to a list so that the classNode contains this information. */
+    List<FunctionNode> classFunctions = new ArrayList<>();
+
+    /* Pre-declare functions first  */
     for (FuncContext func : ctx.func()) {
-      classFunctions.put(func.IDENT().getText(), (FunctionNode) visit(func));
+      declareFunction(func);
+    }
+
+    for (FuncContext func : ctx.func()) {
+      classFunctions.add((FunctionNode) visit(func));
     }
 
     /* Since we are using a paramList in the parser, we can call visitParamList
-     * to create a paramListNode for us. Then, extract the relevant
-     * String -> Type mapping and place it into a Map for the classNode
-     * to contain. */
-    Map<String, Type> classFields = new HashMap<>();
+     * to create a paramListNode for us. Then, pass this information
+     * to classNode. */
     ParamListNode paramListNode = (ParamListNode) visit(ctx.paramList());
-    for (ParamNode field : paramListNode.getParams()) {
-      classFields.put(field.getInput(), field.getType());
-    }
 
     /* Actually make the class node now that we have all the required information. */
     String className = ctx.IDENT().getText();
     ClassNode classNode = new ClassNode(className, classSymbolTable,
-        classFields, classFunctions);
-    classNode.check(this, ctx);
+        paramListNode.getParams(), classFunctions);
 
     currentSymbolTable = classNode.getClassSymbolTable().getParentSymbolTable();
-
-    /* Add class to the current symbol table (not its own symbol table!) */
-    ClassIdentifier classIdentifier = new ClassIdentifier(className, classNode);
-    SymbolKey classKey = new SymbolKey(className, KeyTypes.CLASS);
-    currentSymbolTable.add(classKey, classIdentifier);
+    classNode.check(this, ctx);
 
     return classNode;
   }
@@ -200,7 +224,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     classAssignmentNode.check(this, ctx);
 
-    throw new IllegalStateException("visitDeclareNewClass not implemented.");
+    return classAssignmentNode;
   }
 
   @Override

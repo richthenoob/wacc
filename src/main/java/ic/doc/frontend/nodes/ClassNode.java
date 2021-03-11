@@ -1,25 +1,26 @@
 package ic.doc.frontend.nodes;
 
 import ic.doc.backend.Context;
-import ic.doc.frontend.semantics.SymbolKey;
-import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
+
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
-import ic.doc.frontend.types.Type;
-import java.util.Map;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ClassNode extends Node {
 
   private final String className;
   private final SymbolTable classSymbolTable;
-  private final Map<String, Type> classFields;
-  private final Map<String, FunctionNode> classFunctions;
+  private final List<ParamNode> classFields;
+  private final List<FunctionNode> classFunctions;
 
   public ClassNode(String className,
       SymbolTable classSymbolTable,
-      Map<String, Type> classFields,
-      Map<String, FunctionNode> classFunctions) {
+      List<ParamNode> classFields,
+      List<FunctionNode> classFunctions) {
     this.className = className;
     this.classSymbolTable = classSymbolTable;
     this.classFields = classFields;
@@ -30,18 +31,24 @@ public class ClassNode extends Node {
     return classSymbolTable;
   }
 
-  public Map<String, Type> getClassFields() {
-    return classFields;
-  }
-
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-    SymbolKey key = new SymbolKey(className, KeyTypes.CLASS);
+    /* Check that there are no repeated field names. */
+    Set<String> duplicateFields = new HashSet<>();
 
-    if (visitor.getCurrentSymbolTable().lookup(key) != null) {
-      visitor.getSemanticErrorList()
-          .addScopeException(ctx, true, "Class", className);
+    for (ParamNode field : classFields) {
+      String fieldName = field.getInput();
+      if (!duplicateFields.add(fieldName)) {
+        visitor.getSemanticErrorList()
+            .addScopeException(ctx, true, field.getType().toString(), fieldName);
+      }
     }
+
+    /* Note:
+     * Checking of repeated function names
+     * is handled when we call declareFunction() in visitClass_().
+     * Checking of repeated class names is handled when we call
+     * declareClass in visitProg. */
   }
 
   @Override
