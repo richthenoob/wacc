@@ -50,7 +50,7 @@ public class ClassAssignmentNode extends AssignmentNode {
     }
 
     /* Check that LHS and RHS classes are the same class (same name). */
-    if (Type
+    if (!Type
         .checkTypeCompatibility(classIdentLHSType, classIdentRHSType)) {
       visitor.getSemanticErrorList().addTypeException(ctx,
           classIdentRHSName, classIdentLHSType.toString() ,
