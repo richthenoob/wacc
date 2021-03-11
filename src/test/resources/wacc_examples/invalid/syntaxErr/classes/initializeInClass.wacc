@@ -1,7 +1,10 @@
 # variables should not be initialized in classes
 
 # Output:
-# #empty#
+# #syntax_error#
+
+# Exit:
+# 100
 
 # Program:
 

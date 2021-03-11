@@ -1,7 +1,10 @@
 # missing () at end of class initialization
 
 # Output:
-# #empty#
+# #syntax_error#
+
+# Exit:
+# 100
 
 # Program:
 

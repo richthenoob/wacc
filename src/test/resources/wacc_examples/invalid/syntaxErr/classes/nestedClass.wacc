@@ -1,7 +1,10 @@
 # second class declared inside first
 
 # Output:
-# #empty#
+# #syntax_error#
+
+# Exit:
+# 100
 
 # Program:
 
