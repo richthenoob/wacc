@@ -1,7 +1,10 @@
-# a simple class is declared, and a pair in it is assigned and accessed.
+# recursively calculate the nth fibonacci number from within a class
 
 # Output:
-# 10
+# This program calculates the nth fibonacci number recursively.
+# Please enter n (should not be too large): #input#
+# The input n is #output#
+# The nth fibonacci number is #output#
 
 # Program:
 
