@@ -20,6 +20,7 @@ public class InvalidSemanticClassTest extends AbstractFrontendTest {
   @Tag("invalid")
   @Tag("semantic")
   @Tag("class")
+
   @ParameterizedTest
   @MethodSource("getTestNames")
   public void invalidSemanticExitTests(String testName) {

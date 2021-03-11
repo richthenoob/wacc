@@ -15,7 +15,7 @@ public class ValidClassTest extends AbstractFrontendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  //@Disabled
+  @Disabled
   @Tag("valid")
   @Tag("class")
   @ParameterizedTest
