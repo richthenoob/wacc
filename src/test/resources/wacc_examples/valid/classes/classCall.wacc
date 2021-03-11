@@ -9,12 +9,12 @@ begin
   class c {
     int t,
     char c
-    int f() is
-        return 10
+    int f(int x) is
+        return 6 + x
     end
   }
   c class1 = new c();
   int i = 4;
-  i = call class1.f();
-  println x
+  i = call class1.f(i);
+  println i
 end

@@ -1,0 +1,21 @@
+# attempting to access variable by directly referencing name of class
+# instead of name of instance of class
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c
+    int f(int y) is
+        return 10
+    end
+  }
+  int x = c.t
+end

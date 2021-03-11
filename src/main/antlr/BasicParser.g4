@@ -45,12 +45,12 @@ assignLhs: IDENT
 | CLASS_OBJECT
 ;
 
-assignRhs: expr                                               #exprDup
-| arrayLiter                                                  #arrayLiterDup
-| NEWPAIR OPEN_PARENTHESES expr COMMA expr CLOSE_PARENTHESES  #newPair
-| pairElem                                                    #pairElemDup
-| CALL IDENT OPEN_PARENTHESES argList CLOSE_PARENTHESES       #call
-| CALL CLASS_OBJECT OPEN_PARENTHESES CLOSE_PARENTHESES         #callClassFunction
+assignRhs: expr                                                        #exprDup
+| arrayLiter                                                           #arrayLiterDup
+| NEWPAIR OPEN_PARENTHESES expr COMMA expr CLOSE_PARENTHESES           #newPair
+| pairElem                                                             #pairElemDup
+| CALL IDENT OPEN_PARENTHESES argList CLOSE_PARENTHESES                #call
+| CALL CLASS_OBJECT OPEN_PARENTHESES argList CLOSE_PARENTHESES         #callClassFunction
 ;
 
 argList: expr (COMMA expr)* | ();
