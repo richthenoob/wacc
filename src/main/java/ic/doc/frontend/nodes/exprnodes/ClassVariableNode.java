@@ -1,9 +1,11 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import ic.doc.backend.Context;
+import ic.doc.frontend.identifiers.ClassIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
+import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ErrorType;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -11,7 +13,12 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public class ClassVariableNode extends VariableNode {
 
   private final String className;
-  private final String varName;
+  private String varName;
+
+  public ClassVariableNode(String className) {
+    super(className);
+    this.className = className;
+  }
 
   public ClassVariableNode(String className, String identifier) {
     super(className + "." + identifier);
@@ -34,13 +41,25 @@ public class ClassVariableNode extends VariableNode {
     Identifier classId = visitor.getCurrentSymbolTable().lookupAll(classKey);
     if (classId == null) {
       setType(new ErrorType());
-      visitor.getSemanticErrorList().addScopeException(ctx, false, "Class", getName());
+      visitor.getSemanticErrorList().addScopeException(ctx, false, "Class", getClassName());
       return;
     }
-
-    /* Checks if variable was defined in symbol table for class */
-
     setType(classId.getType());
+
+    if (varName != null) {
+      /* Checks if variable was defined in symbol table for class */
+      SymbolTable classSymbolTable = ((ClassIdentifier) classId).getClassSymbolTable();
+      SymbolKey varKey = new SymbolKey(getVarName(), KeyTypes.VARIABLE);
+      Identifier varId = classSymbolTable.lookupAll(varKey);
+      if (varId == null) {
+        setType(new ErrorType());
+        visitor.getSemanticErrorList().addScopeException(ctx, false, "Variable", getName());
+        return;
+      }
+
+      /* Sets type to type of variable */
+      setType(varId.getType());
+    }
   }
 
   @Override

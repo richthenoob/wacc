@@ -3,6 +3,7 @@ package ic.doc.frontend.identifiers;
 import ic.doc.frontend.nodes.ClassNode;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.types.ClassType;
+import ic.doc.frontend.types.Type;
 
 public class ClassIdentifier extends Identifier {
 

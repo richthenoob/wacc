@@ -16,7 +16,7 @@ public class InvalidSemanticClassTest extends AbstractFrontendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
+  //@Disabled
   @Tag("invalid")
   @Tag("semantic")
   @Tag("class")
