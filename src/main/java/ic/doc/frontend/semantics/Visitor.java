@@ -281,8 +281,15 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
   @Override
   public Node visitClassVariable(ClassVariableContext ctx) {
-    // TODO: implement
-    throw new IllegalStateException("visitClassVariable not implemented.");
+    String className = ctx.classObject().IDENT(0).getText();
+    String varName = ctx.classObject().IDENT(1).getText();
+    ClassVariableNode node = new ClassVariableNode(className, varName);
+
+    /* Has side-effect of setting
+     * its type when calling check(). */
+    node.check(this, ctx);
+
+    return node;
   }
 
   /* ---------------- CLASS RELATED VISITS END ---------------- */

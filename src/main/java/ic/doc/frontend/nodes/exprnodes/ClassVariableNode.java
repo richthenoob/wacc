@@ -10,22 +10,37 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ClassVariableNode extends VariableNode {
 
-  public ClassVariableNode(String identifier) {
-    super(identifier);
+  private final String className;
+  private final String varName;
+
+  public ClassVariableNode(String className, String identifier) {
+    super(className + "." + identifier);
+    this.className = className;
+    this.varName = identifier;
+  }
+
+  public String getClassName() {
+    return className;
+  }
+
+  public String getVarName() {
+    return varName;
   }
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-    SymbolKey key = new SymbolKey(getName(), KeyTypes.CLASS);
-    /* Checks if name was defined in symbol table */
-    Identifier id = visitor.getCurrentSymbolTable().lookupAll(key);
-    if (id == null) {
+    /* Checks if class was defined in symbol table */
+    SymbolKey classKey = new SymbolKey(getClassName(), KeyTypes.CLASS);
+    Identifier classId = visitor.getCurrentSymbolTable().lookupAll(classKey);
+    if (classId == null) {
       setType(new ErrorType());
       visitor.getSemanticErrorList().addScopeException(ctx, false, "Class", getName());
       return;
     }
 
-    setType(id.getType());
+    /* Checks if variable was defined in symbol table for class */
+
+    setType(classId.getType());
   }
 
   @Override
