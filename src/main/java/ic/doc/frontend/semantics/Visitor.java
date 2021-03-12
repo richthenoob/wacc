@@ -72,7 +72,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     StatNode statNode = (StatNode) visit(ctx.stat());
 
-    return new ProgNode(currentSymbolTable, functionNodes, classNodes, statNode);
+    return new ProgNode(currentSymbolTable, functionNodes, classNodes,
+        statNode);
   }
 
   /* Helper function to called to declare functions, adds to symbol table if function name is not already defined */
@@ -149,26 +150,26 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   /* ---------------- CLASS RELATED VISITS START ---------------- */
 
   private void declareClass(BasicParser.Class_Context ctx) {
-      String className = ctx.IDENT().toString();
+    String className = ctx.IDENT().toString();
 
     /* Add class to the current symbol table. This symbol table
      * should be the top level symbol table. */
-    assert(currentSymbolTable.getParentSymbolTable() == null);
+    assert (currentSymbolTable.getParentSymbolTable() == null);
 
     SymbolKey classKey = new SymbolKey(className, KeyTypes.CLASS);
-      if (currentSymbolTable.lookup(classKey) == null) {
-        ClassIdentifier classIdentifier = new ClassIdentifier(className);
-        currentSymbolTable.add(classKey, classIdentifier);
+    if (currentSymbolTable.lookup(classKey) == null) {
+      ClassIdentifier classIdentifier = new ClassIdentifier(className);
+      currentSymbolTable.add(classKey, classIdentifier);
 
-        /* Pre-declare functions in this class. */
-        for (FuncContext func : ctx.func()) {
-          declareFunction(func);
-        }
-
-      } else {
-        semanticErrorList
-            .addScopeException(ctx, true, "Class", "'" + className + "'");
+      /* Pre-declare functions in this class. */
+      for (FuncContext func : ctx.func()) {
+        declareFunction(func);
       }
+
+    } else {
+      semanticErrorList
+          .addScopeException(ctx, true, "Class", "'" + className + "'");
+    }
   }
 
   @Override
@@ -197,6 +198,13 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     currentSymbolTable = classNode.getClassSymbolTable().getParentSymbolTable();
     classNode.check(this, ctx);
+
+    /* Add classNode to ClassIdentifier so future references to this
+     * class identifier can find the appropriate information. */
+    SymbolKey key = new SymbolKey(className, KeyTypes.CLASS);
+    ClassIdentifier identifier = (ClassIdentifier) currentSymbolTable
+        .lookupAll(key);
+    identifier.setClassNode(classNode);
 
     return classNode;
   }
@@ -252,10 +260,23 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return classAssignmentNode;
   }
 
+  /* Called when calling a class method on the RHS of an assignment,
+   * e.g. call class1.foo(argument1)
+   *            |      |          |
+   * classInstance classFunction argumentList */
   @Override
   public Node visitCallClassFunction(CallClassFunctionContext ctx) {
-    // TODO: implement
-    throw new IllegalStateException("visitCallClassFunction not implemented.");
+    String classInstanceName = ctx.classObject().IDENT(0).getText();
+    String classFunctionName = ctx.classObject().IDENT(1).getText();
+    ArgListNode argListNode = (ArgListNode) visit(ctx.argList());
+
+    /* Create node and check that class1 exists, class1 has function foo,
+     * and the function is passed the correct argument types. */
+    CallClassFunctionNode node = new CallClassFunctionNode(classInstanceName,
+        classFunctionName, argListNode);
+    node.check(this, ctx);
+
+    return node;
   }
 
   @Override
