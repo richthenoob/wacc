@@ -3,7 +3,6 @@ package ic.doc.frontend.semantics;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -12,22 +11,22 @@ public class SymbolTable {
   private final SymbolTable parentSymbolTable;
   private final Map<SymbolKey, Identifier> dictionary;
   private int tableSizeInBytes;
-  private int functionParametersSizeInBytes;
+  private int parametersSizeInBytes;
 
   public SymbolTable(SymbolTable parentSymbolTable) {
     this.parentSymbolTable = parentSymbolTable;
     dictionary = new LinkedHashMap<>();
     tableSizeInBytes = 0;
-    functionParametersSizeInBytes = 0;
+    parametersSizeInBytes = 0;
   }
 
   /* Used for adjusting size of stack used by parameters. */
   public void incrementFunctionParametersSize(int paramSize) {
-    functionParametersSizeInBytes += paramSize;
+    parametersSizeInBytes += paramSize;
   }
 
-  public int getFunctionParametersSizeInBytes() {
-    return functionParametersSizeInBytes;
+  public int getParametersSizeInBytes() {
+    return parametersSizeInBytes;
   }
 
   /* Used for tracking the largest offset within a symbol table. */
