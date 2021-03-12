@@ -17,13 +17,10 @@ public class InvalidSemanticClassTest extends AbstractFrontendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  //@Disabled
   @Tag("invalid")
   @Tag("semantic")
   @Tag("class")
-
   @ParameterizedTest
-  //@ValueSource(strings = {"classBadReference.wacc"})
   @MethodSource("getTestNames")
   public void invalidSemanticExitTests(String testName) {
     frontendTestFile(groupTestPath + testName);

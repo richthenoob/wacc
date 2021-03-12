@@ -3,7 +3,6 @@ package ic.doc.frontend.nodes.exprnodes;
 import ic.doc.backend.Context;
 import ic.doc.frontend.identifiers.ClassIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
-import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;

@@ -16,11 +16,9 @@ public class ValidClassTest extends AbstractFrontendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  //@Disabled
   @Tag("valid")
   @Tag("class")
   @ParameterizedTest
-  //@ValueSource(strings = {"classAccessObjects.wacc"})
   @MethodSource("getTestNames")
   public void validSimpleFunctionTests(String testName) {
     frontendTestFile(groupTestPath + testName);

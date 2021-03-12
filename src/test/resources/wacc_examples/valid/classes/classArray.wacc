@@ -15,7 +15,10 @@ begin
   c class1 = new c();
   class1.a = [1,2,3];
   class1.b = [3,4];
-  class1.c = [a,b] ;
-  println c[0][2] ;
-  println c[1][0]
+  class1.c = [class1.a,class1.b];
+  int[][] v = class1.c;
+  #tests for binop where the var wasnt initialized semantic
+  #test for making a class in the function for a class valid
+  println v[0][2];
+  println v[1][0]
 end

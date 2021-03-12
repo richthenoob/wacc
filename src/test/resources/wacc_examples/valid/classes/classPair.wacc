@@ -11,6 +11,6 @@ begin
   }
   c class1 = new c() ;
   class1.p = newpair(10,15) ;
-  int x = fst p ;
+  int x = fst class1.p ;
   println x
 end
