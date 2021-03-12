@@ -3,11 +3,14 @@ package ic.doc.frontend.nodes.exprnodes;
 import ic.doc.backend.Context;
 import ic.doc.frontend.identifiers.ClassIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
+import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
+import ic.doc.frontend.types.ClassType;
 import ic.doc.frontend.types.ErrorType;
+import ic.doc.frontend.types.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ClassFieldVariableNode extends VariableNode{
@@ -32,14 +35,16 @@ public class ClassFieldVariableNode extends VariableNode{
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-    /* Checks if class was defined in symbol table */
+    /* Checks if class instance was defined in symbol table */
     Identifier classVarId = checkIdentifier(visitor, ctx,
-        getClassName(), KeyTypes.VARIABLE, "Class");
+        getClassName(), KeyTypes.VARIABLE, "Class instance");
     if (classVarId == null) return;
 
-    /* Use classname to search for class identifier */
+    /* Checks if class was defined in symbol table */
+    Type classType = classVarId.getType();
+    String classGeneralName = ((ClassType) classType).getClassName();
     Identifier classId = checkIdentifier(visitor, ctx,
-        getClassName(), KeyTypes.CLASS, "Class");
+        classGeneralName, KeyTypes.CLASS, "Class");
     if (classId == null) return;
 
     /* Checks if variable was defined in symbol table for class */

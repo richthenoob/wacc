@@ -17,6 +17,10 @@ public class ClassIdentifier extends Identifier {
     this.classSymbolTable = classSymbolTable;
   }
 
+  public String getClassName() {
+    return className;
+  }
+
   public ClassNode getClassNode() {
     if (classNode == null) {
       throw new IllegalStateException(

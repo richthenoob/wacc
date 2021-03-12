@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class ValidClassTest extends AbstractFrontendTest {
   private static final String groupTestPath = "/valid/classes/";
@@ -19,6 +20,7 @@ public class ValidClassTest extends AbstractFrontendTest {
   @Tag("valid")
   @Tag("class")
   @ParameterizedTest
+  //@ValueSource(strings = {"classAccessObjects.wacc"})
   @MethodSource("getTestNames")
   public void validSimpleFunctionTests(String testName) {
     frontendTestFile(groupTestPath + testName);

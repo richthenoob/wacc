@@ -491,8 +491,20 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       return node;
     } else if (ctx.arrayElem() != null) {
       return this.visit(ctx.arrayElem());
-    } else {
+    } else if (ctx.pairElem() != null){
       return this.visit(ctx.pairElem());
+    } else if (ctx.classObject() != null){
+      String className = ctx.classObject().IDENT(0).getText();
+      String varName = ctx.classObject().IDENT(1).getText();
+      ClassFieldVariableNode node = new ClassFieldVariableNode(className, varName);
+
+      /* Has side-effect of setting
+       * its type when calling check(). */
+      node.check(this, ctx);
+
+      return node;
+    } else {
+      throw new IllegalStateException("No LHS found!");
     }
   }
 
