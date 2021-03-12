@@ -1,5 +1,6 @@
 begin
-  int i = 5 * 3;
+  int i = 5 * (3 + 6);
+  i = 5 * 3 + 6;
   int x = 6 / 3;
   int y = 6 % 3
 end

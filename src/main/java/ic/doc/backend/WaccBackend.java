@@ -1,9 +1,12 @@
 package ic.doc.backend;
 
 import ic.doc.backend.instructions.Instruction;
+import ic.doc.backend.instructions.Move;
+import ic.doc.backend.instructions.SingleDataTransfer;
 import ic.doc.frontend.nodes.ProgNode;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class WaccBackend {
@@ -17,6 +20,45 @@ public class WaccBackend {
     List<Label<Data>> dataLabels = context.getDataLabels();
     List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
 
+    /* Peephole Optimization */
+    for (Label<Instruction> instructionLabel : instructionLabels) {
+      if (!instructionLabel.getBody().isEmpty()) {
+        List<Instruction> optimizedInstructions = new ArrayList<>();
+        Instruction prevInstruction = instructionLabel.getBody().get(0);
+        for (Instruction instruction : instructionLabel.getBody()) {
+
+          /* Remove redundant moves eg: MOV r1,r2 followed by MOV r2,r1 */
+          if (prevInstruction instanceof Move && instruction instanceof Move) {
+            /* If not optimizable then add to new List */
+            if (!((Move) instruction).optimizable((Move) prevInstruction)) {
+              optimizedInstructions.add(instruction);
+            }
+          }
+          /* Remove redundant Load after Store eg STR r1, [sp] followed by LDR r1, [sp] */
+          else if (prevInstruction instanceof SingleDataTransfer
+              && instruction instanceof SingleDataTransfer) {
+            /* If not optimizable then add to new List */
+            if (!((SingleDataTransfer) instruction)
+                .optimizable((SingleDataTransfer) prevInstruction)) {
+              optimizedInstructions.add(instruction);
+            }
+          }
+          /* Remove redundant move/Single Data Transfer when dst and src are the same */
+          else if (instruction instanceof Move || instruction instanceof SingleDataTransfer) {
+            if (instruction instanceof Move && !((Move) instruction).redundant()) {
+              optimizedInstructions.add(instruction);
+            } else if (instruction instanceof SingleDataTransfer
+                && !((SingleDataTransfer) instruction).redundant())
+              optimizedInstructions.add(instruction);
+
+          } else {
+            optimizedInstructions.add(instruction);
+          }
+          prevInstruction = instruction;
+        }
+        instructionLabel.setBody(optimizedInstructions);
+      }
+    }
     /* Build .data section. */
     outputString.append(".data\n");
 
@@ -32,7 +74,7 @@ public class WaccBackend {
     /* Build .text section. */
     outputString.append("\n.text\n");
     outputString.append(".global main\n");
-    for (Label<Instruction> instructionLabel: instructionLabels) {
+    for (Label<Instruction> instructionLabel : instructionLabels) {
       outputString.append(instructionLabel.toString());
       outputString.append(":\n");
       for (Instruction instruction : instructionLabel.getBody()) {
@@ -43,7 +85,7 @@ public class WaccBackend {
     }
 
     /* Build predefined functions at the very end. */
-    for (Label<Instruction> endLabel: context.getEndFunctions()) {
+    for (Label<Instruction> endLabel : context.getEndFunctions()) {
       outputString.append(endLabel.toString());
       outputString.append(":\n");
       for (Instruction instruction : endLabel.getBody()) {

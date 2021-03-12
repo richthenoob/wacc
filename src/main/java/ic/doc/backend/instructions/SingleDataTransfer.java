@@ -28,6 +28,19 @@ public class SingleDataTransfer extends Instruction {
     return this;
   }
 
+  /* For optimization */
+  public boolean optimizable(SingleDataTransfer prev) {
+    Operand fst = prev.dst;
+    Operand snd = prev.expr;
+    boolean b = fst.equals(dst);
+    boolean c = snd.equals(expr);
+    return (!prev.loadFlag && loadFlag && b && c);
+  }
+
+  public boolean redundant(){
+    return dst.equals(expr);
+  }
+
   @Override
   public String toAssembly() {
     String action = loadFlag ? "LDR" : "STR";
