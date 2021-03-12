@@ -6,7 +6,6 @@ import ic.doc.frontend.identifiers.FunctionIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.ArgListNode;
-import ic.doc.frontend.nodes.ClassNode;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
@@ -84,8 +83,7 @@ public class CallClassFunctionNode extends CallNode {
     /* We can now check if the class actually has a function with
      * name functionName. */
     ClassIdentifier classIdentifier_ = (ClassIdentifier) classIdentifier;
-    ClassNode classNode = classIdentifier_.getClassNode();
-    SymbolTable classSymbolTable = classNode.getClassSymbolTable();
+    SymbolTable classSymbolTable = classIdentifier_.getClassSymbolTable();
 
     String functionName = getIdentifier();
     SymbolKey functionKey = new SymbolKey(functionName, KeyTypes.FUNCTION);
