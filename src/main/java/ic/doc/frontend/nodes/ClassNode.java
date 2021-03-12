@@ -8,7 +8,7 @@ import ic.doc.backend.instructions.Move;
 import ic.doc.backend.instructions.SingleDataTransfer;
 import ic.doc.backend.instructions.Stack;
 import ic.doc.backend.instructions.operands.ImmediateOperand;
-import ic.doc.backend.instructions.operands.PostIndexedAddressOperand;
+import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.semantics.SymbolKey;
@@ -102,8 +102,7 @@ public class ClassNode extends Node {
       /* Store contents of r1 (previously set to 0) to
        * address of r0 (instance address) + offset of field within address
        * STR r1, [r0], #offset */
-      PostIndexedAddressOperand addressOperand = new PostIndexedAddressOperand()
-          .withRN(RegisterOperand.R0)
+      PreIndexedAddressOperand addressOperand = new PreIndexedAddressOperand(RegisterOperand.R0)
           .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"));
       SingleDataTransfer initialiseFieldZeroInst =
           SingleDataTransfer.STR(RegisterOperand.R1, addressOperand);
