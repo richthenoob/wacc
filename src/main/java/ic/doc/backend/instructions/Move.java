@@ -54,6 +54,10 @@ public class Move extends Instruction {
     return (fst.equals(this.src) && snd.equals(this.dst) && prev.normalMOV() && normalMOV());
   }
 
+  public boolean redundant(){
+    return dst.equals(src);
+  }
+
   @Override
   public String toAssembly() {
     switch (condition) {

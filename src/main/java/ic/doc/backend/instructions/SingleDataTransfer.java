@@ -37,6 +37,10 @@ public class SingleDataTransfer extends Instruction {
     return (!prev.loadFlag && loadFlag && b && c);
   }
 
+  public boolean redundant(){
+    return dst.equals(expr);
+  }
+
   @Override
   public String toAssembly() {
     String action = loadFlag ? "LDR" : "STR";

@@ -42,6 +42,15 @@ public class WaccBackend {
                 .optimizable((SingleDataTransfer) prevInstruction)) {
               optimizedInstructions.add(instruction);
             }
+          }
+          /* Remove redundant move/Single Data Transfer when dst and src are the same */
+          else if (instruction instanceof Move || instruction instanceof SingleDataTransfer) {
+            if (instruction instanceof Move && !((Move) instruction).redundant()) {
+              optimizedInstructions.add(instruction);
+            } else if (instruction instanceof SingleDataTransfer
+                && !((SingleDataTransfer) instruction).redundant())
+              optimizedInstructions.add(instruction);
+
           } else {
             optimizedInstructions.add(instruction);
           }

@@ -16,7 +16,6 @@ public class ValidAdvancedTest extends AbstractBackendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
   @Tag("backend")
   @Tag("advanced")
   @ParameterizedTest
