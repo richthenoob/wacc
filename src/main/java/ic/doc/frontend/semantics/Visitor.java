@@ -302,7 +302,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   public Node visitClassVariable(ClassVariableContext ctx) {
     String className = ctx.classObject().IDENT(0).getText();
     String varName = ctx.classObject().IDENT(1).getText();
-    ClassVariableNode node = new ClassVariableNode(className, varName);
+    ClassFieldVariableNode node = new ClassFieldVariableNode(className, varName);
 
     /* Has side-effect of setting
      * its type when calling check(). */

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class InvalidSemanticClassTest extends AbstractFrontendTest {
 
@@ -22,6 +23,7 @@ public class InvalidSemanticClassTest extends AbstractFrontendTest {
   @Tag("class")
 
   @ParameterizedTest
+  //@ValueSource(strings = {"classBadReference.wacc"})
   @MethodSource("getTestNames")
   public void invalidSemanticExitTests(String testName) {
     frontendTestFile(groupTestPath + testName);
