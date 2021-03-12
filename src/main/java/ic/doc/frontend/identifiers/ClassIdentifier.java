@@ -1,16 +1,19 @@
 package ic.doc.frontend.identifiers;
 
 import ic.doc.frontend.nodes.ClassNode;
+import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.types.ClassType;
 
 public class ClassIdentifier extends Identifier {
 
   private final String className;
   private ClassNode classNode;
+  private final SymbolTable classSymbolTable;
 
-  public ClassIdentifier(String className) {
+  public ClassIdentifier(String className, SymbolTable classSymbolTable) {
     super(new ClassType(className));
     this.className = className;
+    this.classSymbolTable = classSymbolTable;
   }
 
   public ClassNode getClassNode() {
@@ -19,6 +22,10 @@ public class ClassIdentifier extends Identifier {
           "Class " + className + " declared but not yet visited!");
     }
     return classNode;
+  }
+
+  public SymbolTable getClassSymbolTable() {
+    return classSymbolTable;
   }
 
   public void setClassNode(ClassNode classNode) {

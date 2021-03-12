@@ -33,6 +33,14 @@ public class CallNode extends ExprNode {
     this.args = args;
   }
 
+  public String getIdentifier() {
+    return identifier;
+  }
+
+  public ArgListNode getArgs() {
+    return args;
+  }
+
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     String functionName = identifier;
