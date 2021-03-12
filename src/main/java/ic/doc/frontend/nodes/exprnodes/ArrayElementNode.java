@@ -67,8 +67,7 @@ public class ArrayElementNode extends ExprNode {
       /* Identifier should be of type "Array". */
       visitor
           .getSemanticErrorList()
-          .addTypeException(ctx, identNode.getInput(), "T[]",
-              identNode.getType().toString(), "");
+          .addTypeException(ctx, identNode.getInput(), "T[]", identNode.getType().toString(), "");
     }
 
     /* Go through all exprNodes to check index is of correct type, INT. */
@@ -110,8 +109,7 @@ public class ArrayElementNode extends ExprNode {
   }
 
   /* Takes care of loading the correct elements of the array in the proper locations relative to the array pointer */
-  public static RegisterOperand translateArray(Context context,
-      ArrayElementNode array) {
+  public static RegisterOperand translateArray(Context context, ArrayElementNode array) {
     Label<Instruction> label = context.getCurrentLabel();
     SymbolTable symbolTable = context.getCurrentSymbolTable();
 
@@ -127,6 +125,7 @@ public class ArrayElementNode extends ExprNode {
     List<ExprNode> arrays = array.getExprNodes();
 
     for (int i = 0; i < arrays.size(); i++) {
+      boolean checkBounds = true;
       if (i == 0) {
         /* Load location of array into arrayReg.
          * Only needed for first layer as for nested arrays the
@@ -139,19 +138,21 @@ public class ArrayElementNode extends ExprNode {
       }
 
       if (arrays.get(i) instanceof IntLiteralNode) {
+        /* For optimization, can check at compile time, only works for first layer */
+        if (i == 0 && ((IntLiteralNode) arrays.get(i)).getValue() < id.getArraySize()) {
+          checkBounds = false;
+        }
         /* Load index literal */
         label.addToBody(
             SingleDataTransfer.LDR(
                 indexReg,
-                new ImmediateOperand<>(
-                    ((IntLiteralNode) arrays.get(i)).getValue().intValue())
+                new ImmediateOperand<>(((IntLiteralNode) arrays.get(i)).getValue().intValue())
                     .withPrefixSymbol("=")));
       } else {
         /* Find offset of index pointer if its a variable */
         String indexVarName = arrays.get(i).getInput();
         SymbolKey indexVarkey = new SymbolKey(indexVarName, false);
-        VariableIdentifier indexId = (VariableIdentifier) symbolTable
-            .lookupAll(indexVarkey);
+        VariableIdentifier indexId = (VariableIdentifier) symbolTable.lookupAll(indexVarkey);
         int offset = indexId.getOffsetStack(symbolTable, indexVarkey);
 
         /* Load index from memory */
@@ -159,26 +160,26 @@ public class ArrayElementNode extends ExprNode {
             SingleDataTransfer.LDR(
                 indexReg,
                 new PreIndexedAddressOperand(RegisterOperand.SP)
-                    .withExpr(
-                        new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
+                    .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
       }
 
       /* Load array */
-      label.addToBody(SingleDataTransfer
-          .LDR(arrayReg, new PreIndexedAddressOperand(arrayReg)));
+      label.addToBody(SingleDataTransfer.LDR(arrayReg, new PreIndexedAddressOperand(arrayReg)));
 
       /* Move values into correct registers to call array bounds checking predefined function */
       label.addToBody(Move.MOV(new RegisterOperand(0), indexReg));
       label.addToBody(Move.MOV(new RegisterOperand(1), arrayReg));
-      PredefinedFunctions.addCheckArrayBoundsFunction(context);
-      label.addToBody(Branch.BL(PredefinedFunctions.CHECK_ARRAY_BOUNDS_FUNC));
-
+      if (checkBounds) {
+        PredefinedFunctions.addCheckArrayBoundsFunction(context);
+        label.addToBody(Branch.BL(PredefinedFunctions.CHECK_ARRAY_BOUNDS_FUNC));
+      }
       /* Address of arrayelem  = address of first element + index * 4 */
       label.addToBody(
-          DataProcessing.ADD(arrayReg, arrayReg,
+          DataProcessing.ADD(
+              arrayReg,
+              arrayReg,
               new ImmediateOperand<>(Context.SIZE_OF_ADDRESS).withPrefixSymbol("#")));
-      Type internalType = ((ArrayType) (array.identNode.getType()))
-          .getInternalType();
+      Type internalType = ((ArrayType) (array.identNode.getType())).getInternalType();
       if (internalType.getVarSize() == 1) {
         label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, indexReg));
       } else {
@@ -210,8 +211,7 @@ public class ArrayElementNode extends ExprNode {
     context
         .getCurrentLabel()
         .addToBody(
-            SingleDataTransfer
-                .LDR(arrayRegister, new PreIndexedAddressOperand(arrayRegister))
+            SingleDataTransfer.LDR(arrayRegister, new PreIndexedAddressOperand(arrayRegister))
                 .withCond(cond));
   }
 
