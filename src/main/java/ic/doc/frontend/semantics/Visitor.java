@@ -163,8 +163,20 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
           classSymbolTable);
       currentSymbolTable.add(classKey, classIdentifier);
 
-      /* Pre-declare functions in this class. */
+      /* Declare class fields and add to its symbol table.
+       * NOTE: this does NOT check for duplicates. Any duplicates will be
+       *       silently ignored, but we will throw a semantic error when we
+       *       actually visit the class node. */
       currentSymbolTable = classSymbolTable;
+      ParamListNode paramListNode = (ParamListNode) visit(ctx.paramList());
+      for (ParamNode field : paramListNode.getParams()) {
+        String fieldName = field.getInput();
+        Type fieldType = field.getType();
+        SymbolKey fieldKey = new SymbolKey(fieldName, KeyTypes.VARIABLE);
+        currentSymbolTable.add(fieldKey, new VariableIdentifier(fieldType));
+      }
+
+      /* Pre-declare functions in this class. */
       for (FuncContext func : ctx.func()) {
         declareFunction(func);
       }
@@ -186,6 +198,11 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         .lookup(classKey)).getClassSymbolTable();
     currentSymbolTable = classSymbolTable;
 
+    /* Since we are using a paramList in the parser, we can call visitParamList
+     * to create a paramListNode for us. Then, pass this information
+     * to classNode. */
+    ParamListNode paramListNode = (ParamListNode) visit(ctx.paramList());
+
     /* Go through declared functions and visit each of them; adding them
      * to a list so that the classNode contains this information. */
     List<FunctionNode> classFunctions = new ArrayList<>();
@@ -193,11 +210,6 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     for (FuncContext func : ctx.func()) {
       classFunctions.add((FunctionNode) visit(func));
     }
-
-    /* Since we are using a paramList in the parser, we can call visitParamList
-     * to create a paramListNode for us. Then, pass this information
-     * to classNode. */
-    ParamListNode paramListNode = (ParamListNode) visit(ctx.paramList());
 
     /* Actually make the class node now that we have all the required information. */
     ClassNode classNode = new ClassNode(className, classSymbolTable,
