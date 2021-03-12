@@ -158,13 +158,17 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     SymbolKey classKey = new SymbolKey(className, KeyTypes.CLASS);
     if (currentSymbolTable.lookup(classKey) == null) {
-      ClassIdentifier classIdentifier = new ClassIdentifier(className);
+      SymbolTable classSymbolTable = new SymbolTable(currentSymbolTable);
+      ClassIdentifier classIdentifier = new ClassIdentifier(className,
+          classSymbolTable);
       currentSymbolTable.add(classKey, classIdentifier);
 
       /* Pre-declare functions in this class. */
+      currentSymbolTable = classSymbolTable;
       for (FuncContext func : ctx.func()) {
         declareFunction(func);
       }
+      currentSymbolTable = classSymbolTable.getParentSymbolTable();
 
     } else {
       semanticErrorList
@@ -174,8 +178,12 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
   @Override
   public Node visitClass_(Class_Context ctx) {
-    /* Create new symbol table to store class information. */
-    SymbolTable classSymbolTable = new SymbolTable(getCurrentSymbolTable());
+    /* Use symbol table that was created when pre-visiting
+     * classes to store class information. */
+    String className = ctx.IDENT().getText();
+    SymbolKey classKey = new SymbolKey(className, KeyTypes.CLASS);
+    SymbolTable classSymbolTable = ((ClassIdentifier) currentSymbolTable
+        .lookup(classKey)).getClassSymbolTable();
     currentSymbolTable = classSymbolTable;
 
     /* Go through declared functions and visit each of them; adding them
@@ -192,7 +200,6 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ParamListNode paramListNode = (ParamListNode) visit(ctx.paramList());
 
     /* Actually make the class node now that we have all the required information. */
-    String className = ctx.IDENT().getText();
     ClassNode classNode = new ClassNode(className, classSymbolTable,
         paramListNode.getParams(), classFunctions);
 
