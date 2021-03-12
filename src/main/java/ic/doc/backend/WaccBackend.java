@@ -26,11 +26,12 @@ public class WaccBackend {
         List<Instruction> optimizedInstructions = new ArrayList<>();
         Instruction prevInstruction = instructionLabel.getBody().get(0);
         for (Instruction instruction : instructionLabel.getBody()) {
-
+          boolean optimized = true;
           /* Remove redundant moves eg: MOV r1,r2 followed by MOV r2,r1 */
           if (prevInstruction instanceof Move && instruction instanceof Move) {
             /* If not optimizable then add to new List */
             if (!((Move) instruction).optimizable((Move) prevInstruction)) {
+              optimized = false;
               optimizedInstructions.add(instruction);
             }
           }
@@ -40,21 +41,27 @@ public class WaccBackend {
             /* If not optimizable then add to new List */
             if (!((SingleDataTransfer) instruction)
                 .optimizable((SingleDataTransfer) prevInstruction)) {
+              optimized = false;
               optimizedInstructions.add(instruction);
             }
           }
           /* Remove redundant move/Single Data Transfer when dst and src are the same */
           else if (instruction instanceof Move || instruction instanceof SingleDataTransfer) {
             if (instruction instanceof Move && !((Move) instruction).redundant()) {
+              optimized = false;
               optimizedInstructions.add(instruction);
             } else if (instruction instanceof SingleDataTransfer
-                && !((SingleDataTransfer) instruction).redundant())
+                && !((SingleDataTransfer) instruction).redundant()) {
+              optimized = false;
               optimizedInstructions.add(instruction);
-
+            }
           } else {
+            optimized = false;
             optimizedInstructions.add(instruction);
           }
-          prevInstruction = instruction;
+          if (!optimized) {
+            prevInstruction = instruction;
+          }
         }
         instructionLabel.setBody(optimizedInstructions);
       }
