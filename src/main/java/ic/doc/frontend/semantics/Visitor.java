@@ -228,10 +228,28 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return classAssignmentNode;
   }
 
+  /* Called when assigning a new class variable to an existing variable,
+   * e.g. ClassA myInstance = myInstance2;
+   *        |         |              |
+   *    classIdent classInstanceLHS  classInstanceRHS */
   @Override
   public Node visitAssignNewClass(AssignNewClassContext ctx) {
-    // TODO: implement
-    throw new IllegalStateException("visitAssignNewClass not implemented.");
+    ClassVariableNode classIdent =
+        new ClassVariableNode(ctx.IDENT(0).getText());
+    VariableNode classInstanceLHS = new VariableNode(ctx.IDENT(1).getText());
+    VariableNode classInstanceRHS = new VariableNode(ctx.IDENT(2).getText());
+
+    /* Ensure that RHS and classIdent have been declared before. */
+    classIdent.check(this, ctx);
+    classInstanceRHS.check(this, ctx);
+
+    /* */
+    ClassAssignmentNode classAssignmentNode =
+        new ClassAssignmentNode(classInstanceLHS, classInstanceRHS, true,
+            getCurrentSymbolTable(), classIdent);
+
+    classAssignmentNode.check(this, ctx);
+    return classAssignmentNode;
   }
 
   @Override

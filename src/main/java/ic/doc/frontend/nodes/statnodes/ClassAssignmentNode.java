@@ -9,61 +9,66 @@ import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ClassType;
+import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ClassAssignmentNode extends AssignmentNode {
 
-  private final ClassVariableNode classIdentLHS;
+  private final ClassVariableNode classIdent;
 
   public ClassAssignmentNode(ExprNode lhs,
       ExprNode rhs, boolean isDeclaration,
-      SymbolTable symbolTable, ClassVariableNode classIdentLHS) {
+      SymbolTable symbolTable, ClassVariableNode classIdent) {
     super(lhs, rhs, isDeclaration, symbolTable);
-    this.classIdentLHS = classIdentLHS;
+    this.classIdent = classIdent;
   }
 
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
-    /* Check that class type declared matches constructor name.
-     * e.g. for ClassA a = new ClassA, check that type ClassA = ClassA */
+    /* Check that class type declared RHS type.
+     * e.g. for ClassA a = new ClassA, check that type ClassA = ClassA
+     *      for ClassA a2 = a, check that type a = ClassA */
 
-    assert (classIdentLHS.getType() != null);
+    assert (classIdent.getType() != null);
     assert (getRhs().getType() != null);
 
-    String classIdentLHSName = classIdentLHS.getInput();
-    String classIdentRHSName = getRhs().getInput();
-    Type classIdentLHSType = classIdentLHS.getType();
-    Type classIdentRHSType = getRhs().getType();
+    String classIdentName = classIdent.getInput();
     String classInstanceName = getLhs().getInput();
+    String rhsName = getRhs().getInput();
+    Type classIdentType = classIdent.getType();
+    Type rhsType = getRhs().getType();
 
-    /* Check LHS and RHS classes are both of ClassType. */
-    if (!(classIdentLHSType instanceof ClassType)) {
+    /* Check classIdent and RHS are both of ClassType. */
+    if (!(classIdentType instanceof ClassType)
+        && !(classIdentType instanceof ErrorType)) {
       visitor.getSemanticErrorList().addTypeException(ctx,
-          classIdentLHSName, "CLASS " + classIdentLHSName,
-          classIdentLHSType.toString(), "");
+          classIdentName, "CLASS " + classIdentName,
+          classIdentType.toString(), "");
     }
-    if (!(classIdentRHSType instanceof ClassType)) {
+    if (!(rhsType instanceof ClassType)
+        && !(rhsType instanceof ErrorType)) {
       visitor.getSemanticErrorList().addTypeException(ctx,
-          classIdentRHSName, "CLASS " + classIdentRHSName,
-          classIdentRHSType.toString(), "");
+          rhsName, "CLASS " + rhsName,
+          rhsType.toString(), "");
     }
 
-    /* Check that LHS and RHS classes are the same class (same name). */
-    if (!Type
-        .checkTypeCompatibility(classIdentLHSType, classIdentRHSType)) {
+    /* Check that classIdent and RHS are the same class (same name). */
+    if (!Type.checkTypeCompatibility(classIdentType, rhsType)
+        && !(classIdentType instanceof ErrorType)
+        && !(rhsType instanceof ErrorType)) {
       visitor.getSemanticErrorList().addTypeException(ctx,
-          classIdentRHSName, classIdentLHSType.toString() ,
-          classIdentRHSType.toString(), "");
+          rhsName, classIdentType.toString(),
+          rhsType.toString(), "");
     }
 
     /* Check that class instance hasn't been declared before in this scope. */
-    SymbolKey key = new SymbolKey(classInstanceName, KeyTypes.CLASS);
+    SymbolKey key = new SymbolKey(classInstanceName, KeyTypes.VARIABLE);
     if (getSymbolTable().lookup(key) != null) {
       visitor.getSemanticErrorList()
           .addScopeException(ctx, true, "Variable", classInstanceName);
     } else {
-      Type classType = classIdentLHS.getType();
+      Type classType = classIdent.getType();
       getLhs().setType(classType);
       getSymbolTable().add(key, new VariableIdentifier(classType));
     }
