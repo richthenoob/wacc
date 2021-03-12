@@ -120,5 +120,11 @@ public class ClassAssignmentNode extends AssignmentNode {
         new PreIndexedAddressOperand(RegisterOperand.SP)));
     currentSymbolTable.incrementOffset(4);
     currentSymbolTable.incrementTableSizeInBytes(4);
+
+    /* Set class instance to 'activated' in symbol table. */
+    SymbolKey classInstanceKey = new SymbolKey(
+        ((VariableNode) getLhs()).getName(), KeyTypes.VARIABLE);
+    VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable.lookupAll(classInstanceKey);
+    classInstanceIdentifier.setActivated();
   }
 }
