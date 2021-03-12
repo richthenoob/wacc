@@ -15,6 +15,10 @@ public class ScopingNode extends StatNode {
     this.symbolTable = symbolTable;
   }
 
+  public StatNode getStatNode() {
+    return statNode;
+  }
+
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     /* No checks needed. */
