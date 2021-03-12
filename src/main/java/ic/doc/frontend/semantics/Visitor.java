@@ -213,7 +213,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     /* Actually make the class node now that we have all the required information. */
     ClassNode classNode = new ClassNode(className, classSymbolTable,
-        paramListNode.getParams(), classFunctions);
+        paramListNode, classFunctions);
 
     currentSymbolTable = classNode.getClassSymbolTable().getParentSymbolTable();
     classNode.check(this, ctx);

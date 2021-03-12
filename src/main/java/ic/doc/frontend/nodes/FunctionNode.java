@@ -68,7 +68,8 @@ public class FunctionNode extends Node {
   @Override
   public void translate(Context context) {
     /* Create new label for function */
-    Label<Instruction> funcLabel = new Label<>("f_" + funcName);
+    Label<Instruction> funcLabel = new Label<>(context.getCurrentClass() +
+       "_" + "f_" + funcName);
     context.getInstructionLabels().add(funcLabel);
     context.setCurrentLabel(funcLabel);
 
