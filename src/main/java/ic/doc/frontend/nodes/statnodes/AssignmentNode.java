@@ -129,8 +129,7 @@ public class AssignmentNode extends StatNode {
     }
 
     /* Optimization, add array size which is fixed at declaration to the symbol table */
-    if(lhs.getType() instanceof ArrayType && isDeclaration){
-      assert(rhs instanceof ArrayLiteralNode);
+    if(lhs.getType() instanceof ArrayType && isDeclaration && rhs instanceof ArrayLiteralNode){
       VariableNode lhsVar = (VariableNode) lhs;
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, false);
