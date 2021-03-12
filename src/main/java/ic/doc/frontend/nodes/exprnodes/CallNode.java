@@ -151,7 +151,7 @@ public class CallNode extends ExprNode {
     context.addToCurrentLabel(BL("f_" + identifier));
     context.addToCurrentLabel(DataProcessing
         .ADD(RegisterOperand.SP, RegisterOperand.SP,
-            new ImmediateOperand<>(funcTable.getFunctionParametersSizeInBytes())
+            new ImmediateOperand<>(funcTable.getParametersSizeInBytes())
                 .withPrefixSymbol("#")));
 
     /* Move result of function call from R0 to free register */
