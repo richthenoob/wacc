@@ -148,7 +148,7 @@ public class CallNode extends ExprNode {
 
     /* Call the function then restore to previous scope.
      * Also restore any stack space used by parameters to the function. */
-    context.addToCurrentLabel(BL("f_" + identifier));
+    context.addToCurrentLabel(BL(context.getCurrentClass() + "_" + "f_" + identifier));
     context.addToCurrentLabel(DataProcessing
         .ADD(RegisterOperand.SP, RegisterOperand.SP,
             new ImmediateOperand<>(funcTable.getParametersSizeInBytes())
