@@ -140,7 +140,7 @@ public class CallClassFunctionNode extends CallNode {
 
   @Override
   public void translate(Context context) {
-
+    throw new IllegalStateException("Translation of CallClassFunctionNode not implemented");
   }
 
   @Override
