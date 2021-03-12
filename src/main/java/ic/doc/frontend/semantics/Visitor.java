@@ -237,12 +237,34 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     /* Each if and else body has their own scope/symbol table */
     ExprNode expr = (ExprNode) visit(ctx.expr());
+    /* If condition is an constant and known value, can evaluate to corresponding body eg. if(false) then a else b can
+    be optimized to b
+     */
+    if (expr instanceof BooleanLiteralNode) {
+      if (((BooleanLiteralNode) expr).getValue()) {
+        SymbolTable trueBodySymbolTable = new SymbolTable(currentSymbolTable);
+        currentSymbolTable = trueBodySymbolTable;
+        StatNode trueBody = (StatNode) visit(ctx.stat(0));
+        currentSymbolTable = trueBodySymbolTable.getParentSymbolTable();
+        return trueBody;
+      } else {
+        SymbolTable falseBodySymbolTable =
+            new SymbolTable(currentSymbolTable.getParentSymbolTable());
+        currentSymbolTable = falseBodySymbolTable;
+        StatNode falseBody = (StatNode) visit(ctx.stat(1));
+        currentSymbolTable = falseBodySymbolTable.getParentSymbolTable();
+        return falseBody;
+      }
+    }
+
     SymbolTable trueBodySymbolTable = new SymbolTable(currentSymbolTable);
     currentSymbolTable = trueBodySymbolTable;
     StatNode trueBody = (StatNode) visit(ctx.stat(0));
+
     SymbolTable falseBodySymbolTable = new SymbolTable(trueBodySymbolTable.getParentSymbolTable());
     currentSymbolTable = falseBodySymbolTable;
     StatNode falseBody = (StatNode) visit(ctx.stat(1));
+
     currentSymbolTable = falseBodySymbolTable.getParentSymbolTable();
     ConditionalBranchNode node =
         new ConditionalBranchNode(

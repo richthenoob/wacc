@@ -1,0 +1,4 @@
+begin
+   int i = 5;
+   if true then i = 6 else i = 7 fi
+end
