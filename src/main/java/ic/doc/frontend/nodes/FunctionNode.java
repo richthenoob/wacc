@@ -8,11 +8,7 @@ import ic.doc.backend.instructions.LoadLiterals;
 import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.errors.SyntaxException;
-import ic.doc.frontend.nodes.statnodes.ConditionalBranchNode;
-import ic.doc.frontend.nodes.statnodes.ExitNode;
-import ic.doc.frontend.nodes.statnodes.FunctionReturnNode;
-import ic.doc.frontend.nodes.statnodes.SequentialCompositionNode;
-import ic.doc.frontend.nodes.statnodes.StatNode;
+import ic.doc.frontend.nodes.statnodes.*;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.Type;
@@ -105,6 +101,10 @@ public class FunctionNode extends Node {
       StatNode trueBody = condNode.getTrueBody();
       StatNode falseBody = condNode.getFalseBody();
       return endsWithReturnOrExit(trueBody) && endsWithReturnOrExit(falseBody);
+    }
+
+    if(stat instanceof ScopingNode) {
+      return endsWithReturnOrExit(((ScopingNode) stat).getStatNode());
     }
 
     return false;
