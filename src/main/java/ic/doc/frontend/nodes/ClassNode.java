@@ -1,15 +1,20 @@
 package ic.doc.frontend.nodes;
 
 import ic.doc.backend.Context;
-
 import ic.doc.backend.Label;
 import ic.doc.backend.instructions.Instruction;
 import ic.doc.backend.instructions.LoadLiterals;
+import ic.doc.backend.instructions.Move;
+import ic.doc.backend.instructions.SingleDataTransfer;
 import ic.doc.backend.instructions.Stack;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.PostIndexedAddressOperand;
 import ic.doc.backend.instructions.operands.RegisterOperand;
+import ic.doc.frontend.identifiers.VariableIdentifier;
+import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,7 +50,8 @@ public class ClassNode extends Node {
       String fieldName = field.getInput();
       if (!duplicateFields.add(fieldName)) {
         visitor.getSemanticErrorList()
-            .addScopeException(ctx, true, field.getType().toString(), fieldName);
+            .addScopeException(ctx, true, field.getType().toString(),
+                fieldName);
       }
     }
 
@@ -61,9 +67,8 @@ public class ClassNode extends Node {
 
     /* Add class init label. */
     context.setScope(classSymbolTable);
-    createClassInit(context);
-
     classFields.translate(context);
+    createClassInit(context);
 
     context.setCurrentClass(className);
     for (FunctionNode node : classFunctions) {
@@ -80,7 +85,44 @@ public class ClassNode extends Node {
     context.getInstructionLabels().add(classInitLabel);
     classInitLabel.addToBody(Stack.PUSH(RegisterOperand.LR));
 
+    /* Store zero into R1, so that we can write this to the relevant addresses later on. */
+    ImmediateOperand<Integer> zeroOperand = new ImmediateOperand<>(0)
+        .withPrefixSymbol("#");
+    classInitLabel.addToBody(Move.MOV(RegisterOperand.R1, zeroOperand));
 
+    /* Go through each field and make sure values are set to 0. */
+    for (ParamNode field : classFields.getParams()) {
+
+      /* First find offset of field within class. */
+      SymbolKey fieldKey = new SymbolKey(field.getInput(), KeyTypes.VARIABLE);
+      VariableIdentifier fieldIdentifier =
+          (VariableIdentifier) classSymbolTable.lookup(fieldKey);
+      int offset = fieldIdentifier.getOffsetStack(classSymbolTable, fieldKey);
+
+      /* Store contents of r1 (previously set to 0) to
+       * address of r0 (instance address) + offset of field within address
+       * STR r1, [r0], #offset */
+      PostIndexedAddressOperand addressOperand = new PostIndexedAddressOperand()
+          .withRN(RegisterOperand.R0)
+          .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"));
+      SingleDataTransfer initialiseFieldZeroInst =
+          SingleDataTransfer.STR(RegisterOperand.R1, addressOperand);
+
+      int fieldSize = field.getType().getVarSize();
+
+      /* Only store 1 byte if writing to char or bool type field. */
+      if (fieldSize == 1) {
+        initialiseFieldZeroInst = initialiseFieldZeroInst.withCond("B");
+      } else if (fieldSize == 4) {
+        /* No conditions needed. */
+      } else {
+        throw new IllegalStateException(
+            "Field \"" + field.getType() + "\" in class " + className
+                + " has invalid field size!");
+      }
+
+      classInitLabel.addToBody(initialiseFieldZeroInst);
+    }
 
     classInitLabel.addToBody(Stack.POP(RegisterOperand.PC));
     classInitLabel.addToBody(new LoadLiterals());

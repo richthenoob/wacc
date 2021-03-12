@@ -1,9 +1,18 @@
 package ic.doc.frontend.nodes.statnodes;
 
 import ic.doc.backend.Context;
+import ic.doc.backend.instructions.Branch;
+import ic.doc.backend.instructions.DataProcessing;
+import ic.doc.backend.instructions.Move;
+import ic.doc.backend.instructions.SingleDataTransfer;
+import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
+import ic.doc.backend.instructions.operands.RegisterOperand;
+import ic.doc.frontend.identifiers.ClassIdentifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.ClassVariableNode;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
+import ic.doc.frontend.nodes.exprnodes.VariableNode;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
@@ -77,6 +86,39 @@ public class ClassAssignmentNode extends AssignmentNode {
   @Override
   public void translate(Context context) {
 
-  }
+    /* Sanity checks. */
+    assert (getLhs() instanceof VariableNode);
+    assert (getLhs().getType() instanceof ClassType);
 
+    SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
+
+    /* Find classNode. */
+    String className = classIdent.getName();
+    SymbolKey classKey = new SymbolKey(className, KeyTypes.CLASS);
+    ClassIdentifier classIdentifier = (ClassIdentifier) currentSymbolTable
+        .lookupAll(classKey);
+    SymbolTable classSymbolTable = classIdentifier.getClassSymbolTable();
+
+    /* Subtract SP by 4 to make space for new instance variable. */
+    context.addToCurrentLabel(
+        DataProcessing.SUB(
+            RegisterOperand.SP,
+            RegisterOperand.SP, // todo: remove magic number 4
+            new ImmediateOperand<>(4).withPrefixSymbol("#")));
+
+    /* Malloc space on heap for class instance. */
+    context.addToCurrentLabel(Move.MOV(RegisterOperand.R0,
+        new ImmediateOperand<>(classSymbolTable.getParametersSizeInBytes())
+            .withPrefixSymbol("#")));
+    context.addToCurrentLabel(Branch.BL("malloc"));
+
+    /* Initialise class. */
+    context.addToCurrentLabel(Branch.BL("c_" + className + "_init"));
+
+    /* Write address of class instance to variable on stack. */
+    context.addToCurrentLabel(SingleDataTransfer.STR(RegisterOperand.R0,
+        new PreIndexedAddressOperand(RegisterOperand.SP)));
+    currentSymbolTable.incrementOffset(4);
+    currentSymbolTable.incrementTableSizeInBytes(4);
+  }
 }
