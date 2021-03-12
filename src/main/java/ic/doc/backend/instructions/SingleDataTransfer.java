@@ -32,7 +32,9 @@ public class SingleDataTransfer extends Instruction {
   public boolean optimizable(SingleDataTransfer prev) {
     Operand fst = prev.dst;
     Operand snd = prev.expr;
-    return (!prev.loadFlag && loadFlag && fst.equals(dst) && snd.equals(expr));
+    boolean b = fst.equals(dst);
+    boolean c = snd.equals(expr);
+    return (!prev.loadFlag && loadFlag && b && c);
   }
 
   @Override
