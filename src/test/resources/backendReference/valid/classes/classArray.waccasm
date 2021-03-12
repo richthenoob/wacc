@@ -1,0 +1,30 @@
+# a simple class is declared, and a nested array in it is assigned and accessed.
+
+# Output:
+# 3
+# 3
+
+# Program:
+
+begin
+  class c {
+    int[] a,
+    int[] b,
+    int[][] c
+  }
+  c class1 = new c();
+  class1.a = [1,2,3];
+  class1.b = [3,4];
+  class1.c = [class1.a,class1.b];
+  int[][] v = class1.c;
+  println v[0][2];
+  println v[1][0]
+end
+
+-- Executing...
+===========================================================
+3
+3
+===========================================================
+The exit code is 0.
+-- Finished

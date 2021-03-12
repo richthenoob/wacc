@@ -1,0 +1,27 @@
+# a simple class is declared, and the objects in it are assigned and accessed.
+
+# Output:
+# 4
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c
+    int f() is
+        return 0
+    end
+  }
+  c class1 = new c() ;
+  class1.t = 4 ;
+  int y = class1.t ;
+  println y
+end
+
+-- Executing...
+===========================================================
+4
+===========================================================
+The exit code is 0.
+-- Finished
