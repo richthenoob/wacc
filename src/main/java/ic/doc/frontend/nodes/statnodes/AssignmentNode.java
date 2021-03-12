@@ -6,10 +6,11 @@ import ic.doc.backend.instructions.*;
 import ic.doc.backend.instructions.operands.ImmediateOperand;
 import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.instructions.operands.RegisterOperand;
-import ic.doc.backend.Label;
+
 import ic.doc.backend.PredefinedFunctions;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.ArrayElementNode;
+import ic.doc.frontend.nodes.exprnodes.ClassFieldVariableNode;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.nodes.exprnodes.PairElementNode;
 import ic.doc.frontend.nodes.exprnodes.VariableNode;
@@ -151,7 +152,11 @@ public class AssignmentNode extends StatNode {
         offset = translateLHSNonDeclaration(context);
       }
     }
-    rhs.translate(context);
+    if (rhs instanceof ClassFieldVariableNode) {
+      ((ClassFieldVariableNode) rhs).translateClassFieldVariableRHS(context);
+    } else {
+      rhs.translate(context);
+    }
 
     if (rhs instanceof PairElementNode) {
       /* Load address of pair element to rhs */
