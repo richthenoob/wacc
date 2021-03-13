@@ -107,38 +107,26 @@ public class PairElementNode extends ExprNode {
 
   /* Helper method for translating pair element node */
   public int translatePairElementNodeLHS(Context context) {
-
-    SymbolTable st = context.getCurrentSymbolTable();
-    String name = ((VariableNode) expr).getName();
-    SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
-    VariableIdentifier id = (VariableIdentifier) context.getCurrentSymbolTable().lookupAll(key);
-    int offset =  id.getOffsetStack(st, key);
-
-    RegisterOperand tempReg = new RegisterOperand(context.getFreeRegister());
-    boolean isFst = getPos().equals(PairElementNode.PairPosition.FST);
-
     /* Translate expression within this node first. This should
      * always return an address at a specified register.
      * This address is the address of the pair, not elements of the value in
      * the pair. */
-    setRegister(tempReg);
-
-    /* Load memory address of the pair into a temporary register */
-    context.addToCurrentLabel(
-        LDR(tempReg,
-            new PreIndexedAddressOperand(RegisterOperand.SP)
-                .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
+    expr.translate(context);
+    RegisterOperand exprReg = expr.getRegister();
+    boolean isFst = getPos().equals(PairElementNode.PairPosition.FST);
 
     /* Check whether the address of the pair points to a null value */
-    context.addToCurrentLabel(MOV(RegisterOperand.R0, tempReg));
+    context.addToCurrentLabel(MOV(RegisterOperand.R0, exprReg));
     PredefinedFunctions.addCheckNullPointerFunction(context);
     context.addToCurrentLabel(BL(PredefinedFunctions.CHECK_NULL_POINTER_FUNC));
 
     /* Load memory address of the pair element into a temporary register */
     context.addToCurrentLabel(
-        LDR(tempReg,
-            new PreIndexedAddressOperand(tempReg)
+        LDR(exprReg,
+            new PreIndexedAddressOperand(exprReg)
                 .withExpr(new ImmediateOperand<>(isFst ? 0 : 4).withPrefixSymbol("#"))));
+
+    setRegister(exprReg);
 
     return 0;
   }

@@ -255,17 +255,6 @@ public class AssignmentNode extends StatNode {
     /* LHS MUST be a VariableNode, other cases are already
      * caught before the call to this function. Return the location of
      * this variable on the stack. */
-
-    if (lhs instanceof PairElementNode) {
-      VariableNode lhsVar = (VariableNode) ((PairElementNode) lhs).getExpr();
-      String name = lhsVar.getName();
-      SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
-      VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-      return id.getOffsetStack(symbolTable, key);
-    }
-
-
-
     assert (lhs instanceof VariableNode);
 
     VariableNode lhsVar = (VariableNode) lhs;
