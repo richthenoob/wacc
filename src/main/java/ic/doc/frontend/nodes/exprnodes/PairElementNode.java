@@ -78,21 +78,58 @@ public class PairElementNode extends ExprNode {
 
   @Override
   public void translate(Context context) {
+    throw new UnsupportedOperationException("Do not use translate() on"
+        + "PairElementNode. Use its helper functions instead.");
+  }
+
+  public void translatePairElementNodeRHS(Context context) {
     /* Get register in which expression valued is stored, and set it as the register of this node. */
     expr.translate(context);
-    RegisterOperand reg = expr.getRegister();
-    setRegister(reg);
+    RegisterOperand exprRegister = expr.getRegister();
     Label<Instruction> curr = context.getCurrentLabel();
 
+    /* Retrieve address of element from memory at offset according to position in pair */
+    int offset = pos.equals(PairPosition.FST) ? 0 : Context.SIZE_OF_ADDRESS;
+    curr.addToBody(LDR(exprRegister,
+        new PreIndexedAddressOperand(exprRegister)
+            .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
+
     /* Move expression to R0 for null pointer check */
-    curr.addToBody(MOV(RegisterOperand.R0, reg));
+    curr.addToBody(MOV(RegisterOperand.R0, exprRegister));
     PredefinedFunctions.addCheckNullPointerFunction(context);
     curr.addToBody(BL("p_check_null_pointer"));
 
-    /* Retrieve value of element from memory at offset according to position in pair */
-    int offset = pos.equals(PairPosition.FST) ? 0 : Context.SIZE_OF_ADDRESS;
-    curr.addToBody(LDR(reg,
-        new PreIndexedAddressOperand(reg)
-        .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
+    /* Dereference heap address to find actual value. */
+    curr.addToBody(LDR(exprRegister,
+        new PreIndexedAddressOperand(exprRegister)));
+
+    setRegister(exprRegister);
+  }
+
+  /* Helper method for translating pair element node */
+  public int translatePairElementNodeLHS(Context context) {
+    /* Translate expression within this node first. This should
+     * always return an address at a specified register.
+     * This address is the address of the pair, not elements of the value in
+     * the pair. */
+    expr.translate(context);
+    RegisterOperand exprRegister = expr.getRegister();
+    setRegister(exprRegister);
+
+    boolean isFst = getPos().equals(PairElementNode.PairPosition.FST);
+    int offset = isFst ? 0 : 4;
+
+    /* Load memory address of the pair back into the same register */
+    context.addToCurrentLabel(
+        LDR(exprRegister,
+            new PreIndexedAddressOperand(exprRegister)
+                .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
+
+    /* Check whether the address of the pair points to a null value */
+    context.addToCurrentLabel(MOV(RegisterOperand.R0, exprRegister));
+    PredefinedFunctions.addCheckNullPointerFunction(context);
+    context.addToCurrentLabel(BL(PredefinedFunctions.CHECK_NULL_POINTER_FUNC));
+
+    return 0;
   }
 }

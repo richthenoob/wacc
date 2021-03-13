@@ -1,6 +1,7 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import ic.doc.backend.Context;
+import ic.doc.backend.instructions.DataProcessing;
 import ic.doc.backend.instructions.SingleDataTransfer;
 import ic.doc.backend.instructions.operands.ImmediateOperand;
 import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
@@ -80,8 +81,56 @@ public class ClassFieldVariableNode extends VariableNode {
   /* Use this function if the class field variable occurs on the LHS of
    * an assignment, e.g. c.x = 1
    * This loads the address of the field into a new register. */
-  public void translateClassFieldVariableLHS(Context context) {
+  public int translateClassFieldVariableLHS(Context context) {
+    /* Find instance of class in current symbol table. */
+    SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
+    SymbolKey classInstanceKey = new SymbolKey(classInstance,
+        KeyTypes.VARIABLE);
+    VariableIdentifier classInstanceIdentifier =
+        (VariableIdentifier) currentSymbolTable.lookupAll(classInstanceKey);
 
+    /* Find class in symbol table that corresponds to this instance. */
+    SymbolKey classKey = new SymbolKey(
+        ((ClassType) classInstanceIdentifier.getType()).getClassName(),
+        KeyTypes.CLASS);
+    SymbolTable classSymbolTable = ((ClassIdentifier) currentSymbolTable
+        .lookupAll(classKey)).getClassSymbolTable();
+
+    /* Find field in class symbol table. */
+    SymbolKey fieldKey = new SymbolKey(varName, KeyTypes.VARIABLE);
+    VariableIdentifier fieldIdentifier = (VariableIdentifier) classSymbolTable
+        .lookup(fieldKey);
+
+    /* Obtain offsets accordingly.*/
+    int classInstanceOffset = classInstanceIdentifier
+        .getOffsetStack(currentSymbolTable, classInstanceKey);
+    int fieldOffset = fieldIdentifier
+        .getOffsetStack(classSymbolTable, fieldKey);
+
+    /* First load address of class instance into a free register.
+     * LDR [instanceReg] [sp, #classInstOffset] */
+    RegisterOperand classInstanceRegister = new RegisterOperand(
+        context.getFreeRegister());
+    PreIndexedAddressOperand classInstanceAddrOperand =
+        new PreIndexedAddressOperand(RegisterOperand.SP)
+            .withExpr(new ImmediateOperand<>(classInstanceOffset)
+                .withPrefixSymbol("#"));
+    SingleDataTransfer loadClassInstanceInst =
+        SingleDataTransfer.LDR(classInstanceRegister, classInstanceAddrOperand);
+    context.addToCurrentLabel(loadClassInstanceInst);
+
+    /* Copy address into output register and add to it.
+     * ADD outputReg, instanceReg, #fieldOffset */
+    RegisterOperand outputRegister = new RegisterOperand(
+        context.getFreeRegister());
+//    DataProcessing copyAddrAndAddInst = DataProcessing
+//        .ADD(outputRegister, classInstanceRegister,
+//            new ImmediateOperand<>(fieldOffset).withPrefixSymbol("#"));
+
+//    context.addToCurrentLabel(copyAddrAndAddInst);
+    setRegister(outputRegister);
+    context.freeRegister(classInstanceRegister.getValue());
+    return fieldOffset;
   }
 
   /* Use this function if the class field variable occurs on the LHS of
@@ -119,17 +168,21 @@ public class ClassFieldVariableNode extends VariableNode {
         context.getFreeRegister());
     PreIndexedAddressOperand classInstanceAddrOperand =
         new PreIndexedAddressOperand(RegisterOperand.SP)
-            .withExpr(new ImmediateOperand<>(classInstanceOffset).withPrefixSymbol("#"));
+            .withExpr(new ImmediateOperand<>(classInstanceOffset)
+                .withPrefixSymbol("#"));
     SingleDataTransfer loadClassInstanceInst =
         SingleDataTransfer.LDR(classInstanceRegister, classInstanceAddrOperand);
+    context.addToCurrentLabel(loadClassInstanceInst);
 
     /* Read and load value into new register.
      * LDR [outputReg] [instanceReg, #fieldOffset] */
     RegisterOperand outputRegister = new RegisterOperand(
         context.getFreeRegister());
-    PreIndexedAddressOperand addressOperand = new PreIndexedAddressOperand(classInstanceRegister)
+    PreIndexedAddressOperand addressOperand = new PreIndexedAddressOperand(
+        classInstanceRegister)
         .withExpr(new ImmediateOperand<>(fieldOffset).withPrefixSymbol("#"));
-    SingleDataTransfer loadValueInst = SingleDataTransfer.LDR(outputRegister, addressOperand);
+    SingleDataTransfer loadValueInst = SingleDataTransfer
+        .LDR(outputRegister, addressOperand);
 
     /* Only load 1 byte if field is char or bool. */
     if (fieldIdentifier.getType().getVarSize() == 1) {
@@ -137,7 +190,6 @@ public class ClassFieldVariableNode extends VariableNode {
     }
 
     /* Actually add instructions to label. */
-    context.addToCurrentLabel(loadClassInstanceInst);
     context.addToCurrentLabel(loadValueInst);
     setRegister(outputRegister);
     context.freeRegister(classInstanceRegister.getValue());
