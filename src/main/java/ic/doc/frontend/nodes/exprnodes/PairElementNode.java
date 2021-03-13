@@ -82,10 +82,6 @@ public class PairElementNode extends ExprNode {
 
   @Override
   public void translate(Context context) {
-    translatePairElementNodeRHS(context);
-  }
-
-  public void translatePairElementNodeRHS(Context context) {
     /* Get register in which expression valued is stored, and set it as the register of this node. */
     expr.translate(context);
     RegisterOperand exprRegister = expr.getRegister();
@@ -103,6 +99,10 @@ public class PairElementNode extends ExprNode {
             .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
 
     setRegister(exprRegister);
+  }
+
+  public void translatePairElementNodeRHS(Context context) {
+    translate(context);
   }
 
   /* Helper method for translating pair element node */
