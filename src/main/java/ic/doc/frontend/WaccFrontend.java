@@ -20,63 +20,13 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import static ic.doc.frontend.utils.fsUtils.parseRootFile;
+import static ic.doc.frontend.utils.fsUtils.parseWaccFile;
+
 public class WaccFrontend {
 
   public static final Integer SYNTAX_EXIT_CODE = 100;
   public static final Integer SEMANTIC_EXIT_CODE = 200;
-
-  public static ProgNode parse(String baseFile, InputStream inputStream) throws IOException {
-
-    CharStream charStream = CharStreams.fromStream(inputStream);
-
-    /* Create a lexer that feeds off of input CharStream */
-    BasicLexer lexer = new BasicLexer(charStream);
-
-    /* Create a buffer of tokens pulled from the lexer */
-    CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-    /* Create a parser that feeds off the tokens buffer */
-    BasicParser parser = new BasicParser(tokens);
-
-    /* Remove ConsoleErrorListener and our custom error listener */
-    parser.removeErrorListeners();
-    parser.addErrorListener(new ErrorListener());
-
-    /* Begin parsing at prog rule */
-    ParseTree tree = parser.prog();
-
-    /* baseDirectory */
-    int idx = 0;
-    for(int i = baseFile.length() - 1; i >= 0; i--){
-      char c = baseFile.charAt(i);
-      if(c == '/'){
-        idx = i;
-        break;
-      }
-    }
-
-    String baseDirectory = baseFile.substring(0, idx);
-    if(baseDirectory.length() != 0){
-      baseDirectory = baseDirectory + "/";
-    }
-    Visitor visitor = new Visitor(baseDirectory);
-    ProgNode rootNode = (ProgNode) visitor.visit(tree);
-
-    if (!visitor.getSemanticErrorList().getSemanticErrors().isEmpty()) {
-      System.err.println("Error messages from compiler:");
-      visitor.getSemanticErrorList().sortErrors();
-      for (int i = 0;
-          i < visitor.getSemanticErrorList().getSemanticErrors().size();
-          i++) {
-        System.err.println(visitor.getSemanticErrorList()
-            .getSemanticErrors()
-            .get(i));
-      }
-      throw new SemanticException();
-    }
-
-    return rootNode;
-  }
 
   public static void main(String[] args) throws IOException {
 
@@ -93,7 +43,7 @@ public class WaccFrontend {
     if (file.exists()) {
       InputStream inputStream = new FileInputStream(file);
       try {
-        ProgNode rootNode = parse(filename, inputStream);
+        ProgNode rootNode = parseRootFile(file.getCanonicalPath(), inputStream);
         String output = WaccBackend.generateCode(rootNode);
         /* Strips .wacc file extension and adds .s before writing to file. */
         Path p = Paths.get(filename);

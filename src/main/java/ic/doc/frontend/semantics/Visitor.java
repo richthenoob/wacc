@@ -20,13 +20,16 @@ import ic.doc.frontend.types.*;
 import ic.doc.frontend.nodes.TypeNode;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import static ic.doc.frontend.nodes.ImportVisitorNode.magicallyParse;
+import static ic.doc.frontend.utils.fsUtils.parseImportedFile;
 
 public class Visitor extends BasicParserBaseVisitor<Node> {
 
@@ -42,10 +45,10 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return semanticErrorList;
   }
 
-  String baseDirectory;
+  private String filePath;
 
-  public Visitor(String baseDirectory){
-    this.baseDirectory = baseDirectory;
+  public Visitor(String filePath){
+    this.filePath = filePath;
   }
 
   /* Called once at the start of any program eg. begin FUNCTIONS STATEMENT end
@@ -59,20 +62,28 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     List<FuncContext> functionCtxs = ctx.func();
     List<FunctionNode> functionNodes = new ArrayList<>();
 
-    List<String> imports = new ArrayList<>();
+    Set<String> imports = new HashSet<>();
+    /* We add the root file to the imports so that other
+     * imported files know that the root file has already been "imported" */
+    imports.add(filePath);
+    String baseDirectory = (Paths.get(filePath)).getParent().toString();
 
     for(IncludeContext i : includeCtxs){
       ImportNode node = (ImportNode) visit(i);
-      String fileDirectory = baseDirectory + node.getFileName();
-      System.out.println(fileDirectory);
-      imports.add(fileDirectory);
+      /* Resolves the file against the current directory and normalize it to remove . and .. */
+      String includedFilePath = Paths.get(baseDirectory).resolve(node.getFileName()).normalize().toString();
+      imports.add(includedFilePath);
     }
 
-    List<FuncContext> importFunctions = new ArrayList<>();
+    List<FuncContext> importedFunctions = new ArrayList<>();
     for(String file : imports){
+      /* We don't want to parse the main file twice */
+      if(file.equals(filePath)){
+        continue;
+      }
       try {
-        List<BasicParser.FuncContext> funcCtxs = magicallyParse(file);
-        importFunctions.addAll(funcCtxs);
+        List<BasicParser.FuncContext> funcCtxs = parseImportedFile(file, imports);
+        importedFunctions.addAll(funcCtxs);
       } catch(IllegalArgumentException e){
         semanticErrorList.addException(ctx, e.getMessage());
       } catch(IOException e){
@@ -80,7 +91,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       }
     }
 
-    for (FuncContext f : importFunctions){
+    for (FuncContext f : importedFunctions){
       declareFunction(f);
     }
 
@@ -89,7 +100,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     }
 
 
-    for (FuncContext f : importFunctions){
+    for (FuncContext f : importedFunctions){
       functionNodes.add((FunctionNode) visit(f));
     }
 

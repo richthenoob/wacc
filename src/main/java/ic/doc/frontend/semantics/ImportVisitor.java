@@ -6,17 +6,23 @@ import ic.doc.frontend.errors.SemanticErrorList;
 import ic.doc.frontend.nodes.*;
 import ic.doc.frontend.nodes.statnodes.StatNode;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import static ic.doc.frontend.nodes.ImportVisitorNode.magicallyParse;
+import static ic.doc.frontend.utils.fsUtils.parseImportedFile;
 
 public class ImportVisitor extends BasicParserBaseVisitor<Node> {
   private String baseDirectory;
+  private Set<String> allImports;
 
-  public ImportVisitor(String baseDirectory){
+  public ImportVisitor(String baseDirectory, Set<String> allImports){
     this.baseDirectory = baseDirectory;
+    this.allImports = allImports;
   }
 
   @Override
@@ -28,16 +34,21 @@ public class ImportVisitor extends BasicParserBaseVisitor<Node> {
 
     for(BasicParser.IncludeContext i : includeCtxs){
       ImportNode node = (ImportNode) visit(i);
-      String fileDirectory = baseDirectory + node.getFileName();
-      System.out.println(fileDirectory);
-      imports.add(fileDirectory);
+      /* Resolves the file against the current directory and normalize it to remove . and .. */
+      String includedFilePath = Paths.get(baseDirectory).resolve(node.getFileName()).normalize().toString();
+      imports.add(includedFilePath);
     }
 
     ImportVisitorNode node = new ImportVisitorNode();
 
     for(String file : imports){
+      /* Ignore any file that has already been imported */
+      if(allImports.contains(file)){
+        continue;
+      }
+      allImports.add(file);
       try {
-        List<BasicParser.FuncContext> funcCtxs = magicallyParse(file);
+        List<BasicParser.FuncContext> funcCtxs = parseImportedFile(file, allImports);
         for(BasicParser.FuncContext funcCtx : funcCtxs){
           node.addFuncCtx(funcCtx);
         }
@@ -45,7 +56,6 @@ public class ImportVisitor extends BasicParserBaseVisitor<Node> {
         throw new IllegalArgumentException("File not found");
       }
     }
-
 
     for(BasicParser.FuncContext funcCtx : functionCtxs){
       node.addFuncCtx(funcCtx);

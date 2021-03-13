@@ -10,6 +10,7 @@ import ic.doc.frontend.WaccFrontend;
 import ic.doc.frontend.errors.SemanticException;
 import ic.doc.frontend.errors.SyntaxException;
 import ic.doc.frontend.nodes.ProgNode;
+import ic.doc.frontend.utils.fsUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -73,7 +74,7 @@ public abstract class AbstractFrontendTest {
     String absolutePath = this.getClass().getResource(path).getPath();
 
     try {
-      rootNode = WaccFrontend.parse(absolutePath, inputStream);
+      rootNode = fsUtils.parseRootFile(absolutePath, inputStream);
     } catch (SyntaxException e) {
       rootNode = null;
       frontendExitCode = SYNTAX_EXIT_CODE;
