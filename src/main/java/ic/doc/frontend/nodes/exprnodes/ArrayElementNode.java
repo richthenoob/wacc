@@ -111,13 +111,12 @@ public class ArrayElementNode extends ExprNode {
   }
 
   /* Takes care of loading the correct elements of the array in the proper locations relative to the array pointer */
-  public static RegisterOperand translateArray(Context context,
-      ArrayElementNode array) {
+  public int translateArrayElemLHS(Context context) {
     Label<Instruction> label = context.getCurrentLabel();
     SymbolTable symbolTable = context.getCurrentSymbolTable();
 
     /* Find stack offset for array pointer */
-    VariableNode lhsVar = array.getIdentNode();
+    VariableNode lhsVar = getIdentNode();
     String name = lhsVar.getName();
     SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
     VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
@@ -125,7 +124,7 @@ public class ArrayElementNode extends ExprNode {
 
     RegisterOperand arrayReg = new RegisterOperand(context.getFreeRegister());
     RegisterOperand indexReg = new RegisterOperand(context.getFreeRegister());
-    List<ExprNode> arrays = array.getExprNodes();
+    List<ExprNode> arrays = getExprNodes();
 
     for (int i = 0; i < arrays.size(); i++) {
       if (i == 0) {
@@ -178,7 +177,7 @@ public class ArrayElementNode extends ExprNode {
       label.addToBody(
           DataProcessing.ADD(arrayReg, arrayReg,
               new ImmediateOperand<>(Context.SIZE_OF_ADDRESS).withPrefixSymbol("#")));
-      Type internalType = ((ArrayType) (array.identNode.getType()))
+      Type internalType = ((ArrayType) (identNode.getType()))
           .getInternalType();
       if (internalType.getVarSize() == 1) {
         label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, indexReg));
@@ -193,13 +192,21 @@ public class ArrayElementNode extends ExprNode {
       }
     }
     context.freeRegister(indexReg.getValue());
-    return arrayReg;
+    setRegister(arrayReg);
+
+    return 0;
+  }
+
+  /* Helper function for AssignmentNode, to conform to a single style of
+   * calling translate. */
+  public void translateArrayElemRHS(Context context) {
+    translate(context);
   }
 
   @Override
   public void translate(Context context) {
-    RegisterOperand arrayRegister = translateArray(context, this);
-    setRegister(arrayRegister);
+    translateArrayElemLHS(context);
+    RegisterOperand arrayRegister = getRegister();
 
     /* Load value at memory location */
     Type internalType = ((ArrayType) (identNode.getType())).getInternalType();

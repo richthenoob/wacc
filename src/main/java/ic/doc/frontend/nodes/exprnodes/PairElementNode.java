@@ -7,7 +7,11 @@ import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.backend.PredefinedFunctions;
+import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.Literals.PairLiteralNode;
+import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
+import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.PairType;
@@ -78,8 +82,7 @@ public class PairElementNode extends ExprNode {
 
   @Override
   public void translate(Context context) {
-    throw new UnsupportedOperationException("Do not use translate() on"
-        + "PairElementNode. Use its helper functions instead.");
+    translatePairElementNodeRHS(context);
   }
 
   public void translatePairElementNodeRHS(Context context) {
@@ -88,47 +91,54 @@ public class PairElementNode extends ExprNode {
     RegisterOperand exprRegister = expr.getRegister();
     Label<Instruction> curr = context.getCurrentLabel();
 
+    /* Move expression to R0 for null pointer check */
+    curr.addToBody(MOV(RegisterOperand.R0, exprRegister));
+    PredefinedFunctions.addCheckNullPointerFunction(context);
+    curr.addToBody(BL("p_check_null_pointer"));
+
     /* Retrieve address of element from memory at offset according to position in pair */
     int offset = pos.equals(PairPosition.FST) ? 0 : Context.SIZE_OF_ADDRESS;
     curr.addToBody(LDR(exprRegister,
         new PreIndexedAddressOperand(exprRegister)
             .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
 
-    /* Move expression to R0 for null pointer check */
-    curr.addToBody(MOV(RegisterOperand.R0, exprRegister));
-    PredefinedFunctions.addCheckNullPointerFunction(context);
-    curr.addToBody(BL("p_check_null_pointer"));
-
-    /* Dereference heap address to find actual value. */
-    curr.addToBody(LDR(exprRegister,
-        new PreIndexedAddressOperand(exprRegister)));
-
     setRegister(exprRegister);
   }
 
   /* Helper method for translating pair element node */
   public int translatePairElementNodeLHS(Context context) {
+
+    SymbolTable st = context.getCurrentSymbolTable();
+    String name = ((VariableNode) expr).getName();
+    SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
+    VariableIdentifier id = (VariableIdentifier) context.getCurrentSymbolTable().lookupAll(key);
+    int offset =  id.getOffsetStack(st, key);
+
+    RegisterOperand tempReg = new RegisterOperand(context.getFreeRegister());
+    boolean isFst = getPos().equals(PairElementNode.PairPosition.FST);
+
     /* Translate expression within this node first. This should
      * always return an address at a specified register.
      * This address is the address of the pair, not elements of the value in
      * the pair. */
-    expr.translate(context);
-    RegisterOperand exprRegister = expr.getRegister();
-    setRegister(exprRegister);
+    setRegister(tempReg);
 
-    boolean isFst = getPos().equals(PairElementNode.PairPosition.FST);
-    int offset = isFst ? 0 : 4;
-
-    /* Load memory address of the pair back into the same register */
+    /* Load memory address of the pair into a temporary register */
     context.addToCurrentLabel(
-        LDR(exprRegister,
-            new PreIndexedAddressOperand(exprRegister)
+        LDR(tempReg,
+            new PreIndexedAddressOperand(RegisterOperand.SP)
                 .withExpr(new ImmediateOperand<>(offset).withPrefixSymbol("#"))));
 
     /* Check whether the address of the pair points to a null value */
-    context.addToCurrentLabel(MOV(RegisterOperand.R0, exprRegister));
+    context.addToCurrentLabel(MOV(RegisterOperand.R0, tempReg));
     PredefinedFunctions.addCheckNullPointerFunction(context);
     context.addToCurrentLabel(BL(PredefinedFunctions.CHECK_NULL_POINTER_FUNC));
+
+    /* Load memory address of the pair element into a temporary register */
+    context.addToCurrentLabel(
+        LDR(tempReg,
+            new PreIndexedAddressOperand(tempReg)
+                .withExpr(new ImmediateOperand<>(isFst ? 0 : 4).withPrefixSymbol("#"))));
 
     return 0;
   }

@@ -6,7 +6,6 @@ import ic.doc.backend.instructions.operands.ImmediateOperand;
 import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.instructions.operands.RegisterOperand;
 
-import ic.doc.backend.PredefinedFunctions;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.ArrayElementNode;
 import ic.doc.frontend.nodes.exprnodes.ClassFieldVariableNode;
@@ -21,8 +20,6 @@ import ic.doc.frontend.types.*;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import static ic.doc.backend.instructions.Branch.BL;
-import static ic.doc.backend.instructions.Move.MOV;
 import static ic.doc.backend.instructions.SingleDataTransfer.LDR;
 
 public class AssignmentNode extends StatNode {
@@ -33,7 +30,8 @@ public class AssignmentNode extends StatNode {
   private final SymbolTable symbolTable;
 
   public AssignmentNode(
-      ExprNode lhs, ExprNode rhs, boolean isDeclaration, SymbolTable symbolTable) {
+      ExprNode lhs, ExprNode rhs, boolean isDeclaration,
+      SymbolTable symbolTable) {
     this.lhs = lhs;
     this.rhs = rhs;
     this.isDeclaration = isDeclaration;
@@ -62,7 +60,8 @@ public class AssignmentNode extends StatNode {
       /* If node corresponds to declarative assignment,
       variable must not have been already defined earlier */
       if (symbolTable.lookup(key) != null) {
-        visitor.getSemanticErrorList().addScopeException(ctx, true, "Variable", name);
+        visitor.getSemanticErrorList()
+            .addScopeException(ctx, true, "Variable", name);
       } else {
         symbolTable.add(key, new VariableIdentifier(lhs.getType()));
       }
@@ -133,18 +132,50 @@ public class AssignmentNode extends StatNode {
     }
   }
 
+  @Override
+  public void translate(Context context) {
+
+    int offset;
+    RegisterOperand base;
+    if (lhs instanceof PairElementNode) {
+      translateRHS(context);
+      offset = translateLHS(context);
+      base = lhs.getRegister();
+    } else {
+      offset = translateLHS(context);
+      base = lhs.getRegister();
+      translateRHS(context);
+    }
+
+    /* Stores 1 byte if char or bool with STRB, and 4 bytes otherwise with STR */
+    String strCond = lhs.getType().getVarSize() == 1 ? "B" : "";
+    context.addToCurrentLabel(
+        SingleDataTransfer.STR(
+            rhs.getRegister(),
+            new PreIndexedAddressOperand(base)
+                .withExpr(new ImmediateOperand<>(offset)
+                    .withPrefixSymbol("#")))
+            .withCond(strCond));
+
+    if (!lhs.getRegister().equals(RegisterOperand.SP)) {
+      context.freeRegister(base.getValue());
+    }
+    context.freeRegister(rhs.getRegister().getValue());
+  }
+
   /* Translate LHS must always return an offset and set its own node's
    * register.
    * The main translate function will copy values from RHS into
    * nodeRegister + offset. */
   private int translateLHS(Context context) {
-
     if (lhs instanceof ClassFieldVariableNode) {
-      return ((ClassFieldVariableNode) lhs).translateClassFieldVariableLHS(context);
+      return ((ClassFieldVariableNode) lhs)
+          .translateClassFieldVariableLHS(context);
     }
 
     if (lhs instanceof ArrayElementNode) {
-      throw new IllegalStateException("not implemented arrayelem lhs");
+      ((ArrayElementNode) lhs).translateArrayElemLHS(context);
+      return 0;
     }
 
     if (lhs instanceof PairElementNode) {
@@ -158,99 +189,29 @@ public class AssignmentNode extends StatNode {
     }
   }
 
+  /* Must always set register of RHS and load it with the correct value. */
   private void translateRHS(Context context) {
-
     if (rhs instanceof ClassFieldVariableNode) {
       ((ClassFieldVariableNode) rhs).translateClassFieldVariableRHS(context);
       return;
     }
 
     if (rhs instanceof ArrayElementNode) {
-      throw new IllegalStateException("not implemented arrayelem rhs");
+      ((ArrayElementNode) rhs).translateArrayElemRHS(context);
+      return;
     }
 
     if (rhs instanceof PairElementNode) {
       ((PairElementNode) rhs).translatePairElementNodeRHS(context);
+
+      /* Dereference heap address to find actual value. */
+      RegisterOperand exprRegister = rhs.getRegister();
+      context.addToCurrentLabel(LDR(exprRegister,
+          new PreIndexedAddressOperand(exprRegister)));
       return;
     }
 
-   rhs.translate(context);
-  }
-
-  @Override
-  public void translate(Context context) {
-
-    if (true) {
-      int offset = translateLHS(context);
-      translateRHS(context);
-      RegisterOperand base = lhs.getRegister();
-
-      /* Stores 1 byte if char or bool with STRB, and 4 bytes otherwise with STR */
-      String strCond = lhs.getType().getVarSize() == 1 ? "B" : "";
-      context.addToCurrentLabel(
-          SingleDataTransfer.STR(
-              rhs.getRegister(),
-              new PreIndexedAddressOperand(base)
-                  .withExpr(new ImmediateOperand<>(offset)
-                      .withPrefixSymbol("#")))
-              .withCond(strCond));
-
-        context.freeRegister(rhs.getRegister().getValue());
-      return;
-    }
-
-    int offset = 0;
-    SingleDataTransfer storeInstr;
-    RegisterOperand base = RegisterOperand.SP;
-
-    // move this into translateLHS
-    if (lhs instanceof ArrayElementNode) {
-      /* Special case when lhs is an arrayElementNode */
-      base = translateArrayElementNode(context);
-      offset = 0;
-    } else {
-      /* Need to distinguish between declarative statement and non declarative statement */
-      if (isDeclaration) {
-        offset = translateLHSDeclaration(context);
-      } else {
-        offset = translateLHSNonDeclaration(context);
-      }
-    }
-
-    if (rhs instanceof ClassFieldVariableNode) {
-      ((ClassFieldVariableNode) rhs).translateClassFieldVariableRHS(context);
-    } else {
-      rhs.translate(context);
-    }
-
-    if (rhs instanceof PairElementNode) {
-      /* Load address of pair element to rhs */
-      context.addToCurrentLabel(
-          LDR(rhs.getRegister(), new PreIndexedAddressOperand(rhs.getRegister())));
-    }
-
-    if (lhs instanceof PairElementNode) {
-      /* Loads pair element address to a free register */
-//      translatePairElementNode(base, offset, context);
-      return;
-    }
-
-    /* Stores 1 byte if char or bool with STRB, and 4 bytes otherwise with STR */
-    String strCond = lhs.getType().getVarSize() == 1 ? "B" : "";
-    context.addToCurrentLabel(
-        SingleDataTransfer.STR(
-            rhs.getRegister(),
-            new PreIndexedAddressOperand(base)
-                .withExpr(new ImmediateOperand<>(offset)
-                    .withPrefixSymbol("#")))
-            .withCond(strCond));
-
-    /* Frees unused registers after assignment */
-    context.freeRegister(rhs.getRegister().getValue());
-    /* Only frees base register for arrayElementNode as it is SP for other cases */
-    if (lhs instanceof ArrayElementNode) {
-      context.freeRegister(base.getValue());
-    }
+    rhs.translate(context);
   }
 
   /* New declaration, e.g. int i = 5
@@ -285,23 +246,16 @@ public class AssignmentNode extends StatNode {
             new ImmediateOperand<>(sizeOfVarOnStack).withPrefixSymbol("#")));
 
     lhsVar.setRegister(RegisterOperand.SP);
-
     return 0;
-  }
-
-  /* Helper method for translating array element node */
-  private RegisterOperand translateArrayElementNode(Context context) {
-    ArrayElementNode arrayElementNode = (ArrayElementNode) lhs;
-    return ArrayElementNode.translateArray(context, arrayElementNode);
   }
 
   /* Helper method for translating assignments into variables previously defined
    * e.g. i = 5 where i has already been pre-defined */
   private int translateLHSNonDeclaration(Context context) {
+    /* LHS MUST be a VariableNode, other cases are already
+     * caught before the call to this function. Return the location of
+     * this variable on the stack. */
 
-    /* FST p = 5 where p is a predefined pair where the first element is of
-     * type int. Return the location of this variable on the stack plus
-     * an offset, depending if it's the FST or SND pair. */
     if (lhs instanceof PairElementNode) {
       VariableNode lhsVar = (VariableNode) ((PairElementNode) lhs).getExpr();
       String name = lhsVar.getName();
@@ -310,8 +264,10 @@ public class AssignmentNode extends StatNode {
       return id.getOffsetStack(symbolTable, key);
     }
 
-    /* All other types, LHS MUST be a VariableNode. Return the location of
-     * this variable on the stack. */
+
+
+    assert (lhs instanceof VariableNode);
+
     VariableNode lhsVar = (VariableNode) lhs;
     String name = lhsVar.getName();
     SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
