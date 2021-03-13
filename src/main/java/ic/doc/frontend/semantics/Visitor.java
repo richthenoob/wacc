@@ -62,10 +62,11 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     List<FuncContext> functionCtxs = ctx.func();
     List<FunctionNode> functionNodes = new ArrayList<>();
 
-    Set<String> imports = new HashSet<>();
+    Set<String> allImports = new HashSet<>();
+    List<String> imports = new ArrayList<>();
     /* We add the root file to the imports so that other
      * imported files know that the root file has already been "imported" */
-    imports.add(filePath);
+    allImports.add(filePath);
     String baseDirectory = (Paths.get(filePath)).getParent().toString();
 
     for(IncludeContext i : includeCtxs){
@@ -73,16 +74,14 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       /* Resolves the file against the current directory and normalize it to remove . and .. */
       String includedFilePath = Paths.get(baseDirectory).resolve(node.getFileName()).normalize().toString();
       imports.add(includedFilePath);
+      allImports.add(includedFilePath);
     }
 
     List<FuncContext> importedFunctions = new ArrayList<>();
     for(String file : imports){
       /* We don't want to parse the main file twice */
-      if(file.equals(filePath)){
-        continue;
-      }
       try {
-        List<BasicParser.FuncContext> funcCtxs = parseImportedFile(file, imports);
+        List<BasicParser.FuncContext> funcCtxs = parseImportedFile(file, allImports);
         importedFunctions.addAll(funcCtxs);
       } catch(IllegalArgumentException e){
         semanticErrorList.addException(ctx, e.getMessage());
