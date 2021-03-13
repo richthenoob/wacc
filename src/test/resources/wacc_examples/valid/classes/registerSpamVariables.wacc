@@ -1,0 +1,44 @@
+# a class is declared with enough variables to occupy all registers,
+# and these variables are operated on.
+
+# Output:
+# 45
+
+# Program:
+
+begin
+  class c {
+    int t1,
+    int t2,
+    int t3,
+    int t4,
+    int t5,
+    int t6,
+    int t7,
+    int t8,
+    int t9
+    int f() is
+        t2 = t1 + t2;
+        t3 = t2 + t3;
+        t4 = t3 + t4;
+        t5 = t4 + t5;
+        t6 = t5 + t6;
+        t7 = t6 + t7;
+        t8 = t7 + t8;
+        t9 = t8 + t9;
+        return t9
+    end
+  }
+  c class1 = new c() ;
+  class1.t1 = 1 ;
+  class1.t2 = 2 ;
+  class1.t3 = 3 ;
+  class1.t4 = 4 ;
+  class1.t5 = 5 ;
+  class1.t6 = 6 ;
+  class1.t7 = 7 ;
+  class1.t8 = 8 ;
+  class1.t9 = 9 ;
+  int y = call class1.f();
+  println y
+end

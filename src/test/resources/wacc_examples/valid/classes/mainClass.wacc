@@ -1,0 +1,20 @@
+# a class that uses the same name for everything.
+# main also overlaps with the name of the main function label.
+
+# Output:
+# 5
+
+# Program:
+
+begin
+  class main {
+    int main
+    int main() is
+        return main + 1
+    end
+  }
+  main main = new main();
+  main.main = 4;
+  int y = call main.main();
+  println y
+end
