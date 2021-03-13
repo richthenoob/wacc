@@ -9,6 +9,7 @@ import ic.doc.backend.instructions.DataProcessing;
 import ic.doc.backend.instructions.operands.ImmediateOperand;
 import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.instructions.operands.RegisterOperand;
+import ic.doc.frontend.identifiers.ClassIdentifier;
 import ic.doc.frontend.identifiers.FunctionIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.nodes.ArgListNode;
@@ -93,14 +94,30 @@ public class CallNode extends ExprNode {
   @Override
   public void translate(Context context) {
 
-    /* Save the previous symbol table so that we can restore it
-     * after the function call. */
+    /* Find function table in class if we are in a classNode, else just
+     * find function table in context. */
+    SymbolTable funcTable;
+    String currentClass = context.getCurrentClass();
     SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
+    if (!currentClass.equals("")) {
+      SymbolKey classKey = new SymbolKey(currentClass, KeyTypes.CLASS);
+      ClassIdentifier classIdentifier = ((ClassIdentifier) currentSymbolTable
+          .lookupAll(classKey));
+      funcTable = classIdentifier.getClassNode().getFunctionTables().get(identifier);
+    } else {
+      funcTable = context.getFunctionTables().get(identifier);
+    }
 
-    /* Look up function symbol table from func name. Use counter to track
-     * the size of parameters that have been pushed onto the stack, ensuring
-     * to restore this at the end of the function call. */
-    SymbolTable funcTable = context.getFunctionTables().get(identifier);
+    translateCallNode(context, funcTable, currentClass);
+  }
+
+  /* Helper function for translating call nodes, since callClassFunctionNode
+   * does almost exactly the same thing. */
+  public void translateCallNode(Context context, SymbolTable funcTable, String currentClass) {
+
+    /* Use counter to track the size of parameters that have been pushed
+     * onto the stack, ensuring to restore this at the end of the function call. */
+    SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
     int counter = 0;
 
     for (int i = args.getParams().size() - 1; i >= 0; i--) {
@@ -148,7 +165,7 @@ public class CallNode extends ExprNode {
 
     /* Call the function then restore to previous scope.
      * Also restore any stack space used by parameters to the function. */
-    context.addToCurrentLabel(BL(context.getCurrentClass() + "_" + "f_" + identifier));
+    context.addToCurrentLabel(BL(currentClass + "_" + "f_" + identifier));
     context.addToCurrentLabel(DataProcessing
         .ADD(RegisterOperand.SP, RegisterOperand.SP,
             new ImmediateOperand<>(funcTable.getParametersSizeInBytes())

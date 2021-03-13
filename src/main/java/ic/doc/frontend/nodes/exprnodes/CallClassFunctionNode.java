@@ -6,6 +6,7 @@ import ic.doc.frontend.identifiers.FunctionIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.ArgListNode;
+import ic.doc.frontend.nodes.ClassNode;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
@@ -140,7 +141,25 @@ public class CallClassFunctionNode extends CallNode {
 
   @Override
   public void translate(Context context) {
-    throw new IllegalStateException("Translation of CallClassFunctionNode not implemented");
+    /* Find class instance in current symbol table. */
+    SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
+    SymbolKey classInstanceKey = new SymbolKey(classInstanceName,
+        KeyTypes.VARIABLE);
+    VariableIdentifier classInstanceIdentifier =
+        (VariableIdentifier) currentSymbolTable.lookupAll(classInstanceKey);
+
+    /* Find class in symbol table that corresponds to this instance. */
+    SymbolKey classKey = new SymbolKey(
+        ((ClassType) classInstanceIdentifier.getType()).getClassName(),
+        KeyTypes.CLASS);
+    ClassIdentifier classIdentifier = ((ClassIdentifier) currentSymbolTable
+        .lookupAll(classKey));
+
+    /* Find function symbol table from class node. */
+    ClassNode classNode = classIdentifier.getClassNode();
+    SymbolTable funcTable = classNode.getFunctionTables().get(getIdentifier());
+
+    translateCallNode(context, funcTable, classNode.getClassName());
   }
 
   @Override

@@ -15,8 +15,10 @@ import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -26,6 +28,7 @@ public class ClassNode extends Node {
   private final SymbolTable classSymbolTable;
   private final ParamListNode classFields;
   private final List<FunctionNode> classFunctions;
+  private final Map<String, SymbolTable> functionTables;
 
   public ClassNode(String className,
       SymbolTable classSymbolTable,
@@ -35,6 +38,15 @@ public class ClassNode extends Node {
     this.classSymbolTable = classSymbolTable;
     this.classFields = classFields;
     this.classFunctions = classFunctions;
+    functionTables = new HashMap<>();
+  }
+
+  public String getClassName() {
+    return className;
+  }
+
+  public Map<String, SymbolTable> getFunctionTables() {
+    return functionTables;
   }
 
   public SymbolTable getClassSymbolTable() {
@@ -71,6 +83,11 @@ public class ClassNode extends Node {
     createClassInit(context);
 
     context.setCurrentClass(className);
+    for (FunctionNode node : classFunctions) {
+      functionTables.put(node.getFuncName(), node.getFuncSymbolTable());
+      node.translateParameters(context);
+    }
+
     for (FunctionNode node : classFunctions) {
       node.translate(context);
     }
