@@ -9,12 +9,12 @@
 begin
   class main {
     int main
-    int main() is
+    int func() is
         return main + 1
     end
   }
   main main = new main();
   main.main = 4;
-  int y = call main.main();
+  int y = call main.func();
   println y
 end
