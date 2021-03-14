@@ -257,11 +257,28 @@ public class AssignmentNode extends StatNode {
      * this variable on the stack. */
     assert (lhs instanceof VariableNode);
 
+    SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
     VariableNode lhsVar = (VariableNode) lhs;
     String name = lhsVar.getName();
     SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
     VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
-    lhsVar.setRegister(RegisterOperand.SP);
-    return id.getOffsetStack(context.getCurrentSymbolTable(), key);
+
+    if (id.isClassVariable()) {
+      RegisterOperand classInstReg = new RegisterOperand(context.getFreeRegister());
+
+      SymbolKey classInstanceKey = new SymbolKey("specialname", KeyTypes.VARIABLE);
+      VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable.lookupAll(classInstanceKey);
+      SingleDataTransfer loadClassInstance = SingleDataTransfer.LDR(classInstReg,
+          new PreIndexedAddressOperand(RegisterOperand.SP)
+              .withExpr(new ImmediateOperand<>(classInstanceIdentifier
+                  .getOffsetStack(currentSymbolTable, classInstanceKey))
+                  .withPrefixSymbol("#")));
+      context.addToCurrentLabel(loadClassInstance);
+      lhsVar.setRegister(classInstReg);
+    } else {
+      lhsVar.setRegister(RegisterOperand.SP);
+    }
+
+    return id.getOffsetStack(currentSymbolTable, key);
   }
 }
