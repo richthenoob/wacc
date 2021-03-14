@@ -72,22 +72,13 @@ public class FunctionNode extends Node {
   @Override
   public void translate(Context context) {
     /* Create new label for function */
-    String currentClass = context.getCurrentClass();
-    Label<Instruction> funcLabel = new Label<>(currentClass +
+    Label<Instruction> funcLabel = new Label<>(context.getCurrentClass() +
        "_" + "f_" + funcName);
     context.getInstructionLabels().add(funcLabel);
     context.setCurrentLabel(funcLabel);
 
     /* Set up function routine. */
     context.setScope(funcSymbolTable);
-    if (!currentClass.isEmpty()) {
-      SymbolKey classInstanceKey = new SymbolKey("specialname", KeyTypes.VARIABLE);
-      VariableIdentifier classInstanceIdentifier = new VariableIdentifier(new ClassType(currentClass));
-      funcSymbolTable.add(classInstanceKey, classInstanceIdentifier);
-      funcSymbolTable.incrementOffset(Context.SIZE_OF_ADDRESS);
-      funcSymbolTable.incrementFunctionParametersSize(Context.SIZE_OF_ADDRESS);
-      classInstanceIdentifier.setActivated();
-    }
 
     context.addToCurrentLabel(PUSH(RegisterOperand.LR));
     funcSymbolTable.incrementOffset(Context.SIZE_OF_ADDRESS);
@@ -102,6 +93,17 @@ public class FunctionNode extends Node {
   public void translateParameters(Context context) {
     context.setScope(funcSymbolTable);
     paramListNode.translate(context);
+
+    /* Account for classInstance when called on a class function. */
+    String currentClass = context.getCurrentClass();
+    if (!currentClass.isEmpty()) {
+      SymbolKey classInstanceKey = new SymbolKey("specialname", KeyTypes.VARIABLE);
+      VariableIdentifier classInstanceIdentifier = new VariableIdentifier(new ClassType(currentClass));
+      funcSymbolTable.add(classInstanceKey, classInstanceIdentifier);
+      funcSymbolTable.incrementOffset(Context.SIZE_OF_ADDRESS);
+      funcSymbolTable.incrementFunctionParametersSize(Context.SIZE_OF_ADDRESS);
+      classInstanceIdentifier.setActivated();
+    }
   }
 
   private boolean endsWithReturnOrExit(StatNode stat) {
