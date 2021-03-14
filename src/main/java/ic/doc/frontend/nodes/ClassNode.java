@@ -79,10 +79,11 @@ public class ClassNode extends Node {
 
     /* Add class init label. */
     context.setScope(classSymbolTable);
-    classFields.translate(context);
-    createClassInit(context);
 
     context.setCurrentClass(className);
+    classFields.translateHelper(context, true);
+    createClassInit(context);
+
     for (FunctionNode node : classFunctions) {
       functionTables.put(node.getFuncName(), node.getFuncSymbolTable());
       node.translateParameters(context);

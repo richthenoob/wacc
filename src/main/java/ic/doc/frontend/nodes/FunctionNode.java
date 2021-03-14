@@ -8,13 +8,17 @@ import ic.doc.backend.instructions.LoadLiterals;
 import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.frontend.errors.SyntaxException;
+import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.statnodes.ConditionalBranchNode;
 import ic.doc.frontend.nodes.statnodes.ExitNode;
 import ic.doc.frontend.nodes.statnodes.FunctionReturnNode;
 import ic.doc.frontend.nodes.statnodes.SequentialCompositionNode;
 import ic.doc.frontend.nodes.statnodes.StatNode;
+import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
+import ic.doc.frontend.types.ClassType;
 import ic.doc.frontend.types.Type;
 import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -68,13 +72,23 @@ public class FunctionNode extends Node {
   @Override
   public void translate(Context context) {
     /* Create new label for function */
-    Label<Instruction> funcLabel = new Label<>(context.getCurrentClass() +
+    String currentClass = context.getCurrentClass();
+    Label<Instruction> funcLabel = new Label<>(currentClass +
        "_" + "f_" + funcName);
     context.getInstructionLabels().add(funcLabel);
     context.setCurrentLabel(funcLabel);
 
     /* Set up function routine. */
     context.setScope(funcSymbolTable);
+    if (!currentClass.isEmpty()) {
+      SymbolKey classInstanceKey = new SymbolKey("specialname", KeyTypes.VARIABLE);
+      VariableIdentifier classInstanceIdentifier = new VariableIdentifier(new ClassType(currentClass));
+      funcSymbolTable.add(classInstanceKey, classInstanceIdentifier);
+      funcSymbolTable.incrementOffset(Context.SIZE_OF_ADDRESS);
+      funcSymbolTable.incrementFunctionParametersSize(Context.SIZE_OF_ADDRESS);
+      classInstanceIdentifier.setActivated();
+    }
+
     context.addToCurrentLabel(PUSH(RegisterOperand.LR));
     funcSymbolTable.incrementOffset(Context.SIZE_OF_ADDRESS);
 

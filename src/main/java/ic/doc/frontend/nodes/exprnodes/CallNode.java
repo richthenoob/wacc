@@ -6,12 +6,14 @@ import static ic.doc.backend.instructions.SingleDataTransfer.STR;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.instructions.DataProcessing;
+import ic.doc.backend.instructions.SingleDataTransfer;
 import ic.doc.backend.instructions.operands.ImmediateOperand;
 import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.frontend.identifiers.ClassIdentifier;
 import ic.doc.frontend.identifiers.FunctionIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
+import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.ArgListNode;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
@@ -99,25 +101,19 @@ public class CallNode extends ExprNode {
     SymbolTable funcTable;
     String currentClass = context.getCurrentClass();
     SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
-    if (!currentClass.equals("")) {
-      SymbolKey classKey = new SymbolKey(currentClass, KeyTypes.CLASS);
-      ClassIdentifier classIdentifier = ((ClassIdentifier) currentSymbolTable
+    SymbolKey classKey;
+    ClassIdentifier classIdentifier;
+    if (!currentClass.isEmpty()) {
+      classKey = new SymbolKey(currentClass, KeyTypes.CLASS);
+      classIdentifier = ((ClassIdentifier) currentSymbolTable
           .lookupAll(classKey));
       funcTable = classIdentifier.getClassNode().getFunctionTables().get(identifier);
     } else {
       funcTable = context.getFunctionTables().get(identifier);
     }
 
-    translateCallNode(context, funcTable, currentClass);
-  }
-
-  /* Helper function for translating call nodes, since callClassFunctionNode
-   * does almost exactly the same thing. */
-  public void translateCallNode(Context context, SymbolTable funcTable, String currentClass) {
-
     /* Use counter to track the size of parameters that have been pushed
      * onto the stack, ensuring to restore this at the end of the function call. */
-    SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
     int counter = 0;
 
     for (int i = args.getParams().size() - 1; i >= 0; i--) {
@@ -155,6 +151,36 @@ public class CallNode extends ExprNode {
 
       /* Free register used for loading. */
       context.freeRegister(reg.getValue());
+    }
+
+    if (!currentClass.isEmpty()) {
+      /* After pushing arguments, push the address of the instance so
+       * that the function can find class instance fields. */
+      RegisterOperand reg = new RegisterOperand(context.getFreeRegister());
+
+      SymbolKey classInstanceKey = new SymbolKey("specialname", KeyTypes.VARIABLE);
+      VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable.lookupAll(classInstanceKey);
+
+      SingleDataTransfer loadClassInstance = SingleDataTransfer.LDR(reg,
+          new PreIndexedAddressOperand(RegisterOperand.SP)
+              .withExpr(new ImmediateOperand<>(classInstanceIdentifier
+                  .getOffsetStack(currentSymbolTable, classInstanceKey))
+                  .withPrefixSymbol("#")));
+      context.addToCurrentLabel(loadClassInstance);
+
+      PreIndexedAddressOperand shiftStack = new PreIndexedAddressOperand(
+          RegisterOperand.SP)
+          .withExpr(new ImmediateOperand<>(-Context.SIZE_OF_ADDRESS)
+              .withPrefixSymbol("#"))
+          .withJump();
+      context.addToCurrentLabel(STR(reg, shiftStack));
+
+      /* Free register used for loading. */
+      context.freeRegister(reg.getValue());
+
+      currentSymbolTable.incrementOffset(4);
+      currentSymbolTable.incrementTableSizeInBytes(4);
+      counter += 4;
     }
 
     /* Finally, restore the changes we have made to the function symbol table
