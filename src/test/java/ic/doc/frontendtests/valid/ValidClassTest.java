@@ -20,7 +20,7 @@ public class ValidClassTest extends AbstractFrontendTest {
   @Tag("class")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void validSimpleFunctionTests(String testName) {
+  public void validClassTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

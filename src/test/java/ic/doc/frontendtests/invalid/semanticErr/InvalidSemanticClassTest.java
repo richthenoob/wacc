@@ -22,7 +22,7 @@ public class InvalidSemanticClassTest extends AbstractFrontendTest {
   @Tag("class")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSemanticExitTests(String testName) {
+  public void invalidSemanticClassTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }
