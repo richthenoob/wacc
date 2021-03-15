@@ -11,9 +11,11 @@ options {
 /* ------------------------- PROGRAMS, CLASSES AND FUNCTIONS ------------------------- */
 prog: BEGIN (class_)* (func)* stat END EOF;
 
-class_: CLASS IDENT OPEN_CURLY_BRACES (paramList (func)*) CLOSE_CURLY_BRACES;
+class_: CLASS IDENT extends OPEN_CURLY_BRACES (paramList (func)*) CLOSE_CURLY_BRACES;
 
 func: type IDENT OPEN_PARENTHESES paramList CLOSE_PARENTHESES IS stat END;
+
+extends: (EXTENDS IDENT)?;
 
 paramList: param (COMMA param)* | ();
 
