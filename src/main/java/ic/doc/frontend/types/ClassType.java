@@ -44,7 +44,7 @@ public class ClassType extends Type {
   }
 
   public static boolean isSubclassOf(String currentClassName,
-      String parentClassName,
+      String superclassName,
       SymbolTable symbolTable) {
 
     /* Iteratively lookup immediate super class names, only returning
@@ -61,7 +61,7 @@ public class ClassType extends Type {
       String immediateSuperClass = ((ClassIdentifier) currentIdentifier)
           .getImmediateSuperClass();
 
-      if (immediateSuperClass.equals(parentClassName)) {
+      if (immediateSuperClass.equals(superclassName)) {
         return true;
       }
 

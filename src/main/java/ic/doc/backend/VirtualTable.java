@@ -15,4 +15,9 @@ public class VirtualTable {
   public Map<String, String> getClassFunctions() {
     return classFunctions;
   }
+
+  public void addClassFunction(String functionName, String className) {
+    classFunctions.put(functionName, className);
+  }
+
 }
