@@ -59,24 +59,21 @@ public class PreIndexedAddressOperand extends AddressOperand {
   }
 
   @Override
-  public boolean equals(Object obj) {
-    boolean compareRm;
-    if (obj instanceof PreIndexedAddressOperand) {
-      if(rm == null){
-        compareRm = ((PreIndexedAddressOperand) obj).rm == null;
-      }
-      else {
-        compareRm = rm.equals(((PreIndexedAddressOperand) obj).rm);
-      }
-      return rn.equals(((PreIndexedAddressOperand) obj).rn)
-              && compareRm
-              && isNegativeRm == ((PreIndexedAddressOperand) obj).isNegativeRm
-              && shift.equals(((PreIndexedAddressOperand) obj).shift)
-              && expr.equals(((PreIndexedAddressOperand) obj).expr);
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-    return false;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    PreIndexedAddressOperand that = (PreIndexedAddressOperand) o;
+    return isNegativeRm == that.isNegativeRm &&
+        jump == that.jump &&
+        Objects.equals(rn, that.rn) &&
+        Objects.equals(expr, that.expr) &&
+        Objects.equals(rm, that.rm) &&
+        shift == that.shift;
   }
-
 
   @Override
   public String toString() {
