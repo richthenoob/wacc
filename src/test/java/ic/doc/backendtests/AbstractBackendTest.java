@@ -265,8 +265,11 @@ public abstract class AbstractBackendTest {
     }
 
     /* Generate code and write to temporary file. */
-    String code = WaccBackend.generateCode(rootNode);
+    WaccBackend wrapper = WaccBackend.generateCode(rootNode);
+    String code = wrapper.getOutput();
+    int instructCount = wrapper.getInstructCount();
     System.out.println(code);
+    System.out.println("Total number of instructions: " + instructCount);
     WaccBackend.writeToFile(TEMP_DIR_PATH + TEMP_ASSEMBLY_FILENAME, code);
 
     /* Cross compilation. */

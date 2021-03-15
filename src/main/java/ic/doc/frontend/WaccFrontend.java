@@ -79,12 +79,16 @@ public class WaccFrontend {
       InputStream inputStream = new FileInputStream(file);
       try {
         ProgNode rootNode = parse(inputStream);
-        String output = WaccBackend.generateCode(rootNode);
+        WaccBackend wrapper = WaccBackend.generateCode(rootNode);
+        String output = wrapper.getOutput();
+        int instructCount = wrapper.getInstructCount();
         /* Strips .wacc file extension and adds .s before writing to file. */
         Path p = Paths.get(filename);
         String outputFileName = p.getFileName().toString().replaceFirst("[.][^.]+$", "");;
         WaccBackend.writeToFile(outputFileName + ".s", output);
         System.out.println(output);
+        System.out.println("Total number of instructions: " + instructCount);
+
       } catch (SyntaxException e) {
         System.err.println(e.toString());
         System.exit(SYNTAX_EXIT_CODE);

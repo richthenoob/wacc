@@ -144,6 +144,7 @@ public class ArrayElementNode extends ExprNode {
             && ((IntLiteralNode) arrays.get(i)).getValue() > 0) {
           checkBounds = false;
         }
+
         /* Load index literal */
         label.addToBody(
             SingleDataTransfer.LDR(

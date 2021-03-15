@@ -11,7 +11,23 @@ import java.util.List;
 
 public class WaccBackend {
 
-  public static String generateCode(ProgNode rootNode) {
+  private String output;
+  private int instructCount;
+
+  public WaccBackend(String output, int instructCount) {
+    this.output = output;
+    this.instructCount = instructCount;
+  }
+
+  public String getOutput() {
+    return output;
+  }
+
+  public int getInstructCount() {
+    return instructCount;
+  }
+
+  public static WaccBackend generateCode(ProgNode rootNode) {
     /* Recursively walk tree to generate code. */
     Context context = new Context();
     rootNode.translate(context);
@@ -19,7 +35,7 @@ public class WaccBackend {
 
     List<Label<Data>> dataLabels = context.getDataLabels();
     List<Label<Instruction>> instructionLabels = context.getInstructionLabels();
-
+    int count = 0;
     /* Peephole Optimization */
     for (Label<Instruction> instructionLabel : instructionLabels) {
       if (!instructionLabel.getBody().isEmpty()) {
@@ -65,6 +81,7 @@ public class WaccBackend {
         }
         instructionLabel.setBody(optimizedInstructions);
       }
+      count += instructionLabel.getBody().size();
     }
     /* Build .data section. */
     outputString.append(".data\n");
@@ -102,7 +119,7 @@ public class WaccBackend {
       }
     }
 
-    return outputString.toString();
+    return new WaccBackend(outputString.toString(),count);
   }
 
   public static void writeToFile(String filepath, String output) {
