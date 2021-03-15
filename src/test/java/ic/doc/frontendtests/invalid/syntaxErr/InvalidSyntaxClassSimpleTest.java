@@ -20,7 +20,7 @@ public class InvalidSyntaxClassSimpleTest extends AbstractFrontendTest {
   @Tag("class")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSyntaxClassTests(String testName) {
+  public void invalidSyntaxClassSimpleTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

@@ -20,7 +20,7 @@ public class ValidClassSimpleTest extends AbstractBackendTest {
   @Tag("class")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void validClassTests(String testName) {
+  public void validClassSimpleTests(String testName) {
     if (testName.equals("classFibonacciRecursive.wacc")) {
       backendTestFileWithInput(groupTestPath + testName, "30");
       return;

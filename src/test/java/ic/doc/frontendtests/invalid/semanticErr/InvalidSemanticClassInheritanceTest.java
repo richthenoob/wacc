@@ -1,4 +1,4 @@
-package ic.doc.frontendtests.valid;
+package ic.doc.frontendtests.invalid.semanticErr;
 
 import ic.doc.TestUtils;
 import ic.doc.frontendtests.AbstractFrontendTest;
@@ -7,20 +7,22 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
-public class ValidClassSimpleTest extends AbstractFrontendTest {
-  private static final String groupTestPath = "/valid/class/simple/";
+public class InvalidSemanticClassInheritanceTest extends AbstractFrontendTest {
+
+  private static final String groupTestPath = "/invalid/semanticErr/class/inheritance/";
 
   private static Collection<String> getTestNames() {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Tag("valid")
+  @Disabled
+  @Tag("invalid")
+  @Tag("semantic")
   @Tag("class")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void validClassSimpleTests(String testName) {
+  public void invalidSemanticClassInheritanceTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

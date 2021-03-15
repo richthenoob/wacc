@@ -1,4 +1,4 @@
-package ic.doc.frontendtests.valid;
+package ic.doc.frontendtests.invalid.syntaxErr;
 
 import ic.doc.TestUtils;
 import ic.doc.frontendtests.AbstractFrontendTest;
@@ -7,20 +7,23 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
-public class ValidClassSimpleTest extends AbstractFrontendTest {
-  private static final String groupTestPath = "/valid/class/simple/";
+public class InvalidSyntaxClassInheritanceTest extends AbstractFrontendTest {
+
+  private static final String groupTestPath = "/invalid/syntaxErr/class/inheritance/";
 
   private static Collection<String> getTestNames() {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Tag("valid")
+  @Disabled
+  @Tag("invalid")
+  @Tag("syntax")
   @Tag("class")
+  @Tag("inheritance")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void validClassSimpleTests(String testName) {
+  public void invalidSyntaxClassInheritanceTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }
