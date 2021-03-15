@@ -15,4 +15,5 @@ begin
   }
   class subclass extends main {
   }
+  skip
 end

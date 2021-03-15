@@ -8,9 +8,9 @@
 begin
   class c {
     int x
-    int f() {
+    int f() is
       return 42
-    }
+    end
   }
   class d extends c {
     int y
@@ -20,6 +20,6 @@ begin
   }
 
   e class1 = new e();
-  int i = e.f();
+  int i = call e.f();
   println i
 end
