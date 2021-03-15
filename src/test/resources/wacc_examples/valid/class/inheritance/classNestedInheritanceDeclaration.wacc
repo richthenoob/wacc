@@ -1,0 +1,19 @@
+# a nested class is declared, but not called
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  class c {
+    int x
+  }
+  class d extends c {
+    int y
+  }
+  class e extends d {
+    int z
+  }
+  skip
+end

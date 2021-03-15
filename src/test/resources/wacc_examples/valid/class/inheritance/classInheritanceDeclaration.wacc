@@ -1,0 +1,19 @@
+# an inherited class is declared, but not called
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c
+    int f() is
+        return 0
+    end
+  }
+  class d extends c {
+  }
+  skip
+end
