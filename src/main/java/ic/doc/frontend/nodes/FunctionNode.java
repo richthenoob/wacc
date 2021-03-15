@@ -12,6 +12,7 @@ import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.statnodes.ConditionalBranchNode;
 import ic.doc.frontend.nodes.statnodes.ExitNode;
 import ic.doc.frontend.nodes.statnodes.FunctionReturnNode;
+import ic.doc.frontend.nodes.statnodes.ScopingNode;
 import ic.doc.frontend.nodes.statnodes.SequentialCompositionNode;
 import ic.doc.frontend.nodes.statnodes.StatNode;
 import ic.doc.frontend.semantics.SymbolKey;
