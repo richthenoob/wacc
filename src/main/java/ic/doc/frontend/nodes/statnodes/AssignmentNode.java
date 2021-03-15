@@ -136,7 +136,7 @@ public class AssignmentNode extends StatNode {
     if(lhs.getType() instanceof ArrayType && isDeclaration && rhs instanceof ArrayLiteralNode){
       VariableNode lhsVar = (VariableNode) lhs;
       String name = lhsVar.getName();
-      SymbolKey key = new SymbolKey(name, false);
+      SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookup(key);
       id.setArraySize(((ArrayLiteralNode) rhs).getValues().size());
     }
