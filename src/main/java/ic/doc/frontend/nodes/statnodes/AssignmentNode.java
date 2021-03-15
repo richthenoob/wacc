@@ -10,6 +10,7 @@ import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.ArrayElementNode;
 import ic.doc.frontend.nodes.exprnodes.ClassFieldVariableNode;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
+import ic.doc.frontend.nodes.exprnodes.Literals.ArrayLiteralNode;
 import ic.doc.frontend.nodes.exprnodes.PairElementNode;
 import ic.doc.frontend.nodes.exprnodes.VariableNode;
 import ic.doc.frontend.semantics.SymbolKey;
@@ -129,6 +130,15 @@ public class AssignmentNode extends StatNode {
               rhs.getType().toString(),
               suggestion,
               "assignment");
+    }
+
+    /* Optimization, add array size which is fixed at declaration to the symbol table */
+    if(lhs.getType() instanceof ArrayType && isDeclaration && rhs instanceof ArrayLiteralNode){
+      VariableNode lhsVar = (VariableNode) lhs;
+      String name = lhsVar.getName();
+      SymbolKey key = new SymbolKey(name, false);
+      VariableIdentifier id = (VariableIdentifier) symbolTable.lookup(key);
+      id.setArraySize(((ArrayLiteralNode) rhs).getValues().size());
     }
   }
 
