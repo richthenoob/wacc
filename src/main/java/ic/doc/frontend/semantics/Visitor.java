@@ -158,9 +158,17 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     SymbolKey classKey = new SymbolKey(className, KeyTypes.CLASS);
     if (currentSymbolTable.lookup(classKey) == null) {
+
+      /* Find immediate superclass if it exists, and pass this information
+       * to class identifier. */
+      String immediateSuperclass = "";
+      if (!ctx.extends_().isEmpty()) {
+        immediateSuperclass = ctx.extends_().IDENT().getText();
+      }
+
       SymbolTable classSymbolTable = new SymbolTable(currentSymbolTable);
       ClassIdentifier classIdentifier = new ClassIdentifier(className,
-          classSymbolTable);
+          classSymbolTable, immediateSuperclass);
       currentSymbolTable.add(classKey, classIdentifier);
 
       /* Declare class fields and add to its symbol table.
@@ -197,6 +205,10 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     SymbolTable classSymbolTable = ((ClassIdentifier) currentSymbolTable
         .lookup(classKey)).getClassSymbolTable();
     currentSymbolTable = classSymbolTable;
+
+    // TODO: somehow unify parent's class symboltable and this class's
+    // symboltable over here. Also remember to populate a new virtual table
+    // and add it to the class node
 
     /* Since we are using a paramList in the parser, we can call visitParamList
      * to create a paramListNode for us. Then, pass this information
