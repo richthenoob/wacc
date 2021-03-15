@@ -6,13 +6,17 @@ import static ic.doc.backend.instructions.SingleDataTransfer.STR;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.instructions.DataProcessing;
+import ic.doc.backend.instructions.SingleDataTransfer;
 import ic.doc.backend.instructions.operands.ImmediateOperand;
 import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.instructions.operands.RegisterOperand;
+import ic.doc.frontend.identifiers.ClassIdentifier;
 import ic.doc.frontend.identifiers.FunctionIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
+import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.ArgListNode;
 import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.BoolType;
@@ -32,10 +36,18 @@ public class CallNode extends ExprNode {
     this.args = args;
   }
 
+  public String getIdentifier() {
+    return identifier;
+  }
+
+  public ArgListNode getArgs() {
+    return args;
+  }
+
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     String functionName = identifier;
-    SymbolKey key = new SymbolKey(functionName, true);
+    SymbolKey key = new SymbolKey(functionName, KeyTypes.FUNCTION);
     Identifier id = visitor.getCurrentSymbolTable().lookupAll(key);
 
     if (id == null) {
@@ -84,14 +96,24 @@ public class CallNode extends ExprNode {
   @Override
   public void translate(Context context) {
 
-    /* Save the previous symbol table so that we can restore it
-     * after the function call. */
+    /* Find function table in class if we are in a classNode, else just
+     * find function table in context. */
+    SymbolTable funcTable;
+    String currentClass = context.getCurrentClass();
     SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
+    SymbolKey classKey;
+    ClassIdentifier classIdentifier;
+    if (!currentClass.isEmpty()) {
+      classKey = new SymbolKey(currentClass, KeyTypes.CLASS);
+      classIdentifier = ((ClassIdentifier) currentSymbolTable
+          .lookupAll(classKey));
+      funcTable = classIdentifier.getClassNode().getFunctionTables().get(identifier);
+    } else {
+      funcTable = context.getFunctionTables().get(identifier);
+    }
 
-    /* Look up function symbol table from func name. Use counter to track
-     * the size of parameters that have been pushed onto the stack, ensuring
-     * to restore this at the end of the function call. */
-    SymbolTable funcTable = context.getFunctionTables().get(identifier);
+    /* Use counter to track the size of parameters that have been pushed
+     * onto the stack, ensuring to restore this at the end of the function call. */
     int counter = 0;
 
     for (int i = args.getParams().size() - 1; i >= 0; i--) {
@@ -131,6 +153,36 @@ public class CallNode extends ExprNode {
       context.freeRegister(reg.getValue());
     }
 
+    if (!currentClass.isEmpty()) {
+      /* After pushing arguments, push the address of the instance so
+       * that the function can find class instance fields. */
+      RegisterOperand reg = new RegisterOperand(context.getFreeRegister());
+
+      SymbolKey classInstanceKey = new SymbolKey("specialname", KeyTypes.VARIABLE);
+      VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable.lookupAll(classInstanceKey);
+
+      SingleDataTransfer loadClassInstance = SingleDataTransfer.LDR(reg,
+          new PreIndexedAddressOperand(RegisterOperand.SP)
+              .withExpr(new ImmediateOperand<>(classInstanceIdentifier
+                  .getOffsetStack(currentSymbolTable, classInstanceKey))
+                  .withPrefixSymbol("#")));
+      context.addToCurrentLabel(loadClassInstance);
+
+      PreIndexedAddressOperand shiftStack = new PreIndexedAddressOperand(
+          RegisterOperand.SP)
+          .withExpr(new ImmediateOperand<>(-Context.SIZE_OF_ADDRESS)
+              .withPrefixSymbol("#"))
+          .withJump();
+      context.addToCurrentLabel(STR(reg, shiftStack));
+
+      /* Free register used for loading. */
+      context.freeRegister(reg.getValue());
+
+      currentSymbolTable.incrementOffset(4);
+      currentSymbolTable.incrementTableSizeInBytes(4);
+      counter += 4;
+    }
+
     /* Finally, restore the changes we have made to the function symbol table
      * after the call. This ensures that the function symbol table is exactly
      * the same as when we entered the call. */
@@ -139,10 +191,10 @@ public class CallNode extends ExprNode {
 
     /* Call the function then restore to previous scope.
      * Also restore any stack space used by parameters to the function. */
-    context.addToCurrentLabel(BL("f_" + identifier));
+    context.addToCurrentLabel(BL(currentClass + "_" + "f_" + identifier));
     context.addToCurrentLabel(DataProcessing
         .ADD(RegisterOperand.SP, RegisterOperand.SP,
-            new ImmediateOperand<>(funcTable.getFunctionParametersSizeInBytes())
+            new ImmediateOperand<>(funcTable.getParametersSizeInBytes())
                 .withPrefixSymbol("#")));
 
     /* Move result of function call from R0 to free register */

@@ -15,6 +15,7 @@ import ic.doc.frontend.nodes.exprnodes.UnaryOperatorNode.UnaryOperators;
 import ic.doc.frontend.identifiers.*;
 import ic.doc.frontend.nodes.*;
 import ic.doc.frontend.nodes.statnodes.*;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.types.*;
 
 import ic.doc.frontend.nodes.TypeNode;
@@ -38,26 +39,41 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return semanticErrorList;
   }
 
-  /* Called once at the start of any program eg. begin FUNCTIONS STATEMENT end
-  Initialises symbol table an semantic list */
+  /* Called once at the start of any program
+   * eg. begin CLASSES FUNCTIONS STATEMENT end
+   * Initialises symbol table an semantic list */
   @Override
   public Node visitProg(BasicParser.ProgContext ctx) {
     currentSymbolTable = new SymbolTable(null);
     semanticErrorList =
-        new SemanticErrorList(ctx.getStart().getInputStream().toString().split("\n"));
+        new SemanticErrorList(
+            ctx.getStart().getInputStream().toString().split("\n"));
 
+    /* First pre-declare any classes and functions in case there are
+     * mutually recursive classes/functions before actually visiting them. */
+    List<Class_Context> classContexts = ctx.class_();
     List<FuncContext> functionCtxs = ctx.func();
+    List<ClassNode> classNodes = new ArrayList<>();
+    for (Class_Context classContext : classContexts) {
+      declareClass(classContext);
+    }
     List<FunctionNode> functionNodes = new ArrayList<>();
     for (FuncContext f : functionCtxs) {
       declareFunction(f);
     }
+
+    /* Actually visit classes and functions */
     for (FuncContext f : functionCtxs) {
       functionNodes.add((FunctionNode) visit(f));
+    }
+    for (Class_Context classContext : classContexts) {
+      classNodes.add((ClassNode) visit(classContext));
     }
 
     StatNode statNode = (StatNode) visit(ctx.stat());
 
-    return new ProgNode(currentSymbolTable, functionNodes, statNode);
+    return new ProgNode(currentSymbolTable, functionNodes, classNodes,
+        statNode);
   }
 
   /* Helper function to called to declare functions, adds to symbol table if function name is not already defined */
@@ -68,12 +84,14 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
       ParamListNode paramList = (ParamListNode) visit(ctx.paramList());
 
-      SymbolKey key = new SymbolKey(funcName, true);
+      SymbolKey key = new SymbolKey(funcName, KeyTypes.FUNCTION);
       if (currentSymbolTable.lookup(key) == null) {
-        FunctionIdentifier id = new FunctionIdentifier(returnType, paramList.getType());
+        FunctionIdentifier id = new FunctionIdentifier(returnType,
+            paramList.getType());
         currentSymbolTable.add(key, id);
       } else {
-        semanticErrorList.addScopeException(ctx, true, "Function", "'" + funcName + "'");
+        semanticErrorList
+            .addScopeException(ctx, true, "Function", "'" + funcName + "'");
       }
     }
   }
@@ -95,13 +113,14 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       for (ParamNode p : params) {
         String name = p.getInput();
         Type type = p.getType();
-        SymbolKey key = new SymbolKey(name, false);
+        SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
         currentSymbolTable.add(key, new VariableIdentifier(type));
       }
       StatNode stat = (StatNode) visit(ctx.stat());
       /* Needs to check current and outer scope*/
       FunctionNode node =
-          new FunctionNode(currentSymbolTable, funcName, returnType, paramList, stat);
+          new FunctionNode(currentSymbolTable, funcName, returnType, paramList,
+              stat);
       node.check(this, ctx);
       currentSymbolTable = node.getParentSymbolTable();
       return node;
@@ -128,16 +147,184 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return new ParamNode(type, ctx.IDENT().getText());
   }
 
-  /* Called when declaring a variable while assigning it to a value. eg. int i = 5
-  Adds variable to symbol table if not already defined in current scope and creates an assignment node */
+  /* ---------------- CLASS RELATED VISITS START ---------------- */
+
+  private void declareClass(BasicParser.Class_Context ctx) {
+    String className = ctx.IDENT().toString();
+
+    /* Add class to the current symbol table. This symbol table
+     * should be the top level symbol table. */
+    assert (currentSymbolTable.getParentSymbolTable() == null);
+
+    SymbolKey classKey = new SymbolKey(className, KeyTypes.CLASS);
+    if (currentSymbolTable.lookup(classKey) == null) {
+      SymbolTable classSymbolTable = new SymbolTable(currentSymbolTable);
+      ClassIdentifier classIdentifier = new ClassIdentifier(className,
+          classSymbolTable);
+      currentSymbolTable.add(classKey, classIdentifier);
+
+      /* Declare class fields and add to its symbol table.
+       * NOTE: this does NOT check for duplicates. Any duplicates will be
+       *       silently ignored, but we will throw a semantic error when we
+       *       actually visit the class node. */
+      currentSymbolTable = classSymbolTable;
+      ParamListNode paramListNode = (ParamListNode) visit(ctx.paramList());
+      for (ParamNode field : paramListNode.getParams()) {
+        String fieldName = field.getInput();
+        Type fieldType = field.getType();
+        SymbolKey fieldKey = new SymbolKey(fieldName, KeyTypes.VARIABLE);
+        currentSymbolTable.add(fieldKey, new VariableIdentifier(fieldType));
+      }
+
+      /* Pre-declare functions in this class. */
+      for (FuncContext func : ctx.func()) {
+        declareFunction(func);
+      }
+      currentSymbolTable = classSymbolTable.getParentSymbolTable();
+
+    } else {
+      semanticErrorList
+          .addScopeException(ctx, true, "Class", "'" + className + "'");
+    }
+  }
+
   @Override
-  public Node visitDeclarativeAssignment(BasicParser.DeclarativeAssignmentContext ctx) {
+  public Node visitClass_(Class_Context ctx) {
+    /* Use symbol table that was created when pre-visiting
+     * classes to store class information. */
+    String className = ctx.IDENT().getText();
+    SymbolKey classKey = new SymbolKey(className, KeyTypes.CLASS);
+    SymbolTable classSymbolTable = ((ClassIdentifier) currentSymbolTable
+        .lookup(classKey)).getClassSymbolTable();
+    currentSymbolTable = classSymbolTable;
+
+    /* Since we are using a paramList in the parser, we can call visitParamList
+     * to create a paramListNode for us. Then, pass this information
+     * to classNode. */
+    ParamListNode paramListNode = (ParamListNode) visit(ctx.paramList());
+
+    /* Go through declared functions and visit each of them; adding them
+     * to a list so that the classNode contains this information. */
+    List<FunctionNode> classFunctions = new ArrayList<>();
+
+    for (FuncContext func : ctx.func()) {
+      classFunctions.add((FunctionNode) visit(func));
+    }
+
+    /* Actually make the class node now that we have all the required information. */
+    ClassNode classNode = new ClassNode(className, classSymbolTable,
+        paramListNode, classFunctions);
+
+    currentSymbolTable = classNode.getClassSymbolTable().getParentSymbolTable();
+    classNode.check(this, ctx);
+
+    /* Add classNode to ClassIdentifier so future references to this
+     * class identifier can find the appropriate information. */
+    SymbolKey key = new SymbolKey(className, KeyTypes.CLASS);
+    ClassIdentifier identifier = (ClassIdentifier) currentSymbolTable
+        .lookupAll(key);
+    identifier.setClassNode(classNode);
+
+    return classNode;
+  }
+
+  /* Called when a new class declaration statement is reached,
+   * e.g. ClassA myInstance = new ClassA();
+   *        |         |              |
+   *    classIdentLHS classInstance  classIdentRHS  */
+  @Override
+  public Node visitDeclareNewClass(DeclareNewClassContext ctx) {
+    ClassVariableNode classIdentLHS =
+        new ClassVariableNode(ctx.IDENT(0).getText());
+    VariableNode classInstance = new VariableNode(ctx.IDENT(1).getText());
+    ClassVariableNode classIdentRHS =
+        new ClassVariableNode(ctx.IDENT(2).getText());
+
+    /* Ensures that these classes have been declared before. */
+    classIdentLHS.check(this, ctx);
+    classIdentRHS.check(this, ctx);
+
+    /* Construct ClassAssignmentNode and check that LHS and RHS refer to the
+     * same class, and that classInstance hasn't been declared before. */
+    ClassAssignmentNode classAssignmentNode =
+        new ClassAssignmentNode(classInstance, classIdentRHS, true,
+            getCurrentSymbolTable(), classIdentLHS);
+
+    classAssignmentNode.check(this, ctx);
+
+    return classAssignmentNode;
+  }
+
+  /* Called when assigning a new class variable to an existing variable,
+   * e.g. ClassA myInstance = myInstance2;
+   *        |         |              |
+   *    classIdent classInstanceLHS  classInstanceRHS */
+  @Override
+  public Node visitAssignNewClass(AssignNewClassContext ctx) {
+    ClassVariableNode classIdent =
+        new ClassVariableNode(ctx.IDENT(0).getText());
+    VariableNode classInstanceLHS = new VariableNode(ctx.IDENT(1).getText());
+    VariableNode classInstanceRHS = new VariableNode(ctx.IDENT(2).getText());
+
+    /* Ensure that RHS and classIdent have been declared before. */
+    classIdent.check(this, ctx);
+    classInstanceRHS.check(this, ctx);
+
+    /* */
+    ClassAssignmentNode classAssignmentNode =
+        new ClassAssignmentNode(classInstanceLHS, classInstanceRHS, true,
+            getCurrentSymbolTable(), classIdent);
+
+    classAssignmentNode.check(this, ctx);
+    return classAssignmentNode;
+  }
+
+  /* Called when calling a class method on the RHS of an assignment,
+   * e.g. call class1.foo(argument1)
+   *            |      |          |
+   * classInstance classFunction argumentList */
+  @Override
+  public Node visitCallClassFunction(CallClassFunctionContext ctx) {
+    String classInstanceName = ctx.classObject().IDENT(0).getText();
+    String classFunctionName = ctx.classObject().IDENT(1).getText();
+    ArgListNode argListNode = (ArgListNode) visit(ctx.argList());
+
+    /* Create node and check that class1 exists, class1 has function foo,
+     * and the function is passed the correct argument types. */
+    CallClassFunctionNode node = new CallClassFunctionNode(classInstanceName,
+        classFunctionName, argListNode);
+    node.check(this, ctx);
+
+    return node;
+  }
+
+  @Override
+  public Node visitClassVariable(ClassVariableContext ctx) {
+    String className = ctx.classObject().IDENT(0).getText();
+    String varName = ctx.classObject().IDENT(1).getText();
+    ClassFieldVariableNode node = new ClassFieldVariableNode(className, varName);
+
+    /* Has side-effect of setting
+     * its type when calling check(). */
+    node.check(this, ctx);
+
+    return node;
+  }
+
+  /* ---------------- CLASS RELATED VISITS END ---------------- */
+
+  /* Called when declaring a variable while assigning it to a value. eg. int i = 5
+    Adds variable to symbol table if not already defined in current scope and creates an assignment node */
+  @Override
+  public Node visitDeclarativeAssignment(
+      BasicParser.DeclarativeAssignmentContext ctx) {
     Type type = ((TypeNode) visit(ctx.type())).getType();
     String name = ctx.IDENT().toString();
     VariableNode var = new VariableNode(name);
     var.setType(type);
     ExprNode expr = (ExprNode) visit(ctx.assignRhs());
-    AssignmentNode node = new AssignmentNode(var, expr, true, currentSymbolTable);
+    AssignmentNode node = new AssignmentNode(var, expr, true,
+        currentSymbolTable);
     node.check(this, ctx);
     return node;
   }
@@ -158,7 +345,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   public Node visitAssignment(BasicParser.AssignmentContext ctx) {
     ExprNode lhs = (ExprNode) visit(ctx.assignLhs());
     ExprNode rhs = (ExprNode) visit(ctx.assignRhs());
-    AssignmentNode node = new AssignmentNode(lhs, rhs, false, currentSymbolTable);
+    AssignmentNode node = new AssignmentNode(lhs, rhs, false,
+        currentSymbolTable);
     node.check(this, ctx);
     return node;
   }
@@ -245,8 +433,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     SymbolTable trueBodySymbolTable = new SymbolTable(currentSymbolTable);
     currentSymbolTable = trueBodySymbolTable;
     StatNode trueBody = (StatNode) visit(ctx.stat(0));
-
-    SymbolTable falseBodySymbolTable = new SymbolTable(trueBodySymbolTable.getParentSymbolTable());
+    SymbolTable falseBodySymbolTable = new SymbolTable(
+        trueBodySymbolTable.getParentSymbolTable());
     currentSymbolTable = falseBodySymbolTable;
     StatNode falseBody = (StatNode) visit(ctx.stat(1));
 
@@ -267,7 +455,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     ConditionalBranchNode node =
         new ConditionalBranchNode(
-            expr, trueBody, falseBody, trueBodySymbolTable, falseBodySymbolTable);
+            expr, trueBody, falseBody, trueBodySymbolTable,
+            falseBodySymbolTable);
     node.check(this, ctx);
     return node;
   }
@@ -300,12 +489,13 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     Type type = null;
     if (functionName.equals("")) {
       functionName = ((FuncContext) curr.getParent()).IDENT().getText();
-      Node functionType = visit(((BasicParser.FuncContext) curr.getParent()).type());
+      Node functionType = visit(
+          ((BasicParser.FuncContext) curr.getParent()).type());
       type = ((TypeNode) functionType).getType();
     }
 
-    FunctionReturnNode node =
-        new FunctionReturnNode((ExprNode) visit(ctx.expr()), functionName, type);
+    FunctionReturnNode node = new FunctionReturnNode(
+        (ExprNode) visit(ctx.expr()), functionName, type);
     node.check(this, ctx);
     return node;
   }
@@ -321,8 +511,20 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       return node;
     } else if (ctx.arrayElem() != null) {
       return this.visit(ctx.arrayElem());
-    } else {
+    } else if (ctx.pairElem() != null){
       return this.visit(ctx.pairElem());
+    } else if (ctx.classObject() != null){
+      String className = ctx.classObject().IDENT(0).getText();
+      String varName = ctx.classObject().IDENT(1).getText();
+      ClassFieldVariableNode node = new ClassFieldVariableNode(className, varName);
+
+      /* Has side-effect of setting
+       * its type when calling check(). */
+      node.check(this, ctx);
+
+      return node;
+    } else {
+      throw new IllegalStateException("No LHS found!");
     }
   }
 
@@ -374,7 +576,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   @Override
   public Node visitFstPairElem(BasicParser.FstPairElemContext ctx) {
     ExprNode exprNode = (ExprNode) visit(ctx.expr());
-    PairElementNode node = new PairElementNode(PairElementNode.PairPosition.FST, exprNode);
+    PairElementNode node = new PairElementNode(PairElementNode.PairPosition.FST,
+        exprNode);
     node.check(this, ctx);
     return node;
   }
@@ -384,7 +587,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   @Override
   public Node visitSndPairElem(BasicParser.SndPairElemContext ctx) {
     ExprNode exprNode = (ExprNode) visit(ctx.expr());
-    PairElementNode node = new PairElementNode(PairElementNode.PairPosition.SND, exprNode);
+    PairElementNode node = new PairElementNode(PairElementNode.PairPosition.SND,
+        exprNode);
     node.check(this, ctx);
     return node;
   }
@@ -576,7 +780,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         }
         break;
       default:
-        throw new IllegalStateException("Invalid operator passed to" + "Unary Operator context!");
+        throw new IllegalStateException(
+            "Invalid operator passed to" + "Unary Operator context!");
     }
 
     UnaryOperatorNode unaryOperatorNode = new UnaryOperatorNode(operator, exprNode);
@@ -610,7 +815,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     variableNode = new VariableNode(varName);
     variableNode.check(this, ctx);
 
-    ArrayElementNode arrayElementNode = new ArrayElementNode(exprNodes, variableNode);
+    ArrayElementNode arrayElementNode = new ArrayElementNode(exprNodes,
+        variableNode);
 
     arrayElementNode.check(this, ctx);
 
@@ -648,7 +854,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         operator = BinaryOperators.MOD;
         break;
       default:
-        throw new IllegalStateException("Invalid operator passed to" + "binOp1 context!");
+        throw new IllegalStateException(
+            "Invalid operator passed to" + "binOp1 context!");
     }
 
     ExprNode leftExpr = (ExprNode) visit(ctx.expr(0));
@@ -704,7 +911,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         operator = BinaryOperators.MINUS;
         break;
       default:
-        throw new IllegalStateException("Invalid operator passed to" + "binOp1 context!");
+        throw new IllegalStateException(
+            "Invalid operator passed to" + "binOp1 context!");
     }
 
     ExprNode leftExpr = (ExprNode) visit(ctx.expr(0));
@@ -754,7 +962,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         operator = BinaryOperators.LTE;
         break;
       default:
-        throw new IllegalStateException("Invalid operator passed to" + "binOp1 context!");
+        throw new IllegalStateException(
+            "Invalid operator passed to" + "binOp1 context!");
     }
 
     ExprNode leftExpr = (ExprNode) visit(ctx.expr(0));
@@ -823,7 +1032,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         operator = BinaryOperators.NEQ;
         break;
       default:
-        throw new IllegalStateException("Invalid operator passed to" + "binOp1 context!");
+        throw new IllegalStateException(
+            "Invalid operator passed to" + "binOp1 context!");
     }
 
     ExprNode leftExpr = (ExprNode) visit(ctx.expr(0));
@@ -862,7 +1072,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     /* Only one operator with precedence 5 : AND. */
     TerminalNode typeNode = (TerminalNode) ctx.getChild(1);
     if (typeNode.getSymbol().getType() != BasicLexer.AND) {
-      throw new IllegalStateException("Invalid operator passed to" + "binOp1 context!");
+      throw new IllegalStateException(
+          "Invalid operator passed to" + "binOp1 context!");
     }
 
     ExprNode leftExpr = (ExprNode) visit(ctx.expr(0));
@@ -891,7 +1102,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     /* Only one operator with precedence 6 : OR. */
     TerminalNode typeNode = (TerminalNode) ctx.getChild(1);
     if (typeNode.getSymbol().getType() != BasicLexer.OR) {
-      throw new IllegalStateException("Invalid operator passed to" + "binOp1 context!");
+      throw new IllegalStateException(
+          "Invalid operator passed to" + "binOp1 context!");
     }
 
     ExprNode leftExpr = (ExprNode) visit(ctx.expr(0));

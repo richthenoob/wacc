@@ -11,6 +11,7 @@ import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.Literals.IntLiteralNode;
 import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ArrayType;
@@ -54,7 +55,7 @@ public class ArrayElementNode extends ExprNode {
     }
 
     /* Identifier checks. */
-    SymbolKey key = new SymbolKey(identNode.getName(), false);
+    SymbolKey key = new SymbolKey(identNode.getName(), KeyTypes.VARIABLE);
     Identifier entry = visitor.getCurrentSymbolTable().lookupAll(key);
     if (entry == null) {
       isErrored = true;
@@ -110,21 +111,20 @@ public class ArrayElementNode extends ExprNode {
   }
 
   /* Takes care of loading the correct elements of the array in the proper locations relative to the array pointer */
-  public static RegisterOperand translateArray(Context context,
-      ArrayElementNode array) {
+  public int translateArrayElemLHS(Context context) {
     Label<Instruction> label = context.getCurrentLabel();
     SymbolTable symbolTable = context.getCurrentSymbolTable();
 
     /* Find stack offset for array pointer */
-    VariableNode lhsVar = array.getIdentNode();
+    VariableNode lhsVar = getIdentNode();
     String name = lhsVar.getName();
-    SymbolKey key = new SymbolKey(name, false);
+    SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
     VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
     int offsetArray = id.getOffsetStack(symbolTable, key);
 
     RegisterOperand arrayReg = new RegisterOperand(context.getFreeRegister());
     RegisterOperand indexReg = new RegisterOperand(context.getFreeRegister());
-    List<ExprNode> arrays = array.getExprNodes();
+    List<ExprNode> arrays = getExprNodes();
 
     for (int i = 0; i < arrays.size(); i++) {
       if (i == 0) {
@@ -149,7 +149,7 @@ public class ArrayElementNode extends ExprNode {
       } else {
         /* Find offset of index pointer if its a variable */
         String indexVarName = arrays.get(i).getInput();
-        SymbolKey indexVarkey = new SymbolKey(indexVarName, false);
+        SymbolKey indexVarkey = new SymbolKey(indexVarName, KeyTypes.VARIABLE);
         VariableIdentifier indexId = (VariableIdentifier) symbolTable
             .lookupAll(indexVarkey);
         int offset = indexId.getOffsetStack(symbolTable, indexVarkey);
@@ -177,7 +177,7 @@ public class ArrayElementNode extends ExprNode {
       label.addToBody(
           DataProcessing.ADD(arrayReg, arrayReg,
               new ImmediateOperand<>(Context.SIZE_OF_ADDRESS).withPrefixSymbol("#")));
-      Type internalType = ((ArrayType) (array.identNode.getType()))
+      Type internalType = ((ArrayType) (identNode.getType()))
           .getInternalType();
       if (internalType.getVarSize() == 1) {
         label.addToBody(DataProcessing.ADD(arrayReg, arrayReg, indexReg));
@@ -192,13 +192,21 @@ public class ArrayElementNode extends ExprNode {
       }
     }
     context.freeRegister(indexReg.getValue());
-    return arrayReg;
+    setRegister(arrayReg);
+
+    return 0;
+  }
+
+  /* Helper function for AssignmentNode, to conform to a single style of
+   * calling translate. */
+  public void translateArrayElemRHS(Context context) {
+    translate(context);
   }
 
   @Override
   public void translate(Context context) {
-    RegisterOperand arrayRegister = translateArray(context, this);
-    setRegister(arrayRegister);
+    translateArrayElemLHS(context);
+    RegisterOperand arrayRegister = getRegister();
 
     /* Load value at memory location */
     Type internalType = ((ArrayType) (identNode.getType())).getInternalType();

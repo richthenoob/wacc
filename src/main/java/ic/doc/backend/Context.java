@@ -19,7 +19,6 @@ public class Context {
    * (i.e. registers 4-10, where 4 corresponds to index 0) */
   public static final int MAX_INDEX = 6;
 
-
   /* -------------------------------- Registers -------------------------------- */
   /* Array of booleans corresponding to registers 4-10, true if registers are in use
    * Initialized to false by default */
@@ -53,6 +52,8 @@ public class Context {
   * */
   private final Map<String, String> dataPlaceHolders = new HashMap<>();
 
+  /* -------------------------------- Classes -------------------------------- */
+  private String currentClass = "";
 
   /* -------------------------------- Registers -------------------------------- */
 
@@ -196,4 +197,13 @@ public class Context {
     }
   }
 
+  /* -------------------------------- Classes -------------------------------- */
+
+  public void setCurrentClass(String currentClass) {
+    this.currentClass = currentClass;
+  }
+
+  public String getCurrentClass() {
+    return currentClass;
+  }
 }
