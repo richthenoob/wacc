@@ -13,9 +13,15 @@ begin
     end
   }
   class d extends c {
+    int p() is
+      int answer = call f();
+      return answer
+    end
   }
 
   d class1 = new d();
   int i = call class1.f();
-  println i
+  println i;
+  int j = call class1.p();
+  println j
 end

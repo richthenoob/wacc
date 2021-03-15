@@ -2,6 +2,7 @@
 
 # Output:
 # 5
+# 5
 
 # Program:
 
@@ -10,8 +11,13 @@ begin
     int t
   }
   class d extends c {
+    int f() is
+      return t
+    end
   }
   d class1 = new d();
   d.t = 5;
   println d.t
+  int y = call d.f();
+  println y
 end
