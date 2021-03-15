@@ -10,6 +10,7 @@ import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.nodes.exprnodes.VariableNode;
 import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.CharType;
 import ic.doc.frontend.types.ErrorType;
@@ -65,7 +66,7 @@ public class ReadNode extends StatNode {
       /* If expression is a variable, get stack offset corresponding to variable from symbol table
        * and move stack pointer accordingly. */
       String varName = ((VariableNode) expr).getName();
-      SymbolKey key = new SymbolKey(varName, false);
+      SymbolKey key = new SymbolKey(varName, KeyTypes.VARIABLE);
       VariableIdentifier id = (VariableIdentifier) context.getCurrentSymbolTable().lookupAll(key);
       int offset = id.getOffsetStack(context.getCurrentSymbolTable(), key);
       curr.addToBody(ADD(reg, RegisterOperand.SP, new ImmediateOperand<>(offset).withPrefixSymbol("#")));

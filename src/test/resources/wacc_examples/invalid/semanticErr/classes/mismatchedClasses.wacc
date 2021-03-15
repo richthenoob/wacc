@@ -1,0 +1,26 @@
+# assigning classes of different types to each other
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c
+    int f(int y) is
+        int p = t + 1;
+        return x
+    end
+  }
+  class d {
+  }
+  c class1 = new c();
+  d class2 = class1;
+  d class3 = new d();
+  class3 = class1
+end

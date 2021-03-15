@@ -1,0 +1,11 @@
+#!/bin/sh
+
+EXEC="exec"
+FILE=$1
+WACC=$1
+WACC+=".wacc"
+S=$1
+S+=".s"
+
+echo "Compiling..."
+./compile $WACC && echo "Assembling..." && ./assemble $EXEC $S && ./emulate $EXEC

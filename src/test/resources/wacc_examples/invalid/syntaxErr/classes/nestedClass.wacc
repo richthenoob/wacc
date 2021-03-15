@@ -1,0 +1,16 @@
+# second class declared inside first
+
+# Output:
+# #syntax_error#
+
+# Exit:
+# 100
+
+# Program:
+
+begin
+  class c {
+    class b {
+    }
+  }
+end

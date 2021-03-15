@@ -1,0 +1,29 @@
+# a class instantiates and holds references to classes inside it
+# a function has a class as a parameter
+
+# Output:
+# #syntax_error#
+
+# Exit:
+# 100
+
+# Program:
+
+begin
+  class c {
+    b anotherClass,
+    c myClass
+    b f(b x) is
+        return x
+    end
+    int callG() is
+        return call myClass.g()
+    end
+    int g() is
+        return 3
+    end
+  }
+  class b {
+  }
+  skip
+end

@@ -23,6 +23,7 @@ NOT: '!';
 LEN: 'len';
 ORD: 'ord';
 CHR: 'chr';
+DOT: '.';
 
 //quote
 SQUOTE: '\'';
@@ -33,6 +34,8 @@ OPEN_PARENTHESES: '(' ;
 CLOSE_PARENTHESES: ')' ;
 OPEN_BRACKETS: '[';
 CLOSE_BRACKETS: ']';
+OPEN_CURLY_BRACES: '{';
+CLOSE_CURLY_BRACES: '}';
 COMMA: ',';
 SEMI: ';';
 
@@ -59,6 +62,10 @@ fragment CHARACTER: ~[\\'"] | '\\' ESCAPED;
 
 //numbers
 INTEGER: ('0'..'9')+;
+
+//class
+CLASS: 'class';
+NEW: 'new';
 
 //func
 BEGIN: 'begin';

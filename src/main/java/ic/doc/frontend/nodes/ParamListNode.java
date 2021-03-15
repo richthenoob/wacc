@@ -41,6 +41,13 @@ public class ParamListNode extends Node {
 
   @Override
   public void translate(Context context) {
+    translateHelper(context, false);
+  }
+
+  /* Helper method to translate params. Because params can refer to both
+   * function arguments and fields within a class, we need to differentiate
+   * between these two cases. */
+  public void translateHelper(Context context, boolean isClassFields) {
     SymbolTable funcSymbolTable = context.getCurrentSymbolTable();
     /* Look up each parameter in function symbol table。 */
     for (int i = params.size() - 1; i >= 0; i--) {
@@ -53,6 +60,11 @@ public class ParamListNode extends Node {
       funcSymbolTable.incrementOffset(sizeOfVarOnStack);
       funcSymbolTable.incrementFunctionParametersSize(sizeOfVarOnStack);
       id.setActivated();
+
+      /* Mark this variable as a class variable if necessary. */
+      if (isClassFields) {
+        id.setClassVariable();
+      }
     }
   }
 

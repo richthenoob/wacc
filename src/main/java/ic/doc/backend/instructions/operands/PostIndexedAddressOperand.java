@@ -16,6 +16,7 @@ public class PostIndexedAddressOperand extends AddressOperand {
 
   public PostIndexedAddressOperand() {
     isNegativeRm = false;
+    shift = ShiftTypes.NONE;
   }
 
   public PostIndexedAddressOperand withRN(RegisterOperand rn) {

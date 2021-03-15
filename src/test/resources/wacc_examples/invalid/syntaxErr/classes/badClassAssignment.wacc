@@ -1,0 +1,16 @@
+# missing () at end of class initialization
+
+# Output:
+# #syntax_error#
+
+# Exit:
+# 100
+
+# Program:
+
+begin
+  class c {
+    int t
+  }
+  c class1 = new c
+end

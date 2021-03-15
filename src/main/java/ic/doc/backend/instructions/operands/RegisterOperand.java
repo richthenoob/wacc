@@ -38,15 +38,19 @@ public class RegisterOperand extends Operand {
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(value);
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    RegisterOperand that = (RegisterOperand) o;
+    return value == that.value;
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if(obj instanceof RegisterOperand){
-      return value == ((RegisterOperand) obj).value;
-    }
-    return false;
+  public int hashCode() {
+    return Objects.hash(value);
   }
 }
