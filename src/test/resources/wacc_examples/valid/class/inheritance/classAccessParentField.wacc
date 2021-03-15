@@ -12,6 +12,6 @@ begin
   class d extends c {
   }
   d class1 = new d();
-  d.t = 5;
-  println d.t
+  class1.t = 5;
+  println class1.t
 end

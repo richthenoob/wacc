@@ -20,6 +20,6 @@ begin
   }
 
   e class1 = new e();
-  int i = call e.f();
+  int i = call class1.f();
   println i
 end
