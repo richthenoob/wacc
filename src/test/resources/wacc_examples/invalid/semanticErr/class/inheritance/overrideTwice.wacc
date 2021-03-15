@@ -1,0 +1,31 @@
+# an inherited class is declared, overrides parent function twice
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class c {
+    int t
+    int f(int x, int y, char z) is
+      return 1
+    end
+  }
+
+  class d extends c {
+    int f() is
+      return 42
+    end
+    int f(int z) is
+      return 64
+    end
+  }
+
+  d class1 = new d();
+  int i = call class1.f();
+  println i
+end

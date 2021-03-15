@@ -1,0 +1,16 @@
+# a class tries to extend a nonexistent superclass
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class d extends c {
+    int y
+  }
+  skip
+end
