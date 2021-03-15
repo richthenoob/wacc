@@ -16,7 +16,7 @@ public class InvalidSyntaxClassInheritanceTest extends AbstractFrontendTest {
     return TestUtils.getAllTestNames(groupTestPath);
   }
 
-  @Disabled
+  //@Disabled
   @Tag("invalid")
   @Tag("syntax")
   @Tag("class")
