@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class InvalidSyntaxClassTest extends AbstractFrontendTest {
 
-  private static final String groupTestPath = "/invalid/syntaxErr/classes/";
+  private static final String groupTestPath = "/invalid/syntaxErr/class/";
 
   private static Collection<String> getTestNames() {
     return TestUtils.getAllTestNames(groupTestPath);

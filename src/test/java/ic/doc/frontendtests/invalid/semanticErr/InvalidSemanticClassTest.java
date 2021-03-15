@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public class InvalidSemanticClassTest extends AbstractFrontendTest {
 
-  private static final String groupTestPath = "/invalid/semanticErr/classes/";
+  private static final String groupTestPath = "/invalid/semanticErr/class/";
 
   private static Collection<String> getTestNames() {
     return TestUtils.getAllTestNames(groupTestPath);

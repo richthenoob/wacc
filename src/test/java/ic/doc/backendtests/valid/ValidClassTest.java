@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class ValidClassTest extends AbstractBackendTest {
 
-  private static final String groupTestPath = "/valid/classes/";
+  private static final String groupTestPath = "/valid/class/";
 
   private static Collection<String> getTestNames() {
     return TestUtils.getAllTestNames(groupTestPath);

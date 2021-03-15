@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class ValidClassTest extends AbstractFrontendTest {
-  private static final String groupTestPath = "/valid/classes/";
+  private static final String groupTestPath = "/valid/class/";
 
   private static Collection<String> getTestNames() {
     return TestUtils.getAllTestNames(groupTestPath);
