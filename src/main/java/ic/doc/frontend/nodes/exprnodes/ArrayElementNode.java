@@ -138,11 +138,12 @@ public class ArrayElementNode extends ExprNode {
                 new ImmediateOperand<>(offsetArray).withPrefixSymbol("#")));
       }
 
-      if (arrays.get(i) instanceof IntLiteralNode && WaccFrontend.OPTIMIZE) {
+      if (arrays.get(i) instanceof IntLiteralNode) {
         /* For optimization, can check at compile time, only works for first layer */
         if (i == 0
             && ((IntLiteralNode) arrays.get(i)).getValue() < id.getArraySize()
-            && ((IntLiteralNode) arrays.get(i)).getValue() > 0) {
+            && ((IntLiteralNode) arrays.get(i)).getValue() > 0
+            && WaccFrontend.OPTIMIZE) {
           checkBounds = false;
         }
 
