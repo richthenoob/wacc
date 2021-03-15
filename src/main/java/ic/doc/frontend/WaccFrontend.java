@@ -22,6 +22,9 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 public class WaccFrontend {
 
+  /* Optimization tag for comparison */
+  public static boolean OPTIMIZE = true;
+
   public static final Integer SYNTAX_EXIT_CODE = 100;
   public static final Integer SEMANTIC_EXIT_CODE = 200;
 
@@ -82,12 +85,18 @@ public class WaccFrontend {
         WaccBackend wrapper = WaccBackend.generateCode(rootNode);
         String output = wrapper.getOutput();
         int instructCount = wrapper.getInstructCount();
+        /* Generate code with no optimization */
+        OPTIMIZE = false;
+        WaccBackend oldWrapper = WaccBackend.generateCode(rootNode);
+        int oldInstructCount = oldWrapper.getInstructCount();
         /* Strips .wacc file extension and adds .s before writing to file. */
         Path p = Paths.get(filename);
         String outputFileName = p.getFileName().toString().replaceFirst("[.][^.]+$", "");;
         WaccBackend.writeToFile(outputFileName + ".s", output);
         System.out.println(output);
-        System.out.println("Total number of instructions: " + instructCount);
+        System.out.println("Total number of instructions in optimized: " + instructCount);
+        System.out.println("Total number of instructions in original: " + oldInstructCount);
+        System.out.println("Reduction : " + (oldInstructCount - instructCount));
 
       } catch (SyntaxException e) {
         System.err.println(e.toString());
