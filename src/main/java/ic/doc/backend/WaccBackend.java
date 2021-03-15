@@ -3,6 +3,7 @@ package ic.doc.backend;
 import ic.doc.backend.instructions.Instruction;
 import ic.doc.backend.instructions.Move;
 import ic.doc.backend.instructions.SingleDataTransfer;
+import ic.doc.frontend.WaccFrontend;
 import ic.doc.frontend.nodes.ProgNode;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -44,7 +45,9 @@ public class WaccBackend {
         for (Instruction instruction : instructionLabel.getBody()) {
           boolean optimized = true;
           /* Remove redundant moves eg: MOV r1,r2 followed by MOV r2,r1 */
-          if (prevInstruction instanceof Move && instruction instanceof Move) {
+          if (prevInstruction instanceof Move
+              && instruction instanceof Move
+              && WaccFrontend.OPTIMIZE) {
             /* If not optimizable then add to new List */
             if (!((Move) instruction).optimizable((Move) prevInstruction)) {
               optimized = false;
@@ -53,7 +56,8 @@ public class WaccBackend {
           }
           /* Remove redundant Load after Store eg STR r1, [sp] followed by LDR r1, [sp] */
           else if (prevInstruction instanceof SingleDataTransfer
-              && instruction instanceof SingleDataTransfer) {
+              && instruction instanceof SingleDataTransfer
+              && WaccFrontend.OPTIMIZE) {
             /* If not optimizable then add to new List */
             if (!((SingleDataTransfer) instruction)
                 .optimizable((SingleDataTransfer) prevInstruction)) {
@@ -62,7 +66,8 @@ public class WaccBackend {
             }
           }
           /* Remove redundant move/Single Data Transfer when dst and src are the same */
-          else if (instruction instanceof Move || instruction instanceof SingleDataTransfer) {
+          else if (instruction instanceof Move
+              || instruction instanceof SingleDataTransfer && WaccFrontend.OPTIMIZE) {
             if (instruction instanceof Move && !((Move) instruction).redundant()) {
               optimized = false;
               optimizedInstructions.add(instruction);
@@ -119,7 +124,7 @@ public class WaccBackend {
       }
     }
 
-    return new WaccBackend(outputString.toString(),count);
+    return new WaccBackend(outputString.toString(), count);
   }
 
   public static void writeToFile(String filepath, String output) {

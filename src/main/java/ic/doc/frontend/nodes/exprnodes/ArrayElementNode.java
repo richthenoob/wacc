@@ -7,6 +7,7 @@ import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.backend.Label;
 import ic.doc.backend.PredefinedFunctions;
+import ic.doc.frontend.WaccFrontend;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.exprnodes.Literals.IntLiteralNode;
@@ -137,7 +138,7 @@ public class ArrayElementNode extends ExprNode {
                 new ImmediateOperand<>(offsetArray).withPrefixSymbol("#")));
       }
 
-      if (arrays.get(i) instanceof IntLiteralNode) {
+      if (arrays.get(i) instanceof IntLiteralNode && WaccFrontend.OPTIMIZE) {
         /* For optimization, can check at compile time, only works for first layer */
         if (i == 0
             && ((IntLiteralNode) arrays.get(i)).getValue() < id.getArraySize()

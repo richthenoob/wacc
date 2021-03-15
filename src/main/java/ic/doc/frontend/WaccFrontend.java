@@ -87,7 +87,8 @@ public class WaccFrontend {
         int instructCount = wrapper.getInstructCount();
         /* Generate code with no optimization */
         OPTIMIZE = false;
-        WaccBackend oldWrapper = WaccBackend.generateCode(rootNode);
+        ProgNode oldRootNode = parse(inputStream);
+        WaccBackend oldWrapper = WaccBackend.generateCode(oldRootNode);
         int oldInstructCount = oldWrapper.getInstructCount();
         /* Strips .wacc file extension and adds .s before writing to file. */
         Path p = Paths.get(filename);

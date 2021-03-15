@@ -273,7 +273,8 @@ public abstract class AbstractBackendTest {
 
     /* Generate code with no optimization */
     WaccFrontend.OPTIMIZE = false;
-    WaccBackend oldWrapper = WaccBackend.generateCode(rootNode);
+    ProgNode oldRootNode = frontendTest.frontendTestFile(testFilepath);
+    WaccBackend oldWrapper = WaccBackend.generateCode(oldRootNode);
     int oldInstructCount = oldWrapper.getInstructCount();
 
     System.out.println(code);

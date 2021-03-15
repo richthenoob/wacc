@@ -1,5 +1,7 @@
 package ic.doc.frontend.semantics;
 
+import ic.doc.backend.WaccBackend;
+import ic.doc.frontend.WaccFrontend;
 import ic.doc.frontend.errors.SemanticErrorList;
 import ic.doc.frontend.errors.SyntaxException;
 import ic.doc.antlr.BasicLexer;
@@ -538,20 +540,25 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     TerminalNode typeNode = (TerminalNode) ctx.getChild(0);
 
     /* If expr is a literal, evaluate immedietely eg not true = false */
+
     switch (typeNode.getSymbol().getType()) {
       case BasicLexer.NOT:
         operator = UnaryOperators.LOGICAL_NOT;
-        if (exprNode instanceof BooleanLiteralNode) {
-          /* No checks for BoolLiteral */
-          return new BooleanLiteralNode(!((BooleanLiteralNode) exprNode).getValue());
+        if (WaccFrontend.OPTIMIZE) {
+          if (exprNode instanceof BooleanLiteralNode) {
+            /* No checks for BoolLiteral */
+            return new BooleanLiteralNode(!((BooleanLiteralNode) exprNode).getValue());
+          }
         }
         break;
       case BasicLexer.MINUS:
         operator = UnaryOperators.MATH_NEGATION;
-        if (exprNode instanceof IntLiteralNode) {
-          IntLiteralNode val = new IntLiteralNode(((IntLiteralNode) exprNode).getValue() * -1);
-          val.check(this, ctx);
-          return val;
+        if (WaccFrontend.OPTIMIZE) {
+          if (exprNode instanceof IntLiteralNode) {
+            IntLiteralNode val = new IntLiteralNode(((IntLiteralNode) exprNode).getValue() * -1);
+            val.check(this, ctx);
+            return val;
+          }
         }
         break;
       case BasicLexer.LEN:
@@ -559,20 +566,24 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         break;
       case BasicLexer.ORD:
         operator = UnaryOperators.ORD;
-        if (exprNode instanceof CharacterLiteralNode) {
-          IntLiteralNode val =
-              new IntLiteralNode((long) ((int) ((CharacterLiteralNode) exprNode).getValue()));
-          val.check(this, ctx);
-          return val;
+        if (WaccFrontend.OPTIMIZE) {
+          if (exprNode instanceof CharacterLiteralNode) {
+            IntLiteralNode val =
+                new IntLiteralNode((long) ((int) ((CharacterLiteralNode) exprNode).getValue()));
+            val.check(this, ctx);
+            return val;
+          }
         }
         break;
       case BasicLexer.CHR:
         operator = UnaryOperators.CHR;
-        if (exprNode instanceof IntLiteralNode) {
-          CharacterLiteralNode val =
-              new CharacterLiteralNode((char) ((IntLiteralNode) exprNode).getValue().intValue());
-          val.check(this, ctx);
-          return val;
+        if (WaccFrontend.OPTIMIZE) {
+          if (exprNode instanceof IntLiteralNode) {
+            CharacterLiteralNode val =
+                new CharacterLiteralNode((char) ((IntLiteralNode) exprNode).getValue().intValue());
+            val.check(this, ctx);
+            return val;
+          }
         }
         break;
       default:
@@ -655,30 +666,34 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof IntLiteralNode && rightExpr instanceof IntLiteralNode) {
-      switch (typeNode.getSymbol().getType()) {
-        case BasicLexer.MUL:
-          IntLiteralNode val =
-              new IntLiteralNode(
-                  ((IntLiteralNode) leftExpr).getValue() * ((IntLiteralNode) rightExpr).getValue());
-          val.check(this, ctx);
-          return val;
-        case BasicLexer.DIV:
-          if (((IntLiteralNode) rightExpr).getValue() != 0) {
+    if (WaccFrontend.OPTIMIZE) {
+      if (leftExpr instanceof IntLiteralNode && rightExpr instanceof IntLiteralNode) {
+        switch (typeNode.getSymbol().getType()) {
+          case BasicLexer.MUL:
+            IntLiteralNode val =
+                new IntLiteralNode(
+                    ((IntLiteralNode) leftExpr).getValue()
+                        * ((IntLiteralNode) rightExpr).getValue());
+            val.check(this, ctx);
+            return val;
+          case BasicLexer.DIV:
+            if (((IntLiteralNode) rightExpr).getValue() != 0) {
+              val =
+                  new IntLiteralNode(
+                      ((IntLiteralNode) leftExpr).getValue()
+                          / ((IntLiteralNode) rightExpr).getValue());
+              val.check(this, ctx);
+              return val;
+            }
+            break;
+          default:
             val =
                 new IntLiteralNode(
                     ((IntLiteralNode) leftExpr).getValue()
-                        / ((IntLiteralNode) rightExpr).getValue());
+                        % ((IntLiteralNode) rightExpr).getValue());
             val.check(this, ctx);
             return val;
-          }
-          break;
-        default:
-          val =
-              new IntLiteralNode(
-                  ((IntLiteralNode) leftExpr).getValue() % ((IntLiteralNode) rightExpr).getValue());
-          val.check(this, ctx);
-          return val;
+        }
       }
     }
 
@@ -711,19 +726,21 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof IntLiteralNode && rightExpr instanceof IntLiteralNode) {
-      if (typeNode.getSymbol().getType() == BasicLexer.PLUS) {
+    if (WaccFrontend.OPTIMIZE) {
+      if (leftExpr instanceof IntLiteralNode && rightExpr instanceof IntLiteralNode) {
+        if (typeNode.getSymbol().getType() == BasicLexer.PLUS) {
+          IntLiteralNode val =
+              new IntLiteralNode(
+                  ((IntLiteralNode) leftExpr).getValue() + ((IntLiteralNode) rightExpr).getValue());
+          val.check(this, ctx);
+          return val;
+        }
         IntLiteralNode val =
             new IntLiteralNode(
-                ((IntLiteralNode) leftExpr).getValue() + ((IntLiteralNode) rightExpr).getValue());
+                ((IntLiteralNode) leftExpr).getValue() - ((IntLiteralNode) rightExpr).getValue());
         val.check(this, ctx);
         return val;
       }
-      IntLiteralNode val =
-          new IntLiteralNode(
-              ((IntLiteralNode) leftExpr).getValue() - ((IntLiteralNode) rightExpr).getValue());
-      val.check(this, ctx);
-      return val;
     }
 
     BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator, leftExpr, rightExpr);
@@ -761,43 +778,47 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof IntLiteralNode && rightExpr instanceof IntLiteralNode) {
-      switch (typeNode.getSymbol().getType()) {
-        /* No checks needed for BooleanLiteral */
-        case BasicLexer.GT:
-          return new BooleanLiteralNode(
-              ((IntLiteralNode) leftExpr).getValue() > ((IntLiteralNode) rightExpr).getValue());
-        case BasicLexer.GTE:
-          return new BooleanLiteralNode(
-              ((IntLiteralNode) leftExpr).getValue() >= ((IntLiteralNode) rightExpr).getValue());
-        case BasicLexer.LT:
-          return new BooleanLiteralNode(
-              ((IntLiteralNode) leftExpr).getValue() < ((IntLiteralNode) rightExpr).getValue());
-        default:
-          return new BooleanLiteralNode(
-              ((IntLiteralNode) leftExpr).getValue() <= ((IntLiteralNode) rightExpr).getValue());
+    if (WaccFrontend.OPTIMIZE) {
+      if (leftExpr instanceof IntLiteralNode && rightExpr instanceof IntLiteralNode) {
+        switch (typeNode.getSymbol().getType()) {
+            /* No checks needed for BooleanLiteral */
+          case BasicLexer.GT:
+            return new BooleanLiteralNode(
+                ((IntLiteralNode) leftExpr).getValue() > ((IntLiteralNode) rightExpr).getValue());
+          case BasicLexer.GTE:
+            return new BooleanLiteralNode(
+                ((IntLiteralNode) leftExpr).getValue() >= ((IntLiteralNode) rightExpr).getValue());
+          case BasicLexer.LT:
+            return new BooleanLiteralNode(
+                ((IntLiteralNode) leftExpr).getValue() < ((IntLiteralNode) rightExpr).getValue());
+          default:
+            return new BooleanLiteralNode(
+                ((IntLiteralNode) leftExpr).getValue() <= ((IntLiteralNode) rightExpr).getValue());
+        }
       }
     }
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof CharacterLiteralNode && rightExpr instanceof CharacterLiteralNode) {
-      switch (typeNode.getSymbol().getType()) {
-        case BasicLexer.GT:
-          return new BooleanLiteralNode(
-              ((CharacterLiteralNode) leftExpr).getValue()
-                  > ((CharacterLiteralNode) rightExpr).getValue());
-        case BasicLexer.GTE:
-          return new BooleanLiteralNode(
-              ((CharacterLiteralNode) leftExpr).getValue()
-                  >= ((CharacterLiteralNode) rightExpr).getValue());
-        case BasicLexer.LT:
-          return new BooleanLiteralNode(
-              ((CharacterLiteralNode) leftExpr).getValue()
-                  < ((CharacterLiteralNode) rightExpr).getValue());
-        default:
-          return new BooleanLiteralNode(
-              ((CharacterLiteralNode) leftExpr).getValue()
-                  <= ((CharacterLiteralNode) rightExpr).getValue());
+    if (WaccFrontend.OPTIMIZE) {
+      if (leftExpr instanceof CharacterLiteralNode && rightExpr instanceof CharacterLiteralNode) {
+        switch (typeNode.getSymbol().getType()) {
+          case BasicLexer.GT:
+            return new BooleanLiteralNode(
+                ((CharacterLiteralNode) leftExpr).getValue()
+                    > ((CharacterLiteralNode) rightExpr).getValue());
+          case BasicLexer.GTE:
+            return new BooleanLiteralNode(
+                ((CharacterLiteralNode) leftExpr).getValue()
+                    >= ((CharacterLiteralNode) rightExpr).getValue());
+          case BasicLexer.LT:
+            return new BooleanLiteralNode(
+                ((CharacterLiteralNode) leftExpr).getValue()
+                    < ((CharacterLiteralNode) rightExpr).getValue());
+          default:
+            return new BooleanLiteralNode(
+                ((CharacterLiteralNode) leftExpr).getValue()
+                    <= ((CharacterLiteralNode) rightExpr).getValue());
+        }
       }
     }
 
@@ -834,18 +855,20 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     }
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof BasicLiteralNode && rightExpr instanceof BasicLiteralNode) {
-      /* No checks needed for BooleanLiteral */
-      if (typeNode.getSymbol().getType() == BasicLexer.EQ) {
+    if (WaccFrontend.OPTIMIZE) {
+      if (leftExpr instanceof BasicLiteralNode && rightExpr instanceof BasicLiteralNode) {
+        /* No checks needed for BooleanLiteral */
+        if (typeNode.getSymbol().getType() == BasicLexer.EQ) {
+          return new BooleanLiteralNode(
+              ((BasicLiteralNode) leftExpr)
+                  .getValue()
+                  .equals(((BasicLiteralNode) rightExpr).getValue()));
+        }
         return new BooleanLiteralNode(
-            ((BasicLiteralNode) leftExpr)
+            !(((BasicLiteralNode) leftExpr)
                 .getValue()
-                .equals(((BasicLiteralNode) rightExpr).getValue()));
+                .equals(((BasicLiteralNode) rightExpr).getValue())));
       }
-      return new BooleanLiteralNode(
-          !(((BasicLiteralNode) leftExpr)
-              .getValue()
-              .equals(((BasicLiteralNode) rightExpr).getValue())));
     }
 
     BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator, leftExpr, rightExpr);
@@ -869,11 +892,13 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof BooleanLiteralNode && rightExpr instanceof BooleanLiteralNode) {
-      /* No checks needed for BooleanLiteral */
-      return new BooleanLiteralNode(
-          ((BooleanLiteralNode) leftExpr).getValue()
-              && ((BooleanLiteralNode) rightExpr).getValue());
+    if (WaccFrontend.OPTIMIZE) {
+      if (leftExpr instanceof BooleanLiteralNode && rightExpr instanceof BooleanLiteralNode) {
+        /* No checks needed for BooleanLiteral */
+        return new BooleanLiteralNode(
+            ((BooleanLiteralNode) leftExpr).getValue()
+                && ((BooleanLiteralNode) rightExpr).getValue());
+      }
     }
 
     BinaryOperatorNode binaryOperatorNode =
@@ -898,11 +923,13 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof BooleanLiteralNode && rightExpr instanceof BooleanLiteralNode) {
-      /* No checks needed for BooleanLiteral */
-      return new BooleanLiteralNode(
-          ((BooleanLiteralNode) leftExpr).getValue()
-              || ((BooleanLiteralNode) rightExpr).getValue());
+    if (WaccFrontend.OPTIMIZE) {
+      if (leftExpr instanceof BooleanLiteralNode && rightExpr instanceof BooleanLiteralNode) {
+        /* No checks needed for BooleanLiteral */
+        return new BooleanLiteralNode(
+            ((BooleanLiteralNode) leftExpr).getValue()
+                || ((BooleanLiteralNode) rightExpr).getValue());
+      }
     }
 
     BinaryOperatorNode binaryOperatorNode =
