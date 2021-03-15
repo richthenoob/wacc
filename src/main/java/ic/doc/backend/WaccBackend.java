@@ -95,6 +95,8 @@ public class WaccBackend {
       }
     }
 
+    // generate code for virtual tables
+
     return outputString.toString();
   }
 

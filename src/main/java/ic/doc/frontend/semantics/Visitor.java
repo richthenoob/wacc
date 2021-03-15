@@ -1,5 +1,6 @@
 package ic.doc.frontend.semantics;
 
+import ic.doc.backend.VirtualTable;
 import ic.doc.frontend.errors.SemanticErrorList;
 import ic.doc.frontend.errors.SyntaxException;
 import ic.doc.antlr.BasicLexer;
@@ -162,7 +163,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       /* Find immediate superclass if it exists, and pass this information
        * to class identifier. */
       String immediateSuperclass = "";
-      if (!ctx.extends_().isEmpty()) {
+      if (ctx.extends_().IDENT() != null) {
         immediateSuperclass = ctx.extends_().IDENT().getText();
       }
 
@@ -206,10 +207,6 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         .lookup(classKey)).getClassSymbolTable();
     currentSymbolTable = classSymbolTable;
 
-    // TODO: somehow unify parent's class symboltable and this class's
-    // symboltable over here. Also remember to populate a new virtual table
-    // and add it to the class node
-
     /* Since we are using a paramList in the parser, we can call visitParamList
      * to create a paramListNode for us. Then, pass this information
      * to classNode. */
@@ -218,14 +215,17 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     /* Go through declared functions and visit each of them; adding them
      * to a list so that the classNode contains this information. */
     List<FunctionNode> classFunctions = new ArrayList<>();
-
     for (FuncContext func : ctx.func()) {
       classFunctions.add((FunctionNode) visit(func));
     }
 
+    /* Virtual table that will hold a mapping from func -> classDeclaredIn.
+     * This will be filled up in the check() function of classNode. */
+    VirtualTable classVirtualTable = new VirtualTable();
+
     /* Actually make the class node now that we have all the required information. */
     ClassNode classNode = new ClassNode(className, classSymbolTable,
-        paramListNode, classFunctions);
+        paramListNode, classFunctions, classVirtualTable);
 
     currentSymbolTable = classNode.getClassSymbolTable().getParentSymbolTable();
     classNode.check(this, ctx);

@@ -2,6 +2,7 @@ package ic.doc.frontend.nodes;
 
 import ic.doc.backend.Context;
 import ic.doc.backend.Label;
+import ic.doc.backend.VirtualTable;
 import ic.doc.backend.instructions.Instruction;
 import ic.doc.backend.instructions.LoadLiterals;
 import ic.doc.backend.instructions.Move;
@@ -29,16 +30,19 @@ public class ClassNode extends Node {
   private final ParamListNode classFields;
   private final List<FunctionNode> classFunctions;
   private final Map<String, SymbolTable> functionTables;
+  private final VirtualTable classVirtualTable;
 
   public ClassNode(String className,
       SymbolTable classSymbolTable,
       ParamListNode classFields,
-      List<FunctionNode> classFunctions) {
+      List<FunctionNode> classFunctions,
+      VirtualTable classVirtualTable) {
     this.className = className;
     this.classSymbolTable = classSymbolTable;
     this.classFields = classFields;
     this.classFunctions = classFunctions;
     functionTables = new HashMap<>();
+    this.classVirtualTable = classVirtualTable;
   }
 
   public String getClassName() {
@@ -67,6 +71,11 @@ public class ClassNode extends Node {
       }
     }
 
+    // TODO: somehow unify parent's class symboltable and this class's
+    // symboltable over here. populate virtual table.
+
+    // check for cycles
+
     /* Note:
      * Checking of repeated function names
      * is handled when we call declareFunction() in visitClass_().
@@ -76,6 +85,8 @@ public class ClassNode extends Node {
 
   @Override
   public void translate(Context context) {
+
+    // Add virtualTable to context for code generation
 
     /* Add class init label. */
     context.setScope(classSymbolTable);
