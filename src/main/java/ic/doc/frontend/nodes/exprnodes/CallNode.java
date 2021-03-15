@@ -50,19 +50,8 @@ public class CallNode extends ExprNode {
     SymbolKey key = new SymbolKey(functionName, KeyTypes.FUNCTION);
     Identifier id = visitor.getCurrentSymbolTable().lookupAll(key);
 
-    if (id == null) {
-      /* Checks if function was defined in scope */
-      setType(new ErrorType());
-      visitor.getSemanticErrorList()
-          .addScopeException(ctx, false, "Function", functionName);
-    } else if (!(id instanceof FunctionIdentifier)) {
-      /* Checks if id is an instance of function */
-      setType(new ErrorType());
-      visitor
-          .getSemanticErrorList()
-          .addException(
-              ctx,
-              "Identifier Variable is not an instance of function. Expected: Function. Actual: Variable.");
+    if (!functionIdCheck(visitor, ctx, id)) {
+      return;
     } else {
       FunctionIdentifier functionId = (FunctionIdentifier) id;
       Type functionType = functionId.getType();
@@ -93,6 +82,29 @@ public class CallNode extends ExprNode {
     }
   }
 
+  /* Checks if function was defined in scope,
+   * and if identifier is an instance of FunctionIdentifier. */
+  protected boolean functionIdCheck(Visitor visitor, ParserRuleContext ctx, Identifier id) {
+    String functionName = getIdentifier();
+    if (id == null) {
+      /* Checks if function was defined in scope */
+      setType(new ErrorType());
+      visitor.getSemanticErrorList()
+          .addScopeException(ctx, false, "Function", functionName);
+      return false;
+    } else if (!(id instanceof FunctionIdentifier)) {
+      /* Checks if id is an instance of function */
+      setType(new ErrorType());
+      visitor
+          .getSemanticErrorList()
+          .addException(
+              ctx,
+              "Identifier Variable is not an instance of function. Expected: Function. Actual: Variable.");
+      return false;
+    }
+    return true;
+  }
+
   @Override
   public void translate(Context context) {
 
@@ -116,8 +128,28 @@ public class CallNode extends ExprNode {
      * onto the stack, ensuring to restore this at the end of the function call. */
     int counter = 0;
 
-    for (int i = args.getParams().size() - 1; i >= 0; i--) {
-      ExprNode arg = args.getParams().get(i);
+    /* Stores arguments of call onto stack to be accessed by function later. */
+    counter = storeArguments(context, counter);
+
+    if (!currentClass.isEmpty()) {
+      /* After pushing arguments, push the address of the instance so
+       * that the function can find class instance fields. */
+      SymbolKey classInstanceKey = new SymbolKey("specialname", KeyTypes.VARIABLE);
+      VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable.lookupAll(classInstanceKey);
+
+      counter = pushInstanceAddress(context, classInstanceIdentifier, classInstanceKey, counter);
+    }
+
+    /* Finally, restore the changes we have made to the function symbol table,
+     * scope, and stack space after the call. Move result of function call to free register. */
+    restoreStateAfterCall(context, currentClass, counter, funcTable);
+  }
+
+  /* Stores arguments of call onto stack to be accessed by function later. */
+  protected int storeArguments(Context context, int counter) {
+    SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
+    for (int i = getArgs().getParams().size() - 1; i >= 0; i--) {
+      ExprNode arg = getArgs().getParams().get(i);
 
       int offset;
       /* Calculate new stack pointer offset after storing each argument.
@@ -152,37 +184,44 @@ public class CallNode extends ExprNode {
       /* Free register used for loading. */
       context.freeRegister(reg.getValue());
     }
+    return counter;
+  }
 
-    if (!currentClass.isEmpty()) {
-      /* After pushing arguments, push the address of the instance so
-       * that the function can find class instance fields. */
-      RegisterOperand reg = new RegisterOperand(context.getFreeRegister());
+  /* Pushes the address of the instance so
+   * that the function can find class instance fields. */
+  protected int pushInstanceAddress(Context context,
+      VariableIdentifier classInstanceIdentifier, SymbolKey classInstanceKey, int counter) {
 
-      SymbolKey classInstanceKey = new SymbolKey("specialname", KeyTypes.VARIABLE);
-      VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable.lookupAll(classInstanceKey);
+    SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
+    RegisterOperand reg = new RegisterOperand(context.getFreeRegister());
 
-      SingleDataTransfer loadClassInstance = SingleDataTransfer.LDR(reg,
-          new PreIndexedAddressOperand(RegisterOperand.SP)
-              .withExpr(new ImmediateOperand<>(classInstanceIdentifier
-                  .getOffsetStack(currentSymbolTable, classInstanceKey))
-                  .withPrefixSymbol("#")));
-      context.addToCurrentLabel(loadClassInstance);
+    SingleDataTransfer loadClassInstance = SingleDataTransfer.LDR(reg,
+        new PreIndexedAddressOperand(RegisterOperand.SP)
+            .withExpr(new ImmediateOperand<>(classInstanceIdentifier
+                .getOffsetStack(currentSymbolTable, classInstanceKey))
+                .withPrefixSymbol("#")));
+    context.addToCurrentLabel(loadClassInstance);
 
-      PreIndexedAddressOperand shiftStack = new PreIndexedAddressOperand(
-          RegisterOperand.SP)
-          .withExpr(new ImmediateOperand<>(-Context.SIZE_OF_ADDRESS)
-              .withPrefixSymbol("#"))
-          .withJump();
-      context.addToCurrentLabel(STR(reg, shiftStack));
+    PreIndexedAddressOperand shiftStack = new PreIndexedAddressOperand(
+        RegisterOperand.SP)
+        .withExpr(new ImmediateOperand<>(-Context.SIZE_OF_ADDRESS)
+            .withPrefixSymbol("#"))
+        .withJump();
+    context.addToCurrentLabel(STR(reg, shiftStack));
 
-      /* Free register used for loading. */
-      context.freeRegister(reg.getValue());
+    /* Free register used for loading. */
+    context.freeRegister(reg.getValue());
 
-      currentSymbolTable.incrementOffset(4);
-      currentSymbolTable.incrementTableSizeInBytes(4);
-      counter += 4;
-    }
+    currentSymbolTable.incrementOffset(4);
+    currentSymbolTable.incrementTableSizeInBytes(4);
+    return counter + 4;
+  }
 
+  /* Finally, restore the changes we have made to the function symbol table,
+   * scope, and stack space after the call. Move result of function call to free register. */
+  protected void restoreStateAfterCall(Context context,
+      String currentClass, int counter, SymbolTable funcTable) {
+    SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
     /* Finally, restore the changes we have made to the function symbol table
      * after the call. This ensures that the function symbol table is exactly
      * the same as when we entered the call. */

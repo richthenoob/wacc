@@ -5,6 +5,7 @@ import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.nodes.Node;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
+import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.Type;
@@ -36,17 +37,23 @@ public abstract class ExprNode extends Node {
   For use in printing semantic error messages. */
   public abstract String getInput();
 
-  /* Given a name and a keyType, checks if name can be found in current symbol table.
+  /* Given a name and a keyType, checks if name can be found in current symbol table of visitor.
   *  Throws an error with errorLabel if otherwise.*/
   public Identifier checkIdentifier(Visitor visitor, ParserRuleContext ctx,
       String name, KeyTypes keyType, String errorLabel) {
-    SymbolKey key = new SymbolKey(name, keyType);
-    Identifier id = visitor.getCurrentSymbolTable().lookupAll(key);
+    Identifier id = findIdentifier(visitor.getCurrentSymbolTable(), name, keyType);
     if (id == null) {
       setType(new ErrorType());
       visitor.getSemanticErrorList().addScopeException(ctx, false, errorLabel, name);
       return null;
     }
     return id;
+  }
+
+  /* Given a name and a keyType, checks if name can be found in given symbol table. */
+  public Identifier findIdentifier(SymbolTable st,
+      String name, KeyTypes keyType) {
+    SymbolKey key = new SymbolKey(name, keyType);
+    return st.lookupAll(key);
   }
 }
