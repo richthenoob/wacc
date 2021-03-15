@@ -1,0 +1,3 @@
+begin
+  bool b = true && false
+end

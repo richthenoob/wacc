@@ -1,5 +1,7 @@
 package ic.doc.backend.instructions.operands;
 
+import java.util.Objects;
+
 /* Adapted from the ARM specification.
  * [Rn], <#expression>]        offset of <expression> bytes
  * [Rn],{+/-}Rm {,<shift>}     offset of +/- contents of index register,
@@ -40,6 +42,30 @@ public class PostIndexedAddressOperand extends AddressOperand {
   public PostIndexedAddressOperand withExpr(ImmediateOperand expr) {
     this.expr = expr;
     return this;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(rn, rm, isNegativeRm, shift, expr);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    boolean compareRm;
+    if (obj instanceof PostIndexedAddressOperand) {
+      if(rm == null){
+        compareRm = ((PostIndexedAddressOperand) obj).rm == null;
+      }
+      else {
+        compareRm = rm.equals(((PostIndexedAddressOperand) obj).rm);
+      }
+      return rn.equals(((PostIndexedAddressOperand) obj).rn)
+          && compareRm
+          && isNegativeRm == ((PostIndexedAddressOperand) obj).isNegativeRm
+              && shift.equals(((PostIndexedAddressOperand) obj).shift)
+              && expr.equals(((PostIndexedAddressOperand) obj).expr);
+    }
+    return false;
   }
 
   @Override

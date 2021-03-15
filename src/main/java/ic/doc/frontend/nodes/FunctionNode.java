@@ -124,6 +124,10 @@ public class FunctionNode extends Node {
       return endsWithReturnOrExit(trueBody) && endsWithReturnOrExit(falseBody);
     }
 
+    if(stat instanceof ScopingNode) {
+      return endsWithReturnOrExit(((ScopingNode) stat).getStatNode());
+    }
+
     return false;
   }
 
