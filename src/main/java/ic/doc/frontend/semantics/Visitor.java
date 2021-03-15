@@ -203,8 +203,9 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
      * classes to store class information. */
     String className = ctx.IDENT().getText();
     SymbolKey classKey = new SymbolKey(className, KeyTypes.CLASS);
-    SymbolTable classSymbolTable = ((ClassIdentifier) currentSymbolTable
-        .lookup(classKey)).getClassSymbolTable();
+    ClassIdentifier classIdentifier = ((ClassIdentifier) currentSymbolTable
+        .lookup(classKey));
+    SymbolTable classSymbolTable = classIdentifier.getClassSymbolTable();
     currentSymbolTable = classSymbolTable;
 
     /* Since we are using a paramList in the parser, we can call visitParamList
@@ -219,13 +220,9 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       classFunctions.add((FunctionNode) visit(func));
     }
 
-    /* Virtual table that will hold a mapping from func -> classDeclaredIn.
-     * This will be filled up in the check() function of classNode. */
-    VirtualTable classVirtualTable = new VirtualTable();
-
     /* Actually make the class node now that we have all the required information. */
     ClassNode classNode = new ClassNode(className, classSymbolTable,
-        paramListNode, classFunctions, classVirtualTable);
+        paramListNode, classFunctions, classIdentifier.getImmediateSuperClass());
 
     currentSymbolTable = classNode.getClassSymbolTable().getParentSymbolTable();
     classNode.check(this, ctx);

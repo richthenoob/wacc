@@ -13,13 +13,14 @@ public class ParamListNode extends Node {
 
   private final int numParas;
   private final List<ParamNode> params;
-  private final List<Type> types;
 
   public ParamListNode(List<ParamNode> params) {
     this.numParas = params.size();
     this.params = params;
-    types = params.stream().map(ParamNode::getType)
-        .collect(Collectors.toList());
+  }
+
+  public void addParam(ParamNode node) {
+    params.add(node);
   }
 
   public int getNumParas() {
@@ -31,7 +32,8 @@ public class ParamListNode extends Node {
   }
 
   public List<Type> getType() {
-    return types;
+    return params.stream().map(ParamNode::getType)
+        .collect(Collectors.toList());
   }
 
   @Override
