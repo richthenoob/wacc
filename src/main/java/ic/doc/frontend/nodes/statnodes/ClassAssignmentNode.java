@@ -103,8 +103,8 @@ public class ClassAssignmentNode extends AssignmentNode {
     context.addToCurrentLabel(
         DataProcessing.SUB(
             RegisterOperand.SP,
-            RegisterOperand.SP, // todo: remove magic number 4
-            new ImmediateOperand<>(4).withPrefixSymbol("#")));
+            RegisterOperand.SP,
+            new ImmediateOperand<>(Context.SIZE_OF_ADDRESS).withPrefixSymbol("#")));
 
     /* Malloc space on heap for class instance. */
     context.addToCurrentLabel(Move.MOV(RegisterOperand.R0,

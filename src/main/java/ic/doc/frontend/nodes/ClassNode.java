@@ -127,12 +127,11 @@ public class ClassNode extends Node {
 
       int fieldSize = field.getType().getVarSize();
 
-      /* Only store 1 byte if writing to char or bool type field. */
+      /* Only store 1 byte if writing to char or bool type field.
+       * No conditions needed if fieldSize == 4. */
       if (fieldSize == 1) {
         initialiseFieldZeroInst = initialiseFieldZeroInst.withCond("B");
-      } else if (fieldSize == 4) {
-        /* No conditions needed. */
-      } else {
+      } else if (fieldSize != 4){
         throw new IllegalStateException(
             "Field \"" + field.getType() + "\" in class " + className
                 + " has invalid field size!");
