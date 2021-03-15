@@ -44,7 +44,8 @@ public class ArrayLiteralNode extends LiteralNode {
     /* Check that every list element type is the same as the first. */
     List<ExprNode> mismatchedTypeNodes =
         values.stream()
-            .filter(x -> !(Type.checkTypeCompatibility(x.getType(), values.get(0).getType())))
+            .filter(x -> !(Type.checkTypeCompatibility(x.getType(), values.get(0).getType(),
+                visitor.getCurrentSymbolTable())))
             .collect(Collectors.toList());
 
     for (ExprNode mismatchedTypeNode : mismatchedTypeNodes) {

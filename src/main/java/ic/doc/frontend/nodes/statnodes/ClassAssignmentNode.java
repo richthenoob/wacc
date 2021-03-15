@@ -63,7 +63,8 @@ public class ClassAssignmentNode extends AssignmentNode {
     }
 
     /* Check that classIdent and RHS are the same class (same name). */
-    if (!Type.checkTypeCompatibility(classIdentType, rhsType)
+    if (!Type.checkTypeCompatibility(classIdentType, rhsType,
+        visitor.getCurrentSymbolTable())
         && !(classIdentType instanceof ErrorType)
         && !(rhsType instanceof ErrorType)) {
       visitor.getSemanticErrorList().addTypeException(ctx,

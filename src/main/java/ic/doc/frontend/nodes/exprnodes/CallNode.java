@@ -72,7 +72,7 @@ public class CallNode extends ExprNode {
                     + args.getNumParas()
                     + ".");
       } else if (!(Type
-          .checkTypeListCompatibility(args.getType(), expectedParamListType))) {
+          .checkTypeListCompatibility(args.getType(), expectedParamListType, visitor.getCurrentSymbolTable()))) {
         /* Checks if types of parameters passed in matches expected types */
         visitor
             .getSemanticErrorList()

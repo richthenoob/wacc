@@ -122,7 +122,7 @@ public class CallClassFunctionNode extends CallNode {
 
     /* Check that each argument matches its expected type. */
     if (!(Type.checkTypeListCompatibility(inputArgumentTypes,
-        expectedArgumentTypes))) {
+        expectedArgumentTypes, visitor.getCurrentSymbolTable()))) {
       setType(new ErrorType());
       visitor
           .getSemanticErrorList()
