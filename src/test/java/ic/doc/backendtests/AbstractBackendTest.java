@@ -259,6 +259,7 @@ public abstract class AbstractBackendTest {
     /* Run test file through frontend to get root node of AST tree. */
     AbstractFrontendTest frontendTest = new AbstractFrontendTest() {
     };
+    WaccFrontend.OPTIMIZE = true;
     ProgNode rootNode = frontendTest.frontendTestFile(testFilepath);
 
     if (rootNode == null) {
@@ -266,7 +267,6 @@ public abstract class AbstractBackendTest {
     }
 
     /* Generate code and write to temporary file. */
-    WaccFrontend.OPTIMIZE = true;
     WaccBackend wrapper = WaccBackend.generateCode(rootNode);
     String code = wrapper.getOutput();
     int instructCount = wrapper.getInstructCount();

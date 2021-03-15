@@ -178,7 +178,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   public Node visitWhile(BasicParser.WhileContext ctx) {
     ExprNode expr = (ExprNode) visit(ctx.expr());
 
-    if (expr instanceof BooleanLiteralNode && !((BooleanLiteralNode) expr).getValue()) {
+    if (expr instanceof BooleanLiteralNode && !((BooleanLiteralNode) expr).getValue() && WaccFrontend.OPTIMIZE) {
       return new SkipNode();
     }
 
@@ -257,7 +257,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     /* If condition is an constant and known value, can evaluate to corresponding body eg. if(false) then a else b can
     be optimized to b
      */
-    if (expr instanceof BooleanLiteralNode) {
+    if (expr instanceof BooleanLiteralNode && WaccFrontend.OPTIMIZE) {
       if (((BooleanLiteralNode) expr).getValue()) {
         /* No checks needed for Scoping Node */
         return new ScopingNode(trueBodySymbolTable, trueBody);
