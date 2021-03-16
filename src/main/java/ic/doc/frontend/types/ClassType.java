@@ -5,6 +5,8 @@ import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ClassType extends Type {
 
@@ -40,12 +42,15 @@ public class ClassType extends Type {
       return true;
     }
 
-    return isSubclassOf(t1ClassName, t2ClassName, currentSymbolTable);
+    return hasSuperclassCycle(t1ClassName, t2ClassName, currentSymbolTable);
   }
 
-  public static boolean isSubclassOf(String currentClassName,
+  public static boolean hasSuperclassCycle(String currentClassName,
       String superclassName,
       SymbolTable symbolTable) {
+
+    /* Track list of classes visited. */
+    Set<String> classesVisited = new HashSet<>();
 
     /* Iteratively lookup immediate super class names, only returning
      * true if it matches the parent class name we are looking for. */
@@ -54,17 +59,18 @@ public class ClassType extends Type {
       Identifier currentIdentifier = symbolTable.lookupAll(currentKey);
 
       if (!(currentIdentifier instanceof ClassIdentifier)) {
-        throw new IllegalStateException(currentClassName +
-            " not in the symbol table or does not exist as a class identifier!");
+        return true;
       }
 
       String immediateSuperClass = ((ClassIdentifier) currentIdentifier)
           .getImmediateSuperClass();
 
-      if (immediateSuperClass.equals(superclassName)) {
+      if (immediateSuperClass.equals(superclassName) ||
+          classesVisited.contains(currentClassName)) {
         return true;
       }
 
+      classesVisited.add(currentClassName);
       currentClassName = immediateSuperClass;
     }
 

@@ -80,7 +80,7 @@ public class ClassNode extends Node {
     }
 
     /* Check for class inheritance cycles. */
-    if (ClassType.isSubclassOf(className, className, currentSymbolTable)) {
+    if (ClassType.hasSuperclassCycle(className, className, currentSymbolTable)) {
       visitor.getSemanticErrorList().addException(ctx,
           "Cyclic inheritance detected for class " + className);
       return;
