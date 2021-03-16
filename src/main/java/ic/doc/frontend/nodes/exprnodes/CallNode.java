@@ -1,10 +1,13 @@
 package ic.doc.frontend.nodes.exprnodes;
 
 import static ic.doc.backend.instructions.Branch.BL;
+import static ic.doc.backend.instructions.Branch.BLX;
 import static ic.doc.backend.instructions.Move.MOV;
+import static ic.doc.backend.instructions.SingleDataTransfer.LDR;
 import static ic.doc.backend.instructions.SingleDataTransfer.STR;
 
 import ic.doc.backend.Context;
+import ic.doc.backend.VirtualTable;
 import ic.doc.backend.instructions.DataProcessing;
 import ic.doc.backend.instructions.SingleDataTransfer;
 import ic.doc.backend.instructions.operands.ImmediateOperand;
@@ -15,6 +18,7 @@ import ic.doc.frontend.identifiers.FunctionIdentifier;
 import ic.doc.frontend.identifiers.Identifier;
 import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.ArgListNode;
+import ic.doc.frontend.nodes.ClassNode;
 import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
@@ -72,7 +76,8 @@ public class CallNode extends ExprNode {
                     + args.getNumParas()
                     + ".");
       } else if (!(Type
-          .checkTypeListCompatibility(args.getType(), expectedParamListType, visitor.getCurrentSymbolTable()))) {
+          .checkTypeListCompatibility(args.getType(), expectedParamListType,
+              visitor.getCurrentSymbolTable()))) {
         /* Checks if types of parameters passed in matches expected types */
         visitor
             .getSemanticErrorList()
@@ -84,7 +89,8 @@ public class CallNode extends ExprNode {
 
   /* Checks if function was defined in scope,
    * and if identifier is an instance of FunctionIdentifier. */
-  protected boolean functionIdCheck(Visitor visitor, ParserRuleContext ctx, Identifier id) {
+  protected boolean functionIdCheck(Visitor visitor, ParserRuleContext ctx,
+      Identifier id) {
     String functionName = getIdentifier();
     if (id == null) {
       /* Checks if function was defined in scope */
@@ -114,12 +120,13 @@ public class CallNode extends ExprNode {
     String currentClass = context.getCurrentClass();
     SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
     SymbolKey classKey;
-    ClassIdentifier classIdentifier;
+    ClassIdentifier classIdentifier = null;
     if (!currentClass.isEmpty()) {
       classKey = new SymbolKey(currentClass, KeyTypes.CLASS);
       classIdentifier = ((ClassIdentifier) currentSymbolTable
           .lookupAll(classKey));
-      funcTable = classIdentifier.getClassNode().getFunctionTables().get(identifier);
+      funcTable = classIdentifier.getClassNode().getFunctionTables()
+          .get(identifier);
     } else {
       funcTable = context.getFunctionTables().get(identifier);
     }
@@ -134,10 +141,13 @@ public class CallNode extends ExprNode {
     if (!currentClass.isEmpty()) {
       /* After pushing arguments, push the address of the instance so
        * that the function can find class instance fields. */
-      SymbolKey classInstanceKey = new SymbolKey("specialname", KeyTypes.VARIABLE);
-      VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable.lookupAll(classInstanceKey);
+      SymbolKey classInstanceKey = new SymbolKey("specialname",
+          KeyTypes.VARIABLE);
+      VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable
+          .lookupAll(classInstanceKey);
 
-      counter = pushInstanceAddress(context, classInstanceIdentifier, classInstanceKey, counter);
+      counter = pushInstanceAddress(context, classInstanceIdentifier,
+          classInstanceKey, counter, classIdentifier);
     }
 
     /* Finally, restore the changes we have made to the function symbol table,
@@ -190,7 +200,8 @@ public class CallNode extends ExprNode {
   /* Pushes the address of the instance so
    * that the function can find class instance fields. */
   protected int pushInstanceAddress(Context context,
-      VariableIdentifier classInstanceIdentifier, SymbolKey classInstanceKey, int counter) {
+      VariableIdentifier classInstanceIdentifier, SymbolKey classInstanceKey,
+      int counter, ClassIdentifier classIdentifier) {
 
     SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
     RegisterOperand reg = new RegisterOperand(context.getFreeRegister());
@@ -209,11 +220,30 @@ public class CallNode extends ExprNode {
         .withJump();
     context.addToCurrentLabel(STR(reg, shiftStack));
 
+    currentSymbolTable.incrementOffset(4);
+    currentSymbolTable.incrementTableSizeInBytes(4);
+
+    /* At this point, the instance address is still in reg. Use this to find
+     * the address to this class's instance table. */
+    context.addToCurrentLabel(LDR(reg, new PreIndexedAddressOperand(reg)));
+
+    /* Look up the offset of the function being called, and load its address
+     * back into reg. Note that we must offset this again by SIZE_OF_ADDRESS,
+     * because of how we used .word 0 at the start of every virtual table. */
+    VirtualTable classVirtualTable = classIdentifier.getClassNode().getClassVirtualTable();
+    int functionOffset = classVirtualTable.getFunctionOffset(identifier);
+    assert (functionOffset != -1);
+
+    context.addToCurrentLabel(LDR(reg, new PreIndexedAddressOperand(reg)
+        .withExpr(new ImmediateOperand<>(functionOffset * 4 + 4)
+            .withPrefixSymbol("#"))));
+
+    /* Branch and link to address stored in this register. */
+    context.addToCurrentLabel(BLX(reg.toString()));
+
     /* Free register used for loading. */
     context.freeRegister(reg.getValue());
 
-    currentSymbolTable.incrementOffset(4);
-    currentSymbolTable.incrementTableSizeInBytes(4);
     return counter + 4;
   }
 
@@ -228,9 +258,12 @@ public class CallNode extends ExprNode {
     currentSymbolTable.decrementOffset(counter);
     currentSymbolTable.decrementTableSizeInBytes(counter);
 
-    /* Call the function then restore to previous scope.
-     * Also restore any stack space used by parameters to the function. */
-    context.addToCurrentLabel(BL(currentClass + "_" + "f_" + identifier));
+    /* Call the function using virtual tables if necessary. */
+    if (currentClass.isEmpty()) {
+      context.addToCurrentLabel(BL(currentClass + "_" + "f_" + identifier));
+    }
+
+    /* Restore any stack space used by parameters to the function. */
     context.addToCurrentLabel(DataProcessing
         .ADD(RegisterOperand.SP, RegisterOperand.SP,
             new ImmediateOperand<>(funcTable.getParametersSizeInBytes())

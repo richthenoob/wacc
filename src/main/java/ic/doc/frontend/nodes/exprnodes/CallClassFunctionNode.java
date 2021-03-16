@@ -162,7 +162,7 @@ public class CallClassFunctionNode extends CallNode {
 
     /* After pushing arguments, push the address of the instance so
      * that the function can find class instance fields. */
-    counter = pushInstanceAddress(context, classInstanceIdentifier, classInstanceKey, counter);
+    counter = pushInstanceAddress(context, classInstanceIdentifier, classInstanceKey, counter, classIdentifier);
 
     /* Finally, restore the changes we have made to the function symbol table,
      * scope, and stack space after the call. Move result of function call to free register. */

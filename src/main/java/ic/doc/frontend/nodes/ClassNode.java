@@ -9,6 +9,7 @@ import ic.doc.backend.instructions.Move;
 import ic.doc.backend.instructions.SingleDataTransfer;
 import ic.doc.backend.instructions.Stack;
 import ic.doc.backend.instructions.operands.ImmediateOperand;
+import ic.doc.backend.instructions.operands.LabelAddressOperand;
 import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.frontend.identifiers.ClassIdentifier;
@@ -49,7 +50,11 @@ public class ClassNode extends Node {
     this.classFunctions = classFunctions;
     this.immediateSuperclass = immediateSuperclass;
     this.functionTables = new HashMap<>();
-    this.classVirtualTable = new VirtualTable();
+    this.classVirtualTable = new VirtualTable(className);
+  }
+
+  public VirtualTable getClassVirtualTable() {
+    return classVirtualTable;
   }
 
   public String getClassName() {
@@ -85,6 +90,14 @@ public class ClassNode extends Node {
       visitor.getSemanticErrorList().addException(ctx,
           "Cyclic inheritance detected for class " + className);
       return;
+    }
+
+    /* Add this class's function to its own virtual table. */
+    for (Map.Entry<SymbolKey, Identifier> entry :
+        currentSymbolTable.getDictionary().entrySet()) {
+      if (entry.getValue() instanceof FunctionIdentifier) {
+        classVirtualTable.addClassFunction(entry.getKey().getName(), className);
+      }
     }
 
     /* Attempt to unify super class symbol table and this one if it exists. */
@@ -154,8 +167,8 @@ public class ClassNode extends Node {
 
   @Override
   public void translate(Context context) {
-
-    // Add virtualTable to context for code generation
+    /* Add this class's virtual table to context, so we can print it later. */
+    context.addToVirtualTables(classVirtualTable);
 
     /* Add class init label. */
     context.setScope(classSymbolTable);
@@ -175,13 +188,24 @@ public class ClassNode extends Node {
     context.setCurrentClass("");
   }
 
-  /* Initialise a class and make sure all values are set to 0.
+  /* Initialise a class and make sure all values are set to 0. Set the first
+   * element of the class instance to this class' virtual table.
    * Assume that when this function is called, the address of the class
    * is in r0. */
   private void createClassInit(Context context) {
     Label<Instruction> classInitLabel = new Label<>("c_" + className + "_init");
     context.getInstructionLabels().add(classInitLabel);
     classInitLabel.addToBody(Stack.PUSH(RegisterOperand.LR));
+
+    /* Store a pointer to this class's virtual table. Use R1 as a temporary
+     * register, recalling that R0 stores the address of our instance. */
+    LabelAddressOperand vtableOperand = new LabelAddressOperand(VirtualTable.VIRTUAL_TABLE_PREFIX + className);
+    classInitLabel.addToBody(SingleDataTransfer.LDR(RegisterOperand.R1, vtableOperand));
+    classInitLabel.addToBody(SingleDataTransfer.STR(RegisterOperand.R1,
+        new PreIndexedAddressOperand(RegisterOperand.R0)));
+
+    classSymbolTable.incrementFunctionParametersSize(4);
+    classSymbolTable.incrementOffset(4);
 
     /* Store zero into R1, so that we can write this to the relevant addresses later on. */
     ImmediateOperand<Integer> zeroOperand = new ImmediateOperand<>(0)
