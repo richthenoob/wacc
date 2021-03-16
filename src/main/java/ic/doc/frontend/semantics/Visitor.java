@@ -213,19 +213,21 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
      * to classNode. */
     ParamListNode paramListNode = (ParamListNode) visit(ctx.paramList());
 
+    /* Check the class node to ensure its fields and functions (as defined
+     * in the symbol table) are fine first. Because of class inheritance,
+     * we must do this before visiting functions so that we have an updated
+     * version of the symbol table. */
+    List<FunctionNode> classFunctions = new ArrayList<>();
+    ClassNode classNode = new ClassNode(className, classSymbolTable,
+        paramListNode, classFunctions, classIdentifier.getImmediateSuperClass());
+    classNode.check(this, ctx);
+
     /* Go through declared functions and visit each of them; adding them
      * to a list so that the classNode contains this information. */
-    List<FunctionNode> classFunctions = new ArrayList<>();
     for (FuncContext func : ctx.func()) {
       classFunctions.add((FunctionNode) visit(func));
     }
-
-    /* Actually make the class node now that we have all the required information. */
-    ClassNode classNode = new ClassNode(className, classSymbolTable,
-        paramListNode, classFunctions, classIdentifier.getImmediateSuperClass());
-
     currentSymbolTable = classNode.getClassSymbolTable().getParentSymbolTable();
-    classNode.check(this, ctx);
 
     /* Add classNode to ClassIdentifier so future references to this
      * class identifier can find the appropriate information. */
