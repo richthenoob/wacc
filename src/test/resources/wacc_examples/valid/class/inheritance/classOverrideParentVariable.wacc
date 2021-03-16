@@ -1,0 +1,23 @@
+# an inherited class is declared, overrides parent variable and operates with it
+
+# Output:
+# 42
+
+# Program:
+
+begin
+  class c {
+    int t
+    int f(int x, int y, char z) is
+      return t
+    end
+  }
+
+  class d extends c {
+    int t
+  }
+  d class1 = new d();
+  class1.t = 42;
+  int y = call class1.f(1, 2, 'a');
+  println y
+end
