@@ -80,7 +80,8 @@ public class ClassNode extends Node {
     }
 
     /* Check for class inheritance cycles. */
-    if (ClassType.hasSuperclassCycle(className, className, currentSymbolTable)) {
+    if (ClassType
+        .hasSuperclassCycle(className, className, currentSymbolTable)) {
       visitor.getSemanticErrorList().addException(ctx,
           "Cyclic inheritance detected for class " + className);
       return;
@@ -97,7 +98,7 @@ public class ClassNode extends Node {
           .getClassSymbolTable();
 
       unifySymbolTables(classSymbolTable, superclassSymbolTable,
-          currentSuperClass, classVirtualTable);
+          currentSuperClass, classVirtualTable, visitor, ctx);
 
       currentSuperClass = superclassIdentifier.getImmediateSuperClass();
     }
@@ -115,7 +116,7 @@ public class ClassNode extends Node {
    * function is in super class and in class, then keep the class's function. */
   private void unifySymbolTables(SymbolTable classSymbolTable,
       SymbolTable superclassSymbolTable, String superclassName,
-      VirtualTable virtualTable) {
+      VirtualTable virtualTable, Visitor visitor, ParserRuleContext ctx) {
 
     for (Map.Entry<SymbolKey, Identifier> entry :
         superclassSymbolTable.getDictionary().entrySet()) {
@@ -127,9 +128,16 @@ public class ClassNode extends Node {
 
       /* Don't add a super class's field if it already exists. */
       if (entryIdentifier instanceof VariableIdentifier) {
-        if (classSymbolTable.lookup(entryKey) == null) {
+        Identifier varIdentifier = classSymbolTable.lookup(entryKey);
+        if (varIdentifier == null) {
           classFields.addParam(new ParamNode(entryType, entryName));
           classSymbolTable.add(entryKey, entryIdentifier);
+        } else if (!Type
+            .checkTypeCompatibility(varIdentifier.getType(), entryType,
+                classSymbolTable)) {
+          visitor.getSemanticErrorList()
+              .addTypeException(ctx, entryName,
+                  varIdentifier.getType().toString(), entryType.toString(), "");
         }
       }
 

@@ -18,5 +18,5 @@ begin
   }
   class f {
   }
-  d class1 = new f();
+  d class1 = new f()
 end
