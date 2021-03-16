@@ -18,14 +18,14 @@ begin
           return 2
         end
   }
-  f class1 = new d();
-  f class2 = new e();
-  f class3 = new f();
-  f[] classes = [class1, class2, class3];
+  d class1 = new d();
+  d class2 = new d();
+  d class3 = new d();
+  d[] classes = [class1, class2, class3];
   int n = 0;
   while n < 3 do
     n = n + 1 ;
-    f nextClass = classes[n];
+    d nextClass = classes[n];
     int y = call nextClass.f();
     println y
   done ;
