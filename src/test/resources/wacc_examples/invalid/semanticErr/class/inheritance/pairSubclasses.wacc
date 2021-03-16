@@ -1,0 +1,26 @@
+# type of pair is superclass of actual type
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class d extends e {
+    int f() is
+      return 2
+    end
+  }
+  class e extends f {
+  }
+  class f {
+  }
+  d class1 = new d();
+  d class2 = new d();
+  f class3 = new d();
+  pair(d, f) p = newpair(class1, class2);
+  pair(d, f) p = newpair(class1, class3)
+end
