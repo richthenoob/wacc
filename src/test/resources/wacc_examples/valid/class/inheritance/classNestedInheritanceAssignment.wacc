@@ -28,8 +28,7 @@ begin
   println class2.y;
 
   c class3 = class2;
-  class3.z = 3;
-  println class3.z;
+  println class3.x;
 
   class3 = class1;
   println class3.x
