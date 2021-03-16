@@ -1,0 +1,30 @@
+# an inherited class is initialized by assigning a superclass to it
+# attempt
+
+# Output:
+# 1
+
+# Program:
+
+begin
+  class d {
+    int y
+  }
+  class e extends d {
+    int x
+  }
+
+  e class1 = new e();
+  class1.x = 1;
+  println class1.x;
+
+  d class2 = class1;
+  println class2.x
+end
+-- Executing...
+===========================================================
+1
+1
+===========================================================
+The exit code is 0.
+-- Finished
