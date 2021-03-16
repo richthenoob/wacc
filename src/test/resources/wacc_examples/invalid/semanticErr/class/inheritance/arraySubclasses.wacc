@@ -1,0 +1,25 @@
+# an array is declared with classes of differing types (but they extend e/o)
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class d extends e {
+    int f() is
+      return 2
+    end
+  }
+  class e extends f {
+  }
+  class f {
+  }
+  d class1 = new d();
+  e class2 = new e();
+  f class3 = new f();
+  f[] classes = [class1, class2, class3]
+end
