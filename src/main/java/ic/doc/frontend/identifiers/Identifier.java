@@ -15,4 +15,6 @@ public abstract class Identifier {
   }
 
   public abstract String toString();
+
+  public abstract Identifier getNewCopy();
 }

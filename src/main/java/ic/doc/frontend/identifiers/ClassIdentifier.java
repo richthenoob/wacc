@@ -48,4 +48,9 @@ public class ClassIdentifier extends Identifier {
     /* CLASS: className */
     return "CLASS: " + className;
   }
+
+  @Override
+  public Identifier getNewCopy() {
+    return new ClassIdentifier(className, classSymbolTable, immediateSuperClass);
+  }
 }

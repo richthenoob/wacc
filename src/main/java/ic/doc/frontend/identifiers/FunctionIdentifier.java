@@ -35,4 +35,9 @@ public class FunctionIdentifier extends Identifier {
     // int(int, str, int)
     return getType() + "(" + printTypes() + ")";
   }
+
+  @Override
+  public Identifier getNewCopy() {
+    return new FunctionIdentifier(getType(), paramTypeList);
+  }
 }

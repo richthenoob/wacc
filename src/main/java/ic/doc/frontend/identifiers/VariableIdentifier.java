@@ -62,4 +62,9 @@ public class VariableIdentifier extends Identifier {
   public String toString() {
     return super.getType().toString();
   }
+
+  @Override
+  public Identifier getNewCopy() {
+    return new VariableIdentifier(getType());
+  }
 }
