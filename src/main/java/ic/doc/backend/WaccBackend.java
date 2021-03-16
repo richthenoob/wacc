@@ -95,7 +95,10 @@ public class WaccBackend {
       }
     }
 
-    // generate code for virtual tables
+    for (VirtualTable table : context.getVirtualTables()) {
+      outputString.append(table.toAssembly());
+      outputString.append("\n");
+    }
 
     return outputString.toString();
   }
