@@ -1,0 +1,27 @@
+# a pair of classes
+
+# Output:
+# 1
+
+# Program:
+
+begin
+  class d extends e {
+  }
+  class e extends f {
+  }
+  class f {
+    int t
+    int f() is
+      return t
+    end
+  }
+  d class1 = new d();
+  class1.t = 1;
+  d class2 = new d();
+  class2.t = 2;
+  pair(d, d) p = newpair(class1, class2);
+  d class = fst p;
+  int ans = call class.f();
+  return ans
+end
