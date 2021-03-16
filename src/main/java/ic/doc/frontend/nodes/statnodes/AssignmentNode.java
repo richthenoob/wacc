@@ -71,7 +71,7 @@ public class AssignmentNode extends StatNode {
      * If their types are errors, an error should already have been thrown
      * for the variable not being defined in the scope
      * and thus further error throwing is unnecessary */
-    if (!(Type.checkTypeCompatibility(lhs.getType(), rhs.getType(),
+    if (!(Type.checkTypeCompatibility(rhs.getType(), lhs.getType(),
         visitor.getCurrentSymbolTable()))
         && !(lhs.getType() instanceof ErrorType)
         && !(rhs.getType() instanceof ErrorType)) {

@@ -97,7 +97,7 @@ public class ClassNode extends Node {
           .getClassSymbolTable();
 
       unifySymbolTables(classSymbolTable, superclassSymbolTable,
-          currentSuperClass, classVirtualTable, visitor, ctx);
+          currentSuperClass, classVirtualTable);
 
       currentSuperClass = superclassIdentifier.getImmediateSuperClass();
     }
@@ -115,7 +115,7 @@ public class ClassNode extends Node {
    * function is in super class and in class, then keep the class's function. */
   private void unifySymbolTables(SymbolTable classSymbolTable,
       SymbolTable superclassSymbolTable, String superclassName,
-      VirtualTable virtualTable, Visitor visitor, ParserRuleContext ctx) {
+      VirtualTable virtualTable) {
 
     for (Map.Entry<SymbolKey, Identifier> entry :
         superclassSymbolTable.getDictionary().entrySet()) {
@@ -125,16 +125,12 @@ public class ClassNode extends Node {
       Identifier entryIdentifier = entry.getValue();
       Type entryType = entryIdentifier.getType();
 
-      /* Disallow redeclaration of fields with same name in subclass. */
+      /* Don't add a super class's field if it already exists. */
       if (entryIdentifier instanceof VariableIdentifier) {
-        if (classSymbolTable.lookup(entryKey) != null) {
-//          visitor.getSemanticErrorList().addScopeException(ctx, true,
-//              entryType.toString(), entryName);
-        } else {
+        if (classSymbolTable.lookup(entryKey) == null) {
           classFields.addParam(new ParamNode(entryType, entryName));
           classSymbolTable.add(entryKey, entryIdentifier);
         }
-        continue;
       }
 
       /* Don't add super class's function definition to this class
