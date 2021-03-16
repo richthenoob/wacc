@@ -36,7 +36,7 @@ public class Context {
   /* Currently active symbol table. Corresponds to current scope */
   private SymbolTable currentSymbolTable;
   /* List of all symbol tables for functions, mapped to their function names */
-  private Map<String, SymbolTable> functionTables = new HashMap<>();
+  private final Map<String, SymbolTable> functionTables = new HashMap<>();
 
   /* -------------------------------- End Functions -------------------------------- */
   /* A set of predefined functions. Compared based on function name. Guaranteed to be unique so we can use a set
@@ -54,6 +54,8 @@ public class Context {
 
   /* -------------------------------- Classes -------------------------------- */
   private String currentClass = "";
+
+  private final List<VirtualTable> virtualTables = new ArrayList<>();
 
   /* -------------------------------- Registers -------------------------------- */
 
@@ -205,5 +207,13 @@ public class Context {
 
   public String getCurrentClass() {
     return currentClass;
+  }
+
+  public void addToVirtualTables(VirtualTable virtualTable) {
+    virtualTables.add(virtualTable);
+  }
+
+  public List<VirtualTable> getVirtualTables() {
+    return virtualTables;
   }
 }
