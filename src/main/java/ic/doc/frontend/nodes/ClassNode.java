@@ -144,7 +144,7 @@ public class ClassNode extends Node {
         Identifier varIdentifier = classSymbolTable.lookup(entryKey);
         if (varIdentifier == null) {
           classFields.addParam(new ParamNode(entryType, entryName));
-          classSymbolTable.add(entryKey, entryIdentifier);
+          classSymbolTable.add(entryKey, entryIdentifier.getNewCopy());
         } else if (!Type
             .checkTypeCompatibility(varIdentifier.getType(), entryType,
                 classSymbolTable)) {
@@ -159,7 +159,7 @@ public class ClassNode extends Node {
       if (entryIdentifier instanceof FunctionIdentifier) {
         if (classSymbolTable.lookup(entryKey) == null) {
           virtualTable.addClassFunction(entryName, superclassName);
-          classSymbolTable.add(entryKey, entryIdentifier);
+          classSymbolTable.add(entryKey, entryIdentifier.getNewCopy());
         }
       }
     }
