@@ -263,6 +263,16 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     classAssignmentNode.check(this, ctx);
 
+    /* Set symbol table corresponding to lhs node as that corresponding to rhs node */
+    SymbolKey rhsKey = new SymbolKey(ctx.IDENT(2).getText(), KeyTypes.VARIABLE);
+    VariableIdentifier rhsId = (VariableIdentifier) currentSymbolTable
+        .lookupAll(rhsKey);
+    SymbolKey lhsKey = new SymbolKey(ctx.IDENT(1).getText(), KeyTypes.VARIABLE);
+    VariableIdentifier lhsId = (VariableIdentifier) currentSymbolTable
+        .lookupAll(lhsKey);
+
+
+
     return classAssignmentNode;
   }
 
@@ -275,13 +285,14 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ClassVariableNode classIdent =
         new ClassVariableNode(ctx.IDENT(0).getText());
     VariableNode classInstanceLHS = new VariableNode(ctx.IDENT(1).getText());
+
+    /* Look up RHS in symbol table*/
     VariableNode classInstanceRHS = new VariableNode(ctx.IDENT(2).getText());
 
     /* Ensure that RHS and classIdent have been declared before. */
     classIdent.check(this, ctx);
     classInstanceRHS.check(this, ctx);
 
-    /* */
     ClassAssignmentNode classAssignmentNode =
         new ClassAssignmentNode(classInstanceLHS, classInstanceRHS, true,
             getCurrentSymbolTable(), classIdent);
