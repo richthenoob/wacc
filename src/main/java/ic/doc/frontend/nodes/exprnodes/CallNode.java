@@ -125,8 +125,7 @@ public class CallNode extends ExprNode {
       classKey = new SymbolKey(currentClass, KeyTypes.CLASS);
       classIdentifier = ((ClassIdentifier) currentSymbolTable
           .lookupAll(classKey));
-      funcTable = classIdentifier.getClassNode().getFunctionTables()
-          .get(identifier);
+      funcTable = classIdentifier.getClassNode().getFunctionTable(identifier);
     } else {
       funcTable = context.getFunctionTables().get(identifier);
     }

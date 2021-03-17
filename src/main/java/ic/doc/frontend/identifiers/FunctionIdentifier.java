@@ -1,15 +1,23 @@
 package ic.doc.frontend.identifiers;
 
+import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.types.Type;
 import java.util.List;
 
 public class FunctionIdentifier extends Identifier {
 
   private final List<Type> paramTypeList;
+  private final SymbolTable functionSymbolTable;
 
-  public FunctionIdentifier(Type type, List<Type> paramTypeList) {
+  public FunctionIdentifier(Type type, List<Type> paramTypeList,
+      SymbolTable functionSymbolTable) {
     super(type);
     this.paramTypeList = paramTypeList;
+    this.functionSymbolTable = functionSymbolTable;
+  }
+
+  public SymbolTable getFunctionSymbolTable() {
+    return functionSymbolTable;
   }
 
   public List<Type> getParamTypeList() {
@@ -38,6 +46,6 @@ public class FunctionIdentifier extends Identifier {
 
   @Override
   public Identifier getNewCopy() {
-    return new FunctionIdentifier(getType(), paramTypeList);
+    return new FunctionIdentifier(getType(), paramTypeList, functionSymbolTable);
   }
 }

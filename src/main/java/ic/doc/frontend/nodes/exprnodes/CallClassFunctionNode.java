@@ -151,7 +151,7 @@ public class CallClassFunctionNode extends CallNode {
 
     /* Find function symbol table from class node. */
     ClassNode classNode = classIdentifier.getClassNode();
-    SymbolTable funcTable = classNode.getFunctionTables().get(getIdentifier());
+    SymbolTable funcTable = classNode.getFunctionTable(getIdentifier());
 
     /* Use counter to track the size of parameters that have been pushed
      * onto the stack, ensuring to restore this at the end of the function call. */

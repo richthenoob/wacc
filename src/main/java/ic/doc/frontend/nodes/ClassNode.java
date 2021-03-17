@@ -36,7 +36,6 @@ public class ClassNode extends Node {
   private final SymbolTable classSymbolTable;
   private final ParamListNode classFields;
   private final List<FunctionNode> classFunctions;
-  private final Map<String, SymbolTable> functionTables;
   private final VirtualTable classVirtualTable;
 
   public ClassNode(String className,
@@ -49,7 +48,6 @@ public class ClassNode extends Node {
     this.classFields = classFields;
     this.classFunctions = classFunctions;
     this.immediateSuperclass = immediateSuperclass;
-    this.functionTables = new HashMap<>();
     this.classVirtualTable = new VirtualTable(className);
   }
 
@@ -61,8 +59,10 @@ public class ClassNode extends Node {
     return className;
   }
 
-  public Map<String, SymbolTable> getFunctionTables() {
-    return functionTables;
+  public SymbolTable getFunctionTable(String functionName) {
+    SymbolKey functionKey = new SymbolKey(functionName, KeyTypes.FUNCTION);
+    FunctionIdentifier functionIdentifier = (FunctionIdentifier) classSymbolTable.lookupAll(functionKey);
+    return functionIdentifier.getFunctionSymbolTable();
   }
 
   public SymbolTable getClassSymbolTable() {
@@ -178,7 +178,6 @@ public class ClassNode extends Node {
     createClassInit(context);
 
     for (FunctionNode node : classFunctions) {
-      functionTables.put(node.getFuncName(), node.getFuncSymbolTable());
       node.translateParameters(context);
     }
 

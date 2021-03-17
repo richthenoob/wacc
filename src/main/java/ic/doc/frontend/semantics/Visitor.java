@@ -1,28 +1,80 @@
 package ic.doc.frontend.semantics;
 
-import ic.doc.backend.VirtualTable;
-import ic.doc.frontend.errors.SemanticErrorList;
-import ic.doc.frontend.errors.SyntaxException;
 import ic.doc.antlr.BasicLexer;
 import ic.doc.antlr.BasicParser;
-import ic.doc.antlr.BasicParser.*;
+import ic.doc.antlr.BasicParser.AssignNewClassContext;
+import ic.doc.antlr.BasicParser.BinOp1ApplicationContext;
+import ic.doc.antlr.BasicParser.BinOp2ApplicationContext;
+import ic.doc.antlr.BasicParser.BinOp3ApplicationContext;
+import ic.doc.antlr.BasicParser.BinOp4ApplicationContext;
+import ic.doc.antlr.BasicParser.BinOp5ApplicationContext;
+import ic.doc.antlr.BasicParser.BinOp6ApplicationContext;
+import ic.doc.antlr.BasicParser.CallClassFunctionContext;
+import ic.doc.antlr.BasicParser.ClassVariableContext;
+import ic.doc.antlr.BasicParser.Class_Context;
+import ic.doc.antlr.BasicParser.DeclareNewClassContext;
+import ic.doc.antlr.BasicParser.ExprContext;
+import ic.doc.antlr.BasicParser.FuncContext;
+import ic.doc.antlr.BasicParser.IntLiterContext;
 import ic.doc.antlr.BasicParserBaseVisitor;
-
+import ic.doc.frontend.errors.SemanticErrorList;
+import ic.doc.frontend.errors.SyntaxException;
+import ic.doc.frontend.identifiers.ClassIdentifier;
+import ic.doc.frontend.identifiers.FunctionIdentifier;
+import ic.doc.frontend.identifiers.VariableIdentifier;
 import ic.doc.frontend.nodes.ArgListNode;
-import ic.doc.frontend.nodes.exprnodes.*;
-import ic.doc.frontend.nodes.exprnodes.Literals.*;
-import ic.doc.frontend.nodes.exprnodes.BinaryOperatorNode.BinaryOperators;
-import ic.doc.frontend.nodes.exprnodes.UnaryOperatorNode.UnaryOperators;
-import ic.doc.frontend.identifiers.*;
-import ic.doc.frontend.nodes.*;
-import ic.doc.frontend.nodes.statnodes.*;
-import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
-import ic.doc.frontend.types.*;
-
+import ic.doc.frontend.nodes.ClassNode;
+import ic.doc.frontend.nodes.FunctionNode;
+import ic.doc.frontend.nodes.Node;
+import ic.doc.frontend.nodes.ParamListNode;
+import ic.doc.frontend.nodes.ParamNode;
+import ic.doc.frontend.nodes.ProgNode;
 import ic.doc.frontend.nodes.TypeNode;
+import ic.doc.frontend.nodes.exprnodes.ArrayElementNode;
+import ic.doc.frontend.nodes.exprnodes.BinaryOperatorNode;
+import ic.doc.frontend.nodes.exprnodes.BinaryOperatorNode.BinaryOperators;
+import ic.doc.frontend.nodes.exprnodes.CallClassFunctionNode;
+import ic.doc.frontend.nodes.exprnodes.CallNode;
+import ic.doc.frontend.nodes.exprnodes.ClassFieldVariableNode;
+import ic.doc.frontend.nodes.exprnodes.ClassVariableNode;
+import ic.doc.frontend.nodes.exprnodes.ExprNode;
+import ic.doc.frontend.nodes.exprnodes.Literals.ArrayLiteralNode;
+import ic.doc.frontend.nodes.exprnodes.Literals.BasicLiteralNode;
+import ic.doc.frontend.nodes.exprnodes.Literals.BooleanLiteralNode;
+import ic.doc.frontend.nodes.exprnodes.Literals.CharacterLiteralNode;
+import ic.doc.frontend.nodes.exprnodes.Literals.IntLiteralNode;
+import ic.doc.frontend.nodes.exprnodes.Literals.PairLiteralNode;
+import ic.doc.frontend.nodes.exprnodes.Literals.StringLiteralNode;
+import ic.doc.frontend.nodes.exprnodes.PairElementNode;
+import ic.doc.frontend.nodes.exprnodes.PairNode;
+import ic.doc.frontend.nodes.exprnodes.UnaryOperatorNode;
+import ic.doc.frontend.nodes.exprnodes.UnaryOperatorNode.UnaryOperators;
+import ic.doc.frontend.nodes.exprnodes.VariableNode;
+import ic.doc.frontend.nodes.statnodes.AssignmentNode;
+import ic.doc.frontend.nodes.statnodes.ClassAssignmentNode;
+import ic.doc.frontend.nodes.statnodes.ConditionalBranchNode;
+import ic.doc.frontend.nodes.statnodes.ExitNode;
+import ic.doc.frontend.nodes.statnodes.FunctionReturnNode;
+import ic.doc.frontend.nodes.statnodes.MemoryFreeNode;
+import ic.doc.frontend.nodes.statnodes.PrintNode;
+import ic.doc.frontend.nodes.statnodes.ReadNode;
+import ic.doc.frontend.nodes.statnodes.ScopingNode;
+import ic.doc.frontend.nodes.statnodes.SequentialCompositionNode;
+import ic.doc.frontend.nodes.statnodes.SkipNode;
+import ic.doc.frontend.nodes.statnodes.StatNode;
+import ic.doc.frontend.nodes.statnodes.WhileLoopNode;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
+import ic.doc.frontend.types.AnyType;
+import ic.doc.frontend.types.ArrayType;
+import ic.doc.frontend.types.BoolType;
+import ic.doc.frontend.types.CharType;
+import ic.doc.frontend.types.ErrorType;
+import ic.doc.frontend.types.IntType;
+import ic.doc.frontend.types.PairType;
+import ic.doc.frontend.types.StringType;
+import ic.doc.frontend.types.Type;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -87,8 +139,11 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
       SymbolKey key = new SymbolKey(funcName, KeyTypes.FUNCTION);
       if (currentSymbolTable.lookup(key) == null) {
+        /* Create new symbol table here*/
+        SymbolTable functionSymbolTable = new SymbolTable(currentSymbolTable);
+
         FunctionIdentifier id = new FunctionIdentifier(returnType,
-            paramList.getType());
+            paramList.getType(), functionSymbolTable);
         currentSymbolTable.add(key, id);
       } else {
         semanticErrorList
@@ -106,8 +161,13 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       String funcName = ctx.IDENT().toString();
       Type returnType = ((TypeNode) visit(ctx.type())).getType();
 
-      /* create new symbol table here*/
-      currentSymbolTable = new SymbolTable(currentSymbolTable);
+      /* Look up its own identifier in symbol table to retrieve pre-declared
+       * symbol table. */
+      SymbolKey functionKey = new SymbolKey(funcName, KeyTypes.FUNCTION);
+      FunctionIdentifier functionIdentifier = (FunctionIdentifier) currentSymbolTable
+          .lookupAll(functionKey);
+      SymbolTable functionSymbolTable = functionIdentifier.getFunctionSymbolTable();
+      currentSymbolTable = functionSymbolTable;
 
       ParamListNode paramList = (ParamListNode) visit(ctx.paramList());
       List<ParamNode> params = paramList.getParams();
@@ -120,10 +180,10 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       StatNode stat = (StatNode) visit(ctx.stat());
       /* Needs to check current and outer scope*/
       FunctionNode node =
-          new FunctionNode(currentSymbolTable, funcName, returnType, paramList,
+          new FunctionNode(functionSymbolTable, funcName, returnType, paramList,
               stat);
       node.check(this, ctx);
-      currentSymbolTable = node.getParentSymbolTable();
+      currentSymbolTable = functionSymbolTable.getParentSymbolTable();
       return node;
     }
     return null;
@@ -219,7 +279,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
      * version of the symbol table. */
     List<FunctionNode> classFunctions = new ArrayList<>();
     ClassNode classNode = new ClassNode(className, classSymbolTable,
-        paramListNode, classFunctions, classIdentifier.getImmediateSuperClass());
+        paramListNode, classFunctions,
+        classIdentifier.getImmediateSuperClass());
     classNode.check(this, ctx);
 
     /* Go through declared functions and visit each of them; adding them
@@ -270,8 +331,6 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     SymbolKey lhsKey = new SymbolKey(ctx.IDENT(1).getText(), KeyTypes.VARIABLE);
     VariableIdentifier lhsId = (VariableIdentifier) currentSymbolTable
         .lookupAll(lhsKey);
-
-
 
     return classAssignmentNode;
   }
@@ -324,7 +383,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   public Node visitClassVariable(ClassVariableContext ctx) {
     String className = ctx.classObject().IDENT(0).getText();
     String varName = ctx.classObject().IDENT(1).getText();
-    ClassFieldVariableNode node = new ClassFieldVariableNode(className, varName);
+    ClassFieldVariableNode node = new ClassFieldVariableNode(className,
+        varName);
 
     /* Has side-effect of setting
      * its type when calling check(). */
@@ -386,7 +446,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   public Node visitWhile(BasicParser.WhileContext ctx) {
     ExprNode expr = (ExprNode) visit(ctx.expr());
 
-    if (expr instanceof BooleanLiteralNode && !((BooleanLiteralNode) expr).getValue()) {
+    if (expr instanceof BooleanLiteralNode && !((BooleanLiteralNode) expr)
+        .getValue()) {
       return new SkipNode();
     }
 
@@ -533,12 +594,13 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       return node;
     } else if (ctx.arrayElem() != null) {
       return this.visit(ctx.arrayElem());
-    } else if (ctx.pairElem() != null){
+    } else if (ctx.pairElem() != null) {
       return this.visit(ctx.pairElem());
-    } else if (ctx.classObject() != null){
+    } else if (ctx.classObject() != null) {
       String className = ctx.classObject().IDENT(0).getText();
       String varName = ctx.classObject().IDENT(1).getText();
-      ClassFieldVariableNode node = new ClassFieldVariableNode(className, varName);
+      ClassFieldVariableNode node = new ClassFieldVariableNode(className,
+          varName);
 
       /* Has side-effect of setting
        * its type when calling check(). */
@@ -769,13 +831,15 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         operator = UnaryOperators.LOGICAL_NOT;
         if (exprNode instanceof BooleanLiteralNode) {
           /* No checks for BoolLiteral */
-          return new BooleanLiteralNode(!((BooleanLiteralNode) exprNode).getValue());
+          return new BooleanLiteralNode(
+              !((BooleanLiteralNode) exprNode).getValue());
         }
         break;
       case BasicLexer.MINUS:
         operator = UnaryOperators.MATH_NEGATION;
         if (exprNode instanceof IntLiteralNode) {
-          IntLiteralNode val = new IntLiteralNode(((IntLiteralNode) exprNode).getValue() * -1);
+          IntLiteralNode val = new IntLiteralNode(
+              ((IntLiteralNode) exprNode).getValue() * -1);
           val.check(this, ctx);
           return val;
         }
@@ -787,7 +851,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         operator = UnaryOperators.ORD;
         if (exprNode instanceof CharacterLiteralNode) {
           IntLiteralNode val =
-              new IntLiteralNode((long) ((int) ((CharacterLiteralNode) exprNode).getValue()));
+              new IntLiteralNode(
+                  (long) ((int) ((CharacterLiteralNode) exprNode).getValue()));
           val.check(this, ctx);
           return val;
         }
@@ -796,7 +861,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         operator = UnaryOperators.CHR;
         if (exprNode instanceof IntLiteralNode) {
           CharacterLiteralNode val =
-              new CharacterLiteralNode((char) ((IntLiteralNode) exprNode).getValue().intValue());
+              new CharacterLiteralNode(
+                  (char) ((IntLiteralNode) exprNode).getValue().intValue());
           val.check(this, ctx);
           return val;
         }
@@ -806,7 +872,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
             "Invalid operator passed to" + "Unary Operator context!");
     }
 
-    UnaryOperatorNode unaryOperatorNode = new UnaryOperatorNode(operator, exprNode);
+    UnaryOperatorNode unaryOperatorNode = new UnaryOperatorNode(operator,
+        exprNode);
 
     unaryOperatorNode.check(this, ctx);
 
@@ -884,12 +951,14 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof IntLiteralNode && rightExpr instanceof IntLiteralNode) {
+    if (leftExpr instanceof IntLiteralNode
+        && rightExpr instanceof IntLiteralNode) {
       switch (typeNode.getSymbol().getType()) {
         case BasicLexer.MUL:
           IntLiteralNode val =
               new IntLiteralNode(
-                  ((IntLiteralNode) leftExpr).getValue() * ((IntLiteralNode) rightExpr).getValue());
+                  ((IntLiteralNode) leftExpr).getValue()
+                      * ((IntLiteralNode) rightExpr).getValue());
           val.check(this, ctx);
           return val;
         case BasicLexer.DIV:
@@ -905,13 +974,15 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         default:
           val =
               new IntLiteralNode(
-                  ((IntLiteralNode) leftExpr).getValue() % ((IntLiteralNode) rightExpr).getValue());
+                  ((IntLiteralNode) leftExpr).getValue()
+                      % ((IntLiteralNode) rightExpr).getValue());
           val.check(this, ctx);
           return val;
       }
     }
 
-    BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator, leftExpr, rightExpr);
+    BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator,
+        leftExpr, rightExpr);
 
     binaryOperatorNode.check(this, ctx);
 
@@ -941,22 +1012,26 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof IntLiteralNode && rightExpr instanceof IntLiteralNode) {
+    if (leftExpr instanceof IntLiteralNode
+        && rightExpr instanceof IntLiteralNode) {
       if (typeNode.getSymbol().getType() == BasicLexer.PLUS) {
         IntLiteralNode val =
             new IntLiteralNode(
-                ((IntLiteralNode) leftExpr).getValue() + ((IntLiteralNode) rightExpr).getValue());
+                ((IntLiteralNode) leftExpr).getValue()
+                    + ((IntLiteralNode) rightExpr).getValue());
         val.check(this, ctx);
         return val;
       }
       IntLiteralNode val =
           new IntLiteralNode(
-              ((IntLiteralNode) leftExpr).getValue() - ((IntLiteralNode) rightExpr).getValue());
+              ((IntLiteralNode) leftExpr).getValue()
+                  - ((IntLiteralNode) rightExpr).getValue());
       val.check(this, ctx);
       return val;
     }
 
-    BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator, leftExpr, rightExpr);
+    BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator,
+        leftExpr, rightExpr);
 
     binaryOperatorNode.check(this, ctx);
 
@@ -992,26 +1067,32 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof IntLiteralNode && rightExpr instanceof IntLiteralNode) {
+    if (leftExpr instanceof IntLiteralNode
+        && rightExpr instanceof IntLiteralNode) {
       switch (typeNode.getSymbol().getType()) {
         /* No checks needed for BooleanLiteral */
         case BasicLexer.GT:
           return new BooleanLiteralNode(
-              ((IntLiteralNode) leftExpr).getValue() > ((IntLiteralNode) rightExpr).getValue());
+              ((IntLiteralNode) leftExpr).getValue()
+                  > ((IntLiteralNode) rightExpr).getValue());
         case BasicLexer.GTE:
           return new BooleanLiteralNode(
-              ((IntLiteralNode) leftExpr).getValue() >= ((IntLiteralNode) rightExpr).getValue());
+              ((IntLiteralNode) leftExpr).getValue()
+                  >= ((IntLiteralNode) rightExpr).getValue());
         case BasicLexer.LT:
           return new BooleanLiteralNode(
-              ((IntLiteralNode) leftExpr).getValue() < ((IntLiteralNode) rightExpr).getValue());
+              ((IntLiteralNode) leftExpr).getValue()
+                  < ((IntLiteralNode) rightExpr).getValue());
         default:
           return new BooleanLiteralNode(
-              ((IntLiteralNode) leftExpr).getValue() <= ((IntLiteralNode) rightExpr).getValue());
+              ((IntLiteralNode) leftExpr).getValue()
+                  <= ((IntLiteralNode) rightExpr).getValue());
       }
     }
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof CharacterLiteralNode && rightExpr instanceof CharacterLiteralNode) {
+    if (leftExpr instanceof CharacterLiteralNode
+        && rightExpr instanceof CharacterLiteralNode) {
       switch (typeNode.getSymbol().getType()) {
         case BasicLexer.GT:
           return new BooleanLiteralNode(
@@ -1032,7 +1113,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
       }
     }
 
-    BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator, leftExpr, rightExpr);
+    BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator,
+        leftExpr, rightExpr);
 
     binaryOperatorNode.check(this, ctx);
 
@@ -1061,12 +1143,14 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode leftExpr = (ExprNode) visit(ctx.expr(0));
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
-    if (leftExpr instanceof PairLiteralNode && rightExpr instanceof PairLiteralNode) {
+    if (leftExpr instanceof PairLiteralNode
+        && rightExpr instanceof PairLiteralNode) {
       return new BooleanLiteralNode(true);
     }
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof BasicLiteralNode && rightExpr instanceof BasicLiteralNode) {
+    if (leftExpr instanceof BasicLiteralNode
+        && rightExpr instanceof BasicLiteralNode) {
       /* No checks needed for BooleanLiteral */
       if (typeNode.getSymbol().getType() == BasicLexer.EQ) {
         return new BooleanLiteralNode(
@@ -1080,7 +1164,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
               .equals(((BasicLiteralNode) rightExpr).getValue())));
     }
 
-    BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator, leftExpr, rightExpr);
+    BinaryOperatorNode binaryOperatorNode = new BinaryOperatorNode(operator,
+        leftExpr, rightExpr);
 
     binaryOperatorNode.check(this, ctx);
 
@@ -1102,7 +1187,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof BooleanLiteralNode && rightExpr instanceof BooleanLiteralNode) {
+    if (leftExpr instanceof BooleanLiteralNode
+        && rightExpr instanceof BooleanLiteralNode) {
       /* No checks needed for BooleanLiteral */
       return new BooleanLiteralNode(
           ((BooleanLiteralNode) leftExpr).getValue()
@@ -1132,7 +1218,8 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     ExprNode rightExpr = (ExprNode) visit(ctx.expr(1));
 
     // If both are literals, just evaluate immediately
-    if (leftExpr instanceof BooleanLiteralNode && rightExpr instanceof BooleanLiteralNode) {
+    if (leftExpr instanceof BooleanLiteralNode
+        && rightExpr instanceof BooleanLiteralNode) {
       /* No checks needed for BooleanLiteral */
       return new BooleanLiteralNode(
           ((BooleanLiteralNode) leftExpr).getValue()
