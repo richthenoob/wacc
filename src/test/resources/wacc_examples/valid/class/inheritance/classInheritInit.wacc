@@ -17,8 +17,9 @@ begin
 
   e class1 = new e();
   class1.x = 1;
+  class1.y = 2;
   println class1.x;
 
   d class2 = class1;
-  println class2.x
+  println class2.y
 end
