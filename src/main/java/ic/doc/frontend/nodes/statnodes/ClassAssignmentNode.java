@@ -25,12 +25,15 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public class ClassAssignmentNode extends AssignmentNode {
 
   private final ClassVariableNode classIdent;
+  private final boolean isNewClass;
 
   public ClassAssignmentNode(ExprNode lhs,
       ExprNode rhs, boolean isDeclaration,
-      SymbolTable symbolTable, ClassVariableNode classIdent) {
+      SymbolTable symbolTable, ClassVariableNode classIdent,
+      boolean isNewClass) {
     super(lhs, rhs, isDeclaration, symbolTable);
     this.classIdent = classIdent;
+    this.isNewClass = isNewClass;
   }
 
   @Override
@@ -90,11 +93,30 @@ public class ClassAssignmentNode extends AssignmentNode {
     /* Sanity checks. */
     assert (getLhs() instanceof VariableNode);
     assert (getLhs().getType() instanceof ClassType);
-
     SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
 
+    /* Special case of e class1 = class2; where class2 is a subclass of or same
+     * class as class1. Then the type of class1 needs to be class2's type,
+     * not the originally declared one. */
+    String lhsName = ((VariableNode) getLhs()).getName();
+    SymbolKey lhsKey = new SymbolKey(lhsName, KeyTypes.VARIABLE);
+    VariableIdentifier lhsId = (VariableIdentifier) currentSymbolTable
+        .lookupAll(lhsKey);
+
+    String className;
+    if (isNewClass) {
+      /* e.g. e class1 = new class1(); */
+      className = classIdent.getName();
+    } else {
+      /* e.g. e class1 = class2 */
+      assert (getRhs() instanceof VariableNode);
+      Type newLHSType = getRhs().getType();
+      getLhs().setType(newLHSType);
+      lhsId.setType(newLHSType);
+      className = ((ClassType) newLHSType).getClassName();
+    }
+
     /* Find classNode. */
-    String className = classIdent.getName();
     SymbolKey classKey = new SymbolKey(className, KeyTypes.CLASS);
     ClassIdentifier classIdentifier = (ClassIdentifier) currentSymbolTable
         .lookupAll(classKey);
@@ -105,27 +127,43 @@ public class ClassAssignmentNode extends AssignmentNode {
         DataProcessing.SUB(
             RegisterOperand.SP,
             RegisterOperand.SP,
-            new ImmediateOperand<>(Context.SIZE_OF_ADDRESS).withPrefixSymbol("#")));
-
-    /* Malloc space on heap for class instance. */
-    context.addToCurrentLabel(Move.MOV(RegisterOperand.R0,
-        new ImmediateOperand<>(classSymbolTable.getParametersSizeInBytes())
-            .withPrefixSymbol("#")));
-    context.addToCurrentLabel(Branch.BL("malloc"));
-
-    /* Initialise class. */
-    context.addToCurrentLabel(Branch.BL("c_" + className + "_init"));
-
-    /* Write address of class instance to variable on stack. */
-    context.addToCurrentLabel(SingleDataTransfer.STR(RegisterOperand.R0,
-        new PreIndexedAddressOperand(RegisterOperand.SP)));
+            new ImmediateOperand<>(Context.SIZE_OF_ADDRESS)
+                .withPrefixSymbol("#")));
     currentSymbolTable.incrementOffset(4);
     currentSymbolTable.incrementTableSizeInBytes(4);
+
+    /* Here, we only malloc space if a new keyword is detected. */
+    if (isNewClass) {
+      /* Malloc space on heap for class instance. */
+      context.addToCurrentLabel(Move.MOV(RegisterOperand.R0,
+          new ImmediateOperand<>(classSymbolTable.getParametersSizeInBytes())
+              .withPrefixSymbol("#")));
+      context.addToCurrentLabel(Branch.BL("malloc"));
+
+      /* Initialise class. */
+      context.addToCurrentLabel(Branch.BL("c_" + className + "_init"));
+    } else {
+      /* Move address of originally declared class instance into R0. */
+      SymbolKey rhsKey = new SymbolKey(getRhs().getInput(), KeyTypes.VARIABLE);
+      VariableIdentifier rhsId = (VariableIdentifier) currentSymbolTable
+          .lookupAll(rhsKey);
+
+      context.addToCurrentLabel(SingleDataTransfer.LDR(RegisterOperand.R0,
+          new PreIndexedAddressOperand(RegisterOperand.SP)
+              .withExpr(new ImmediateOperand<>(
+                  rhsId.getOffsetStack(currentSymbolTable, rhsKey))
+                  .withPrefixSymbol("#"))));
+    }
+
+    /* Write address of class instance to variable on stack from R0. */
+    context.addToCurrentLabel(SingleDataTransfer.STR(RegisterOperand.R0,
+        new PreIndexedAddressOperand(RegisterOperand.SP)));
 
     /* Set class instance to 'activated' in symbol table. */
     SymbolKey classInstanceKey = new SymbolKey(
         ((VariableNode) getLhs()).getName(), KeyTypes.VARIABLE);
-    VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable.lookupAll(classInstanceKey);
+    VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable
+        .lookupAll(classInstanceKey);
     classInstanceIdentifier.setActivated();
   }
 }

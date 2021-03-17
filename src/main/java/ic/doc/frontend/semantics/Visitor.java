@@ -195,7 +195,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         declareFunction(func);
       }
       currentSymbolTable = classSymbolTable.getParentSymbolTable();
-      className = "";
+      currentClass = "";
     } else {
       semanticErrorList
           .addScopeException(ctx, true, "Class", "'" + className + "'");
@@ -265,7 +265,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
      * same class, and that classInstance hasn't been declared before. */
     ClassAssignmentNode classAssignmentNode =
         new ClassAssignmentNode(classInstance, classIdentRHS, true,
-            getCurrentSymbolTable(), classIdentLHS);
+            getCurrentSymbolTable(), classIdentLHS, true);
 
     classAssignmentNode.check(this, ctx);
 
@@ -299,7 +299,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     ClassAssignmentNode classAssignmentNode =
         new ClassAssignmentNode(classInstanceLHS, classInstanceRHS, true,
-            getCurrentSymbolTable(), classIdent);
+            getCurrentSymbolTable(), classIdent, false);
 
     classAssignmentNode.check(this, ctx);
     return classAssignmentNode;
