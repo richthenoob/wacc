@@ -81,9 +81,8 @@ public class ClassAssignmentNode extends AssignmentNode {
       visitor.getSemanticErrorList()
           .addScopeException(ctx, true, "Variable", classInstanceName);
     } else {
-      Type classType = classIdent.getType();
-      getLhs().setType(classType);
-      getSymbolTable().add(key, new VariableIdentifier(classType));
+      getLhs().setType(rhsType);
+      getSymbolTable().add(key, new VariableIdentifier(rhsType));
     }
   }
 
@@ -103,18 +102,7 @@ public class ClassAssignmentNode extends AssignmentNode {
     VariableIdentifier lhsId = (VariableIdentifier) currentSymbolTable
         .lookupAll(lhsKey);
 
-    String className;
-    if (isNewClass) {
-      /* e.g. e class1 = new class1(); */
-      className = classIdent.getName();
-    } else {
-      /* e.g. e class1 = class2 */
-      assert (getRhs() instanceof VariableNode);
-      Type newLHSType = getRhs().getType();
-      getLhs().setType(newLHSType);
-      lhsId.setType(newLHSType);
-      className = ((ClassType) newLHSType).getClassName();
-    }
+    String className = classIdent.getName();
 
     /* Find classNode. */
     SymbolKey classKey = new SymbolKey(className, KeyTypes.CLASS);

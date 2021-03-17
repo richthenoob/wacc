@@ -264,16 +264,6 @@ public class AssignmentNode extends StatNode {
     SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
     VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
 
-    /* Special case of class2 = class1 where class2 is a superclass instance of
-     * class1. Then, we need to change class2's type to class1's type,
-     * including its type in the symbol table. */
-    if (rhs.getType() instanceof ClassType) {
-      assert (rhs instanceof VariableNode);
-      Type newLHSType = rhs.getType();
-      lhs.setType(newLHSType);
-      id.setType(newLHSType);
-    }
-
     if (id.isClassVariable()) {
       RegisterOperand classInstReg = new RegisterOperand(context.getFreeRegister());
 
