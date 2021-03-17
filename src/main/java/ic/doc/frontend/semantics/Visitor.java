@@ -2,77 +2,19 @@ package ic.doc.frontend.semantics;
 
 import ic.doc.antlr.BasicLexer;
 import ic.doc.antlr.BasicParser;
-import ic.doc.antlr.BasicParser.AssignNewClassContext;
-import ic.doc.antlr.BasicParser.BinOp1ApplicationContext;
-import ic.doc.antlr.BasicParser.BinOp2ApplicationContext;
-import ic.doc.antlr.BasicParser.BinOp3ApplicationContext;
-import ic.doc.antlr.BasicParser.BinOp4ApplicationContext;
-import ic.doc.antlr.BasicParser.BinOp5ApplicationContext;
-import ic.doc.antlr.BasicParser.BinOp6ApplicationContext;
-import ic.doc.antlr.BasicParser.CallClassFunctionContext;
-import ic.doc.antlr.BasicParser.ClassVariableContext;
-import ic.doc.antlr.BasicParser.Class_Context;
-import ic.doc.antlr.BasicParser.DeclareNewClassContext;
-import ic.doc.antlr.BasicParser.ExprContext;
-import ic.doc.antlr.BasicParser.FuncContext;
-import ic.doc.antlr.BasicParser.IntLiterContext;
+import ic.doc.antlr.BasicParser.*;
 import ic.doc.antlr.BasicParserBaseVisitor;
 import ic.doc.frontend.errors.SemanticErrorList;
 import ic.doc.frontend.errors.SyntaxException;
-import ic.doc.frontend.identifiers.ClassIdentifier;
-import ic.doc.frontend.identifiers.FunctionIdentifier;
-import ic.doc.frontend.identifiers.VariableIdentifier;
-import ic.doc.frontend.nodes.ArgListNode;
-import ic.doc.frontend.nodes.ClassNode;
-import ic.doc.frontend.nodes.FunctionNode;
-import ic.doc.frontend.nodes.Node;
-import ic.doc.frontend.nodes.ParamListNode;
-import ic.doc.frontend.nodes.ParamNode;
-import ic.doc.frontend.nodes.ProgNode;
-import ic.doc.frontend.nodes.TypeNode;
-import ic.doc.frontend.nodes.exprnodes.ArrayElementNode;
-import ic.doc.frontend.nodes.exprnodes.BinaryOperatorNode;
-import ic.doc.frontend.nodes.exprnodes.BinaryOperatorNode.BinaryOperators;
-import ic.doc.frontend.nodes.exprnodes.CallClassFunctionNode;
-import ic.doc.frontend.nodes.exprnodes.CallNode;
-import ic.doc.frontend.nodes.exprnodes.ClassFieldVariableNode;
-import ic.doc.frontend.nodes.exprnodes.ClassVariableNode;
-import ic.doc.frontend.nodes.exprnodes.ExprNode;
-import ic.doc.frontend.nodes.exprnodes.Literals.ArrayLiteralNode;
-import ic.doc.frontend.nodes.exprnodes.Literals.BasicLiteralNode;
-import ic.doc.frontend.nodes.exprnodes.Literals.BooleanLiteralNode;
-import ic.doc.frontend.nodes.exprnodes.Literals.CharacterLiteralNode;
-import ic.doc.frontend.nodes.exprnodes.Literals.IntLiteralNode;
-import ic.doc.frontend.nodes.exprnodes.Literals.PairLiteralNode;
-import ic.doc.frontend.nodes.exprnodes.Literals.StringLiteralNode;
-import ic.doc.frontend.nodes.exprnodes.PairElementNode;
-import ic.doc.frontend.nodes.exprnodes.PairNode;
-import ic.doc.frontend.nodes.exprnodes.UnaryOperatorNode;
+import ic.doc.frontend.identifiers.*;
+import ic.doc.frontend.nodes.*;
+import ic.doc.frontend.nodes.exprnodes.*;
+import ic.doc.frontend.nodes.exprnodes.Literals.*;
 import ic.doc.frontend.nodes.exprnodes.UnaryOperatorNode.UnaryOperators;
-import ic.doc.frontend.nodes.exprnodes.VariableNode;
-import ic.doc.frontend.nodes.statnodes.AssignmentNode;
-import ic.doc.frontend.nodes.statnodes.ClassAssignmentNode;
-import ic.doc.frontend.nodes.statnodes.ConditionalBranchNode;
-import ic.doc.frontend.nodes.statnodes.ExitNode;
-import ic.doc.frontend.nodes.statnodes.FunctionReturnNode;
-import ic.doc.frontend.nodes.statnodes.MemoryFreeNode;
-import ic.doc.frontend.nodes.statnodes.PrintNode;
-import ic.doc.frontend.nodes.statnodes.ReadNode;
-import ic.doc.frontend.nodes.statnodes.ScopingNode;
-import ic.doc.frontend.nodes.statnodes.SequentialCompositionNode;
-import ic.doc.frontend.nodes.statnodes.SkipNode;
-import ic.doc.frontend.nodes.statnodes.StatNode;
-import ic.doc.frontend.nodes.statnodes.WhileLoopNode;
+import ic.doc.frontend.nodes.exprnodes.BinaryOperatorNode.BinaryOperators;
+import ic.doc.frontend.nodes.statnodes.*;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
-import ic.doc.frontend.types.AnyType;
-import ic.doc.frontend.types.ArrayType;
-import ic.doc.frontend.types.BoolType;
-import ic.doc.frontend.types.CharType;
-import ic.doc.frontend.types.ErrorType;
-import ic.doc.frontend.types.IntType;
-import ic.doc.frontend.types.PairType;
-import ic.doc.frontend.types.StringType;
-import ic.doc.frontend.types.Type;
+import ic.doc.frontend.types.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -81,6 +23,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 public class Visitor extends BasicParserBaseVisitor<Node> {
 
   private SymbolTable currentSymbolTable;
+  private String currentClass;
 
   private SemanticErrorList semanticErrorList;
 
@@ -98,6 +41,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
   @Override
   public Node visitProg(BasicParser.ProgContext ctx) {
     currentSymbolTable = new SymbolTable(null);
+    currentClass = "";
     semanticErrorList =
         new SemanticErrorList(
             ctx.getStart().getInputStream().toString().split("\n"));
@@ -143,7 +87,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         SymbolTable functionSymbolTable = new SymbolTable(currentSymbolTable);
 
         FunctionIdentifier id = new FunctionIdentifier(returnType,
-            paramList.getType(), functionSymbolTable);
+            paramList.getType(), functionSymbolTable, currentClass);
         currentSymbolTable.add(key, id);
       } else {
         semanticErrorList
@@ -237,6 +181,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
        *       silently ignored, but we will throw a semantic error when we
        *       actually visit the class node. */
       currentSymbolTable = classSymbolTable;
+      currentClass = className;
       ParamListNode paramListNode = (ParamListNode) visit(ctx.paramList());
       for (ParamNode field : paramListNode.getParams()) {
         String fieldName = field.getInput();
@@ -250,7 +195,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         declareFunction(func);
       }
       currentSymbolTable = classSymbolTable.getParentSymbolTable();
-
+      className = "";
     } else {
       semanticErrorList
           .addScopeException(ctx, true, "Class", "'" + className + "'");

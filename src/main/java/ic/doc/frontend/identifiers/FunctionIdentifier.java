@@ -8,12 +8,18 @@ public class FunctionIdentifier extends Identifier {
 
   private final List<Type> paramTypeList;
   private final SymbolTable functionSymbolTable;
+  private final String originalClass;
 
   public FunctionIdentifier(Type type, List<Type> paramTypeList,
-      SymbolTable functionSymbolTable) {
+      SymbolTable functionSymbolTable, String originalClass) {
     super(type);
     this.paramTypeList = paramTypeList;
     this.functionSymbolTable = functionSymbolTable;
+    this.originalClass = originalClass;
+  }
+
+  public String getOriginalClass() {
+    return originalClass;
   }
 
   public SymbolTable getFunctionSymbolTable() {
@@ -46,6 +52,7 @@ public class FunctionIdentifier extends Identifier {
 
   @Override
   public Identifier getNewCopy() {
-    return new FunctionIdentifier(getType(), paramTypeList, functionSymbolTable);
+    return new FunctionIdentifier(getType(), paramTypeList, functionSymbolTable,
+        originalClass);
   }
 }

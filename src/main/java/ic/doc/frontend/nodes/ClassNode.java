@@ -22,7 +22,6 @@ import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ClassType;
 import ic.doc.frontend.types.Type;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +60,8 @@ public class ClassNode extends Node {
 
   public SymbolTable getFunctionTable(String functionName) {
     SymbolKey functionKey = new SymbolKey(functionName, KeyTypes.FUNCTION);
-    FunctionIdentifier functionIdentifier = (FunctionIdentifier) classSymbolTable.lookupAll(functionKey);
+    FunctionIdentifier functionIdentifier = (FunctionIdentifier) classSymbolTable
+        .lookupAll(functionKey);
     return functionIdentifier.getFunctionSymbolTable();
   }
 
@@ -158,7 +158,8 @@ public class ClassNode extends Node {
        * if it already exists. */
       if (entryIdentifier instanceof FunctionIdentifier) {
         if (classSymbolTable.lookup(entryKey) == null) {
-          virtualTable.addClassFunction(entryName, superclassName);
+          virtualTable.addClassFunction(entryName,
+              ((FunctionIdentifier) entryIdentifier).getOriginalClass());
           classSymbolTable.add(entryKey, entryIdentifier.getNewCopy());
         }
       }
@@ -198,8 +199,10 @@ public class ClassNode extends Node {
 
     /* Store a pointer to this class's virtual table. Use R1 as a temporary
      * register, recalling that R0 stores the address of our instance. */
-    LabelAddressOperand vtableOperand = new LabelAddressOperand(VirtualTable.VIRTUAL_TABLE_PREFIX + className);
-    classInitLabel.addToBody(SingleDataTransfer.LDR(RegisterOperand.R1, vtableOperand));
+    LabelAddressOperand vtableOperand = new LabelAddressOperand(
+        VirtualTable.VIRTUAL_TABLE_PREFIX + className);
+    classInitLabel
+        .addToBody(SingleDataTransfer.LDR(RegisterOperand.R1, vtableOperand));
     classInitLabel.addToBody(SingleDataTransfer.STR(RegisterOperand.R1,
         new PreIndexedAddressOperand(RegisterOperand.R0)));
 
