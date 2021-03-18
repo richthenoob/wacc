@@ -1,17 +1,38 @@
-# an inherited class is declared, with its type being its parent class
-# attempt
+# a subclass instance is assigned to its superclass, and its functions are called.
 
 # Output:
-# #empty#
+# 2
+# 4
+# 2
+# 4
+# 4
 
 # Program:
 
 begin
-  class c {
-    int t
-  }
   class d extends c {
-    int x
+    int y
+    int f() is
+      return 2
+    end
   }
-  c class1 = new d()
+  class c {
+    int x
+    int f() is
+      return 6
+    end
+  }
+
+  d oldClass = new d();
+  oldClass.x = 4;
+  int oldAns = call oldClass.f();
+  println oldAns;
+  println oldClass.x;
+
+  c newClass = new c();
+  newClass = oldClass;
+  int newAns = call newClass.f();
+  println newAns;
+  println newClass.x;
+  println oldClass.x
 end
