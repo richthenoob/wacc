@@ -86,7 +86,7 @@ public class ClassNode extends Node {
 
     /* Check if super class exists. */
     SymbolKey superclassKey = new SymbolKey(immediateSuperclass, KeyTypes.CLASS);
-    if (currentSymbolTable.lookupAll(superclassKey) == null) {
+    if (!immediateSuperclass.isEmpty() && currentSymbolTable.lookupAll(superclassKey) == null) {
       visitor.getSemanticErrorList().addScopeException(ctx, false, "Class", immediateSuperclass);
       return;
     }
