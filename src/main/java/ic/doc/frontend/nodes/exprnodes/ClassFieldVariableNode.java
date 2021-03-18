@@ -59,8 +59,7 @@ public class ClassFieldVariableNode extends VariableNode {
     /* Checks if variable was defined in symbol table for class */
     SymbolTable classSymbolTable = ((ClassIdentifier) classId)
         .getClassSymbolTable();
-    SymbolKey varKey = new SymbolKey(getVarName(), KeyTypes.VARIABLE);
-    Identifier varId = classSymbolTable.lookupAll(varKey);
+    Identifier varId = findIdentifier(classSymbolTable, getVarName(), KeyTypes.VARIABLE);
     if (varId == null) {
       setType(new ErrorType());
       visitor.getSemanticErrorList()

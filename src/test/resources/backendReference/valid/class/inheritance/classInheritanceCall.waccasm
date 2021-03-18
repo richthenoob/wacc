@@ -1,0 +1,35 @@
+# an inherited class is declared, and attempts to call a function defined in its parent
+
+# Output:
+# 15
+# 15
+
+# Program:
+
+begin
+  class c {
+    int t
+    int f() is
+      return 15
+    end
+  }
+  class d extends c {
+    int p() is
+      int answer = call f();
+      return answer
+    end
+  }
+
+  d class1 = new d();
+  int i = call class1.f();
+  println i;
+  int j = call class1.p();
+  println j
+end
+-- Executing...
+===========================================================
+15
+15
+===========================================================
+The exit code is 0.
+-- Finished

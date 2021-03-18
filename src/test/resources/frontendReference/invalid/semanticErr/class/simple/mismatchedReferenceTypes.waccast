@@ -1,0 +1,4 @@
+-- Compiling...
+Errors detected during compilation! Exit code 200 returned.
+Semantic Error at 21:2 -- Incompatible type at 'class1.t' for assignment. Expected type: BOOL. Actual type: INT.
+Semantic Error at 22:2 -- Incompatible type at 'callclass1.f(1)' for assignment. Expected type: BOOL. Actual type: INT.

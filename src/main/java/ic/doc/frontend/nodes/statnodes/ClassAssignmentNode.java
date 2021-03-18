@@ -25,12 +25,15 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public class ClassAssignmentNode extends AssignmentNode {
 
   private final ClassVariableNode classIdent;
+  private final boolean isNewClass;
 
   public ClassAssignmentNode(ExprNode lhs,
       ExprNode rhs, boolean isDeclaration,
-      SymbolTable symbolTable, ClassVariableNode classIdent) {
+      SymbolTable symbolTable, ClassVariableNode classIdent,
+      boolean isNewClass) {
     super(lhs, rhs, isDeclaration, symbolTable);
     this.classIdent = classIdent;
+    this.isNewClass = isNewClass;
   }
 
   @Override
@@ -63,7 +66,8 @@ public class ClassAssignmentNode extends AssignmentNode {
     }
 
     /* Check that classIdent and RHS are the same class (same name). */
-    if (!Type.checkTypeCompatibility(classIdentType, rhsType)
+    if (!Type.checkTypeCompatibility(rhsType, classIdentType,
+        visitor.getCurrentSymbolTable())
         && !(classIdentType instanceof ErrorType)
         && !(rhsType instanceof ErrorType)) {
       visitor.getSemanticErrorList().addTypeException(ctx,
@@ -77,9 +81,8 @@ public class ClassAssignmentNode extends AssignmentNode {
       visitor.getSemanticErrorList()
           .addScopeException(ctx, true, "Variable", classInstanceName);
     } else {
-      Type classType = classIdent.getType();
-      getLhs().setType(classType);
-      getSymbolTable().add(key, new VariableIdentifier(classType));
+      getLhs().setType(rhsType);
+      getSymbolTable().add(key, new VariableIdentifier(rhsType));
     }
   }
 
@@ -89,11 +92,19 @@ public class ClassAssignmentNode extends AssignmentNode {
     /* Sanity checks. */
     assert (getLhs() instanceof VariableNode);
     assert (getLhs().getType() instanceof ClassType);
-
     SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
 
-    /* Find classNode. */
+    /* Special case of e class1 = class2; where class2 is a subclass of or same
+     * class as class1. Then the type of class1 needs to be class2's type,
+     * not the originally declared one. */
+    String lhsName = ((VariableNode) getLhs()).getName();
+    SymbolKey lhsKey = new SymbolKey(lhsName, KeyTypes.VARIABLE);
+    VariableIdentifier lhsId = (VariableIdentifier) currentSymbolTable
+        .lookupAll(lhsKey);
+
     String className = classIdent.getName();
+
+    /* Find classNode. */
     SymbolKey classKey = new SymbolKey(className, KeyTypes.CLASS);
     ClassIdentifier classIdentifier = (ClassIdentifier) currentSymbolTable
         .lookupAll(classKey);
@@ -103,28 +114,44 @@ public class ClassAssignmentNode extends AssignmentNode {
     context.addToCurrentLabel(
         DataProcessing.SUB(
             RegisterOperand.SP,
-            RegisterOperand.SP, // todo: remove magic number 4
-            new ImmediateOperand<>(4).withPrefixSymbol("#")));
-
-    /* Malloc space on heap for class instance. */
-    context.addToCurrentLabel(Move.MOV(RegisterOperand.R0,
-        new ImmediateOperand<>(classSymbolTable.getParametersSizeInBytes())
-            .withPrefixSymbol("#")));
-    context.addToCurrentLabel(Branch.BL("malloc"));
-
-    /* Initialise class. */
-    context.addToCurrentLabel(Branch.BL("c_" + className + "_init"));
-
-    /* Write address of class instance to variable on stack. */
-    context.addToCurrentLabel(SingleDataTransfer.STR(RegisterOperand.R0,
-        new PreIndexedAddressOperand(RegisterOperand.SP)));
+            RegisterOperand.SP,
+            new ImmediateOperand<>(Context.SIZE_OF_ADDRESS)
+                .withPrefixSymbol("#")));
     currentSymbolTable.incrementOffset(4);
     currentSymbolTable.incrementTableSizeInBytes(4);
+
+    /* Here, we only malloc space if a new keyword is detected. */
+    if (isNewClass) {
+      /* Malloc space on heap for class instance. */
+      context.addToCurrentLabel(Move.MOV(RegisterOperand.R0,
+          new ImmediateOperand<>(classSymbolTable.getParametersSizeInBytes())
+              .withPrefixSymbol("#")));
+      context.addToCurrentLabel(Branch.BL("malloc"));
+
+      /* Initialise class. */
+      context.addToCurrentLabel(Branch.BL("c_" + className + "_init"));
+    } else {
+      /* Move address of originally declared class instance into R0. */
+      SymbolKey rhsKey = new SymbolKey(getRhs().getInput(), KeyTypes.VARIABLE);
+      VariableIdentifier rhsId = (VariableIdentifier) currentSymbolTable
+          .lookupAll(rhsKey);
+
+      context.addToCurrentLabel(SingleDataTransfer.LDR(RegisterOperand.R0,
+          new PreIndexedAddressOperand(RegisterOperand.SP)
+              .withExpr(new ImmediateOperand<>(
+                  rhsId.getOffsetStack(currentSymbolTable, rhsKey))
+                  .withPrefixSymbol("#"))));
+    }
+
+    /* Write address of class instance to variable on stack from R0. */
+    context.addToCurrentLabel(SingleDataTransfer.STR(RegisterOperand.R0,
+        new PreIndexedAddressOperand(RegisterOperand.SP)));
 
     /* Set class instance to 'activated' in symbol table. */
     SymbolKey classInstanceKey = new SymbolKey(
         ((VariableNode) getLhs()).getName(), KeyTypes.VARIABLE);
-    VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable.lookupAll(classInstanceKey);
+    VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable
+        .lookupAll(classInstanceKey);
     classInstanceIdentifier.setActivated();
   }
 }

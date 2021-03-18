@@ -2,6 +2,8 @@ package ic.doc.frontend.nodes;
 
 import ic.doc.backend.Context;
 import ic.doc.frontend.identifiers.VariableIdentifier;
+import ic.doc.frontend.semantics.SymbolKey;
+import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.Type;
@@ -13,13 +15,14 @@ public class ParamListNode extends Node {
 
   private final int numParas;
   private final List<ParamNode> params;
-  private final List<Type> types;
 
   public ParamListNode(List<ParamNode> params) {
     this.numParas = params.size();
     this.params = params;
-    types = params.stream().map(ParamNode::getType)
-        .collect(Collectors.toList());
+  }
+
+  public void addParam(ParamNode node) {
+    params.add(node);
   }
 
   public int getNumParas() {
@@ -31,7 +34,8 @@ public class ParamListNode extends Node {
   }
 
   public List<Type> getType() {
-    return types;
+    return params.stream().map(ParamNode::getType)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -52,8 +56,9 @@ public class ParamListNode extends Node {
     /* Look up each parameter in function symbol table。 */
     for (int i = params.size() - 1; i >= 0; i--) {
       ParamNode param = params.get(i);
+      SymbolKey paramKey = new SymbolKey(param.getInput(), KeyTypes.VARIABLE);
       VariableIdentifier id = (VariableIdentifier)
-          funcSymbolTable.getIdentifier(i);
+          funcSymbolTable.lookupAll(paramKey);
 
       /* Increment offsets in symbol table accordingly.*/
       int sizeOfVarOnStack = param.getType().getVarSize();

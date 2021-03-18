@@ -10,15 +10,21 @@ public class ClassIdentifier extends Identifier {
   private final String className;
   private ClassNode classNode;
   private final SymbolTable classSymbolTable;
+  private final String immediateSuperClass;
 
-  public ClassIdentifier(String className, SymbolTable classSymbolTable) {
+  public ClassIdentifier(String className, SymbolTable classSymbolTable, String immediateSuperClass) {
     super(new ClassType(className));
     this.className = className;
     this.classSymbolTable = classSymbolTable;
+    this.immediateSuperClass = immediateSuperClass;
   }
 
   public String getClassName() {
     return className;
+  }
+
+  public String getImmediateSuperClass() {
+    return immediateSuperClass;
   }
 
   public ClassNode getClassNode() {
@@ -37,25 +43,14 @@ public class ClassIdentifier extends Identifier {
     this.classNode = classNode;
   }
 
-  public int getSizeOfClass() {
-    return classNode.getClassSymbolTable().getTableSize();
-  }
-
-  // Disabled for now, since ClassNode only holds a list of
-  // ParamNodes, not a Map<String, Type>
-//  public Type getTypeOfField(String fieldName) {
-//    Map<String, Type> fieldTypes = classNode.getClassFields();
-//    if (!fieldTypes.containsKey(fieldName)) {
-//      throw new IllegalArgumentException(
-//          "CLASS " + className + "does not contain field \"" + fieldName
-//              + "\"!");
-//    }
-//    return fieldTypes.get(fieldName);
-//  }
-
   @Override
   public String toString() {
     /* CLASS: className */
     return "CLASS: " + className;
+  }
+
+  @Override
+  public Identifier getNewCopy() {
+    return new ClassIdentifier(className, classSymbolTable, immediateSuperClass);
   }
 }

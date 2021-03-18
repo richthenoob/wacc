@@ -32,6 +32,7 @@ public class PredefinedFunctions {
   public static final String THROW_OVERFLOW_ERROR_FUNC = "p_throw_overflow_error";
   public static final String FREE_ARRAY_FUNC = "p_free_array";
   public static final String FREE_PAIR_FUNC = "p_free_pair";
+  public static final String FREE_CLASS_FUNC = "p_free_class";
   public static final String READ_CHAR_FUNC = "p_read_char";
   public static final String READ_INT_FUNC = "p_read_int";
   /* Reduce code duplication by appending "char" or "int" to READ_TYPE_FUNC */
@@ -416,6 +417,23 @@ public class PredefinedFunctions {
         .addToBody(POP(RegisterOperand.PC));
 
     endFunctions.add(freePairFuncLabel);
+  }
+
+  /* Adds the p_free_class predefined function */
+  public static void addFreeClassFunction(Context ctx) {
+    Set<Label<Instruction>> endFunctions = ctx.getEndFunctions();
+    Label<Instruction> freeClassFuncLabel = new Label<>(FREE_CLASS_FUNC);
+    if (endFunctions.contains(freeClassFuncLabel)) {
+      return;
+    }
+
+    addCommonFreeInstructions(ctx, freeClassFuncLabel);
+
+    freeClassFuncLabel.addToBody(BL("free"));
+    freeClassFuncLabel
+        .addToBody(POP(RegisterOperand.PC));
+
+    endFunctions.add(freeClassFuncLabel);
   }
 
   /* Adds the p_read_int or p_read_char predefined function

@@ -13,9 +13,11 @@ prog: BEGIN (include)* (class_)* (func)* stat END EOF;
 
 include: INCLUDE FILE_NAME;
 
-class_: CLASS IDENT OPEN_CURLY_BRACES (paramList (func)*) CLOSE_CURLY_BRACES;
+class_: CLASS IDENT extends_ OPEN_CURLY_BRACES (paramList (func)*) CLOSE_CURLY_BRACES;
 
 func: type IDENT OPEN_PARENTHESES paramList CLOSE_PARENTHESES IS stat END;
+
+extends_: (EXTENDS IDENT)?;
 
 paramList: param (COMMA param)* | ();
 

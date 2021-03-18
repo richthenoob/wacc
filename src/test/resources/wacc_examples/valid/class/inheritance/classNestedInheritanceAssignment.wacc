@@ -1,0 +1,35 @@
+# a nested class is declared and assigned in various ways
+
+# Output:
+# 1
+# 2
+# 3
+# 1
+
+# Program:
+
+begin
+  class c {
+    int x
+  }
+  class d extends c {
+    int y
+  }
+  class e extends d {
+    int z
+  }
+
+  e class1 = new e();
+  class1.x = 1;
+  println class1.x;
+
+  d class2 = class1;
+  class2.y = 2;
+  println class2.y;
+
+  c class3 = class2;
+  println class3.x;
+
+  class3 = class1;
+  println class3.x
+end

@@ -13,4 +13,5 @@ public enum Condition {
     BL,
     BLCS,
     BLLT,
+    BLX
 }

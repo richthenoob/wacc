@@ -124,7 +124,12 @@ public class WaccBackend {
       }
     }
 
-    return new WaccBackend(outputString.toString(), count);
+    for (VirtualTable table : context.getVirtualTables()) {
+      outputString.append(table.toAssembly());
+      outputString.append("\n");
+    }
+
+    return outputString.toString();
   }
 
   public static void writeToFile(String filepath, String output) {

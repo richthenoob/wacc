@@ -66,6 +66,7 @@ INTEGER: ('0'..'9')+;
 //class
 CLASS: 'class';
 NEW: 'new';
+EXTENDS: 'extends';
 
 //func
 BEGIN: 'begin';

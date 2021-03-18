@@ -1,0 +1,25 @@
+# a nested class is declared, but not called
+
+# Output:
+# 42
+
+# Program:
+
+begin
+  class c {
+    int x
+    int f() is
+      return 42
+    end
+  }
+  class d extends c {
+    int y
+  }
+  class e extends d {
+    int z
+  }
+
+  e class1 = new e();
+  int i = call class1.f();
+  println i
+end

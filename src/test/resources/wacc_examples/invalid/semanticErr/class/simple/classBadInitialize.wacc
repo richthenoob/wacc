@@ -1,0 +1,21 @@
+# initialized class with mismatched type after new
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c
+    int f(int y) is
+        int p = t + 1;
+        return p
+    end
+  }
+  c class1 = new m()
+end

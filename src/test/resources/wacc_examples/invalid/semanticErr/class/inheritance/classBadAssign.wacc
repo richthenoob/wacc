@@ -1,0 +1,32 @@
+# a superclass instance is assigned to a subclass.
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class d extends c {
+    int y
+    int g() is
+      return 4
+    end
+    int f() is
+      return y
+    end
+  }
+  class c {
+    int x
+    int f() is
+      return 2
+    end
+  }
+  c oldClass = new c();
+  d newClass = new d();
+  newClass = oldClass
+end
+
+

@@ -1,7 +1,10 @@
 package ic.doc.frontend.nodes.statnodes;
 
+import static ic.doc.backend.instructions.SingleDataTransfer.LDR;
+
 import ic.doc.backend.Context;
-import ic.doc.backend.instructions.*;
+import ic.doc.backend.instructions.DataProcessing;
+import ic.doc.backend.instructions.SingleDataTransfer;
 import ic.doc.backend.instructions.operands.ImmediateOperand;
 import ic.doc.backend.instructions.operands.PreIndexedAddressOperand;
 import ic.doc.backend.instructions.operands.RegisterOperand;
@@ -17,11 +20,12 @@ import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
-import ic.doc.frontend.types.*;
-
+import ic.doc.frontend.types.CharType;
+import ic.doc.frontend.types.ClassType;
+import ic.doc.frontend.types.ErrorType;
+import ic.doc.frontend.types.StringType;
+import ic.doc.frontend.types.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
-
-import static ic.doc.backend.instructions.SingleDataTransfer.LDR;
 
 public class AssignmentNode extends StatNode {
 
@@ -72,7 +76,8 @@ public class AssignmentNode extends StatNode {
      * If their types are errors, an error should already have been thrown
      * for the variable not being defined in the scope
      * and thus further error throwing is unnecessary */
-    if (!(Type.checkTypeCompatibility(lhs.getType(), rhs.getType()))
+    if (!(Type.checkTypeCompatibility(rhs.getType(), lhs.getType(),
+        visitor.getCurrentSymbolTable()))
         && !(lhs.getType() instanceof ErrorType)
         && !(rhs.getType() instanceof ErrorType)) {
 
@@ -274,15 +279,19 @@ public class AssignmentNode extends StatNode {
     VariableIdentifier id = (VariableIdentifier) symbolTable.lookupAll(key);
 
     if (id.isClassVariable()) {
-      RegisterOperand classInstReg = new RegisterOperand(context.getFreeRegister());
+      RegisterOperand classInstReg = new RegisterOperand(
+          context.getFreeRegister());
 
-      SymbolKey classInstanceKey = new SymbolKey("specialname", KeyTypes.VARIABLE);
-      VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable.lookupAll(classInstanceKey);
-      SingleDataTransfer loadClassInstance = SingleDataTransfer.LDR(classInstReg,
-          new PreIndexedAddressOperand(RegisterOperand.SP)
-              .withExpr(new ImmediateOperand<>(classInstanceIdentifier
-                  .getOffsetStack(currentSymbolTable, classInstanceKey))
-                  .withPrefixSymbol("#")));
+      SymbolKey classInstanceKey = new SymbolKey("specialname",
+          KeyTypes.VARIABLE);
+      VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable
+          .lookupAll(classInstanceKey);
+      SingleDataTransfer loadClassInstance = SingleDataTransfer
+          .LDR(classInstReg,
+              new PreIndexedAddressOperand(RegisterOperand.SP)
+                  .withExpr(new ImmediateOperand<>(classInstanceIdentifier
+                      .getOffsetStack(currentSymbolTable, classInstanceKey))
+                      .withPrefixSymbol("#")));
       context.addToCurrentLabel(loadClassInstance);
       lhsVar.setRegister(classInstReg);
     } else {

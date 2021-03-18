@@ -20,6 +20,10 @@ public class SymbolTable {
     parametersSizeInBytes = 0;
   }
 
+  public Map<SymbolKey, Identifier> getDictionary() {
+    return dictionary;
+  }
+
   /* Used for adjusting size of stack used by parameters. */
   public void incrementFunctionParametersSize(int paramSize) {
     parametersSizeInBytes += paramSize;

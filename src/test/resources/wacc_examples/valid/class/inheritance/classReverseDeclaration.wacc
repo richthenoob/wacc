@@ -1,0 +1,19 @@
+# a nested class is declared before its parent class is declared
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  class e extends d {
+    int z
+  }
+  class d extends c {
+    int y
+  }
+  class c {
+    int x
+  }
+  skip
+end

@@ -1,0 +1,21 @@
+# a simple class is declared, and a pair in it is assigned before the class is freed.
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  class c {
+    pair(int, int) p,
+    int[][] c,
+    int t
+    int f() is
+      return 2
+    end
+  }
+  c class1 = new c() ;
+  class1.p = newpair(10,15) ;
+  free class1.p;
+  free class1
+end
