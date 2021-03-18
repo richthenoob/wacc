@@ -1,0 +1,4 @@
+-- Compiling...
+Errors detected during compilation! Exit code 100 returned.
+Syntactic Error at line 12:2 -- extraneous input 'class' expecting {'pair', 'fst', 'snd', CLASS_OBJECT, 'begin', 'read', 'free', 'return', 'exit', 'print', 'println', 'if', 'while', 'skip', 'int', 'bool', 'char', 'string', IDENT}
+1 parser error(s) detected, no further compilation attempted.

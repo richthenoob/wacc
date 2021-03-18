@@ -26,17 +26,27 @@ import java.util.List;
 
 public class ImportVisitorNode extends Node {
   private List<BasicParser.FuncContext> funcCtxs;
+  private List<BasicParser.Class_Context> classCtxs;
 
   public ImportVisitorNode(){
     funcCtxs = new ArrayList<>();
+    classCtxs = new ArrayList<>();
   }
 
   public List<BasicParser.FuncContext> getFuncCtxs(){
     return funcCtxs;
   }
 
+  public List<BasicParser.Class_Context> getClassCtxs(){
+    return classCtxs;
+  }
+
   public void addFuncCtx(BasicParser.FuncContext ctx){
     funcCtxs.add(ctx);
+  }
+
+  public void addClassCtx(BasicParser.Class_Context ctx){
+    classCtxs.add(ctx);
   }
 
   @Override

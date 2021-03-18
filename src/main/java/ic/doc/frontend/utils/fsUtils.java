@@ -18,7 +18,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Set;
 
 public class fsUtils {
@@ -66,7 +65,7 @@ public class fsUtils {
     return rootNode;
   }
 
-  public static List<BasicParser.FuncContext> parseImportedFile(String filename, Set<String> imports) throws IOException, IllegalArgumentException {
+  public static ImportVisitorNode parseImportedFile(String filename, Set<String> imports) throws IOException, IllegalArgumentException {
     File file = new File(filename);
     if (!file.exists()){
       throw new IllegalArgumentException(filename + "not found.");
@@ -78,9 +77,9 @@ public class fsUtils {
     String baseDirectory = (Paths.get(filename)).getParent().toString();
 
     ImportVisitor visitor = new ImportVisitor(baseDirectory, imports);
-    ImportVisitorNode rootNode = (ImportVisitorNode) visitor.visit(tree);
+    ImportVisitorNode node = (ImportVisitorNode) visitor.visit(tree);
 
-    return rootNode.getFuncCtxs();
+    return node;
   }
 
 }

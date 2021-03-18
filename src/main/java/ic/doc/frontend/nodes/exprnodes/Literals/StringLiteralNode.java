@@ -14,7 +14,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Multiple ASCII character between two " symbols. A '\' can be used to escape the character
  * immediately following the '\'. */
-public class StringLiteralNode extends LiteralNode {
+public class StringLiteralNode extends BasicLiteralNode {
 
   private final String value;
 

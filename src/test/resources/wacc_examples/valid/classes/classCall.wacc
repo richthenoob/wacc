@@ -1,0 +1,20 @@
+# a simple class is declared, but not called
+
+# Output:
+# 10
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c
+    int f(int x) is
+        return 6 + x
+    end
+  }
+  c class1 = new c();
+  int i = 4;
+  i = call class1.f(i);
+  println i
+end

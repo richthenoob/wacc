@@ -1,0 +1,22 @@
+# a simple class is declared, instantiated, and reassigned
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  class c {
+    int t
+  }
+  c class1 = new c() ;
+  c class2 = class1 ;
+  c class3 = new c() ;
+  class3 = class1
+end
+
+-- Executing...
+===========================================================
+===========================================================
+The exit code is 0.
+-- Finished

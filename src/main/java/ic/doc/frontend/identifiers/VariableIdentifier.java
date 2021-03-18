@@ -8,6 +8,22 @@ public class VariableIdentifier extends Identifier {
 
   private int offsetStack;
   private boolean activated;
+  private int arraySize;
+  private boolean isClassVariable;
+
+  public VariableIdentifier(Type type) {
+    super(type);
+    offsetStack = 0;
+    activated = false;
+  }
+
+  public boolean isClassVariable() {
+    return isClassVariable;
+  }
+
+  public void setClassVariable() {
+    isClassVariable = true;
+  }
 
   public boolean isActivated() {
     return activated;
@@ -21,6 +37,14 @@ public class VariableIdentifier extends Identifier {
       currSymbolTable = currSymbolTable.getParentSymbolTable();
     }
     return offsetStack + tableOffset;
+  }
+
+  public int getArraySize() {
+    return arraySize;
+  }
+
+  public void setArraySize(int arraySize) {
+    this.arraySize = arraySize;
   }
 
   public void incrementOffsetStack(int offset) {
@@ -37,12 +61,6 @@ public class VariableIdentifier extends Identifier {
 
   public void decrementOffsetStack(int offset) {
     this.offsetStack -= offset;
-  }
-
-  public VariableIdentifier(Type type) {
-    super(type);
-    offsetStack = 0;
-    activated = false;
   }
 
   public void setActivated() {

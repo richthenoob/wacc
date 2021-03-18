@@ -1,0 +1,35 @@
+# iterative calculation of the first 20 fibonacci numbers using a class
+
+# Output:
+# The first 20 fibonacci numbers are:
+# 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, ...
+
+# Program:
+
+begin
+  class c {
+    int i,
+    int f0,
+    int f1,
+    int save
+    int f() is
+        while i < 20 do
+          print f0 ;
+          print ", " ;
+          save = f0 ;
+          f0 = f1 ;
+          f1 = save + f1 ;
+          i = i + 1
+        done ;
+        return 1
+    end
+  }
+  c class1 = new c();
+  class1.i = 0 ;
+  class1.f0 = 0 ;
+  class1.f1 = 1 ;
+  class1.save = 0;
+  println "The first 20 fibonacci numbers are:" ;
+  int y = call class1.f();
+  println "..."
+end

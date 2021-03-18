@@ -81,7 +81,7 @@ public abstract class AbstractFrontendTest {
     } catch (SemanticException e) {
       rootNode = null;
       frontendExitCode = SEMANTIC_EXIT_CODE;
-    } catch (IOException | NullPointerException e) {
+    } catch (IOException e) {
       throw new IllegalStateException("An error occurred while parsing input"
           + " stream in frontend test for filepath: " + testFilepath);
     }

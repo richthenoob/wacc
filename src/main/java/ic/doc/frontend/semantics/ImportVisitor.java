@@ -29,6 +29,7 @@ public class ImportVisitor extends BasicParserBaseVisitor<Node> {
   public Node visitProg(BasicParser.ProgContext ctx) throws IllegalArgumentException {
     List<BasicParser.IncludeContext> includeCtxs = ctx.include();
     List<BasicParser.FuncContext> functionCtxs = ctx.func();
+    List<BasicParser.Class_Context> classCtxs = ctx.class_();
 
     List<String> imports = new ArrayList<>();
 
@@ -48,9 +49,12 @@ public class ImportVisitor extends BasicParserBaseVisitor<Node> {
       }
       allImports.add(file);
       try {
-        List<BasicParser.FuncContext> funcCtxs = parseImportedFile(file, allImports);
-        for(BasicParser.FuncContext funcCtx : funcCtxs){
+        ImportVisitorNode importedFile = parseImportedFile(file, allImports);
+        for(BasicParser.FuncContext funcCtx : importedFile.getFuncCtxs()){
           node.addFuncCtx(funcCtx);
+        }
+        for(BasicParser.Class_Context classCtx : importedFile.getClassCtxs()){
+          node.addClassCtx(classCtx);
         }
       } catch(IOException e){
         throw new IllegalArgumentException("File not found");
@@ -59,6 +63,10 @@ public class ImportVisitor extends BasicParserBaseVisitor<Node> {
 
     for(BasicParser.FuncContext funcCtx : functionCtxs){
       node.addFuncCtx(funcCtx);
+    }
+
+    for(BasicParser.Class_Context classCtx : classCtxs){
+      node.addClassCtx(classCtx);
     }
 
     return node;

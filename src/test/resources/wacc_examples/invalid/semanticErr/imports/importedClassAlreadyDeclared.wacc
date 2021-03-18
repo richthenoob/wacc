@@ -1,0 +1,7 @@
+begin
+  include "importFiles/fileWithClass.wacc"
+  class a {
+    int z
+  }
+  skip
+end

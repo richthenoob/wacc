@@ -1,0 +1,28 @@
+# functions with the same name are declared in a class
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class c {
+    int f(int y) is
+        int p = t + 1;
+        return x
+    end
+    int f(bool b) is
+        return 0
+    end
+    int f() is
+        return 1
+    end
+    int f() is
+        return 10
+    end
+  }
+  skip
+end

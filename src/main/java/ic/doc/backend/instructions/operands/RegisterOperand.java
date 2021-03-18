@@ -1,5 +1,7 @@
 package ic.doc.backend.instructions.operands;
 
+import java.util.Objects;
+
 /* Class to hold registers, e.g. r0, r1, ... r12, sp, r, pc */
 public class RegisterOperand extends Operand {
 
@@ -33,5 +35,22 @@ public class RegisterOperand extends Operand {
       default:
         return "r" + value;
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    RegisterOperand that = (RegisterOperand) o;
+    return value == that.value;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(value);
   }
 }

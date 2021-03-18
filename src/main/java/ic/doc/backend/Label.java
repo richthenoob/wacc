@@ -5,7 +5,11 @@ import java.util.List;
 
 public class Label<E> {
   private final String functionLabel;
-  private final List<E> body;
+  private List<E> body;
+
+  public void setBody(List<E> body) {
+    this.body = body;
+  }
 
   public Label(String functionLabel) {
     this.functionLabel = functionLabel;

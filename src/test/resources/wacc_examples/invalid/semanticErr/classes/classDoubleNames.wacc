@@ -1,0 +1,18 @@
+# variables with the same name are declared in a class
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class c {
+    int t,
+    int t,
+    char t
+  }
+  skip
+end

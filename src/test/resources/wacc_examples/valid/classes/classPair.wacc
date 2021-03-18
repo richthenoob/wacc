@@ -1,0 +1,16 @@
+# a simple class is declared, and a pair in it is assigned and accessed.
+
+# Output:
+# 10
+
+# Program:
+
+begin
+  class c {
+    pair(int, int) p
+  }
+  c class1 = new c() ;
+  class1.p = newpair(10,15) ;
+  int x = fst class1.p ;
+  println x
+end

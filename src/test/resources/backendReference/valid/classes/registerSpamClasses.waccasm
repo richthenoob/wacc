@@ -1,0 +1,44 @@
+# large amount of classes declared, with each class storing a variable.
+# This exceeds the total number of registers.
+
+# Output:
+# 1
+
+# Program:
+
+begin
+  class c {
+    int t
+    int f() is
+        return t
+    end
+  }
+  c class1 = new c();
+  class1.t = 1;
+  c class2 = new c() ;
+  class2.t = 2;
+  c class3 = new c() ;
+  class3.t = 3;
+  c class4 = new c() ;
+  class4.t = 4;
+  c class5 = new c() ;
+  class5.t = 5;
+  c class6 = new c() ;
+  class6.t = 6;
+  c class7 = new c() ;
+  class7.t = 7;
+  c class8 = new c() ;
+  class8.t = 8;
+  c class9 = new c() ;
+  class9.t = 9;
+
+  int y = call class1.f();
+  println y
+end
+
+-- Executing...
+===========================================================
+1
+===========================================================
+The exit code is 0.
+-- Finished

@@ -1,0 +1,22 @@
+# binary operator attempts to use variable that hasn't been initialized from class
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c
+    int f(int y) is
+        int p = t + 1;
+        return x
+    end
+  }
+  c class1 = new c() ;
+  int z = 4 + class1.t
+end

@@ -19,7 +19,7 @@ public class InvalidSyntaxImportsTest extends AbstractFrontendTest {
   @Tag("imports")
   @ParameterizedTest
   @MethodSource("getTestNames")
-  public void invalidSyntaxIfTests(String testName) {
+  public void invalidSyntaxImportsTests(String testName) {
     frontendTestFile(groupTestPath + testName);
   }
 }

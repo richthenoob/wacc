@@ -9,7 +9,7 @@ import ic.doc.frontend.types.BoolType;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Either 'true' or 'false' */
-public class BooleanLiteralNode extends LiteralNode {
+public class BooleanLiteralNode extends BasicLiteralNode {
 
   private final boolean value;
 
@@ -18,7 +18,7 @@ public class BooleanLiteralNode extends LiteralNode {
     setType(new BoolType());
   }
 
-  public boolean getValue() {
+  public Boolean getValue() {
     return value;
   }
 

@@ -8,10 +8,12 @@ options {
   tokenVocab=BasicLexer;
 }
 
-/* ----------------------------- PROGRAMS, IMPORTS AND FUNCTIONS ----------------------------- */
-prog: BEGIN (include)* (func)* stat END EOF;
+/* ----------------------------- PROGRAMS, CLASSES, IMPORTS AND FUNCTIONS ----------------------------- */
+prog: BEGIN (include)* (class_)* (func)* stat END EOF;
 
 include: INCLUDE FILE_NAME;
+
+class_: CLASS IDENT OPEN_CURLY_BRACES (paramList (func)*) CLOSE_CURLY_BRACES;
 
 func: type IDENT OPEN_PARENTHESES paramList CLOSE_PARENTHESES IS stat END;
 
@@ -19,32 +21,38 @@ paramList: param (COMMA param)* | ();
 
 param: type IDENT;
 
+classObject: IDENT DOT IDENT;
+
 /* ----------------------------------- STATEMENTS ----------------------------------- */
-stat: SKP                                                     #skip
-| type IDENT ASSIGN assignRhs                                 #declarativeAssignment
-| assignLhs ASSIGN assignRhs                                  #assignment
-| READ assignLhs                                              #read
-| FREE expr                                                   #free
-| RETURN expr                                                 #return
-| EXIT expr                                                   #exit
-| PRINT expr                                                  #print
-| PRINTLN expr                                                #println
-| IF expr THEN stat ELSE stat FI                              #if
-| WHILE expr DO stat DONE                                     #while
-| BEGIN stat END                                              #begin
-| stat SEMI stat                                              #semi
+stat: SKP                                                         #skip
+| IDENT IDENT ASSIGN NEW IDENT OPEN_PARENTHESES CLOSE_PARENTHESES #declareNewClass
+| IDENT IDENT ASSIGN IDENT                                        #assignNewClass
+| type IDENT ASSIGN assignRhs                                     #declarativeAssignment
+| assignLhs ASSIGN assignRhs                                      #assignment
+| READ assignLhs                                                  #read
+| FREE expr                                                       #free
+| RETURN expr                                                     #return
+| EXIT expr                                                       #exit
+| PRINT expr                                                      #print
+| PRINTLN expr                                                    #println
+| IF expr THEN stat ELSE stat FI                                  #if
+| WHILE expr DO stat DONE                                         #while
+| BEGIN stat END                                                  #begin
+| stat SEMI stat                                                  #semi
 ;
 
 assignLhs: IDENT
 | arrayElem
 | pairElem
+| classObject
 ;
 
-assignRhs: expr                                               #exprDup
-| arrayLiter                                                  #arrayLiterDup
-| NEWPAIR OPEN_PARENTHESES expr COMMA expr CLOSE_PARENTHESES  #newPair
-| pairElem                                                    #pairElemDup
-| CALL IDENT OPEN_PARENTHESES argList CLOSE_PARENTHESES    #call
+assignRhs: expr                                                        #exprDup
+| arrayLiter                                                           #arrayLiterDup
+| NEWPAIR OPEN_PARENTHESES expr COMMA expr CLOSE_PARENTHESES           #newPair
+| pairElem                                                             #pairElemDup
+| CALL IDENT OPEN_PARENTHESES argList CLOSE_PARENTHESES                #call
+| CALL classObject OPEN_PARENTHESES argList CLOSE_PARENTHESES         #callClassFunction
 ;
 
 argList: expr (COMMA expr)* | ();
@@ -88,6 +96,7 @@ expr: expr (MUL | DIV | MOD) expr                             #binOp1Application
 | arrayElem                                                   #arrayElemDup
 | (NOT | MINUS | LEN | ORD | CHR) expr                        #unOpApplication
 | OPEN_PARENTHESES expr CLOSE_PARENTHESES                     #brackets
+| classObject                                                 #classVariable
 ;
 
 /* Numbers */
