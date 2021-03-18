@@ -1,0 +1,14 @@
+begin
+  include "stdlib.wacc"
+  int[] arr1 = [3,1,2,5,2];
+  int a = 5;
+  int b = 2;
+  int c = 4;
+  int d = 222;
+  int e = 412;
+  int[] arr2 = [a,b,c,d,e];
+  int[] arr3 = [];
+  bool _ = call printIntArray(arr1);
+  _ = call printIntArray(arr2);
+  _ = call printIntArray(arr3)
+end

@@ -3,12 +3,17 @@ package ic.doc.frontendtests;
 import static ic.doc.TestUtils.readFileIntoString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.stringContainsInOrder;
 
 import ic.doc.TestUtils;
 import ic.doc.frontend.WaccFrontend;
 import ic.doc.frontend.errors.SemanticException;
 import ic.doc.frontend.errors.SyntaxException;
 import ic.doc.frontend.nodes.ProgNode;
+import ic.doc.frontend.utils.fsUtils;
+import org.junit.jupiter.api.Test;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Matcher;
@@ -58,16 +63,18 @@ public abstract class AbstractFrontendTest {
   }
 
   public ProgNode frontendTestFile(String testFilepath) {
-    System.out.println(testFilepath);
     ProgNode rootNode;
 
+    /* Path of file */
+    String path = TestUtils.EXAMPLES_DIR + testFilepath;
     /* Run sample program through frontend */
     int frontendExitCode = TestUtils.SUCCESS_EXIT_CODE;
-    InputStream inputStream = this.getClass().getResourceAsStream(
-        TestUtils.EXAMPLES_DIR + testFilepath);
+    InputStream inputStream = this.getClass().getResourceAsStream(path);
+
+    String absolutePath = this.getClass().getResource(path).getPath();
 
     try {
-      rootNode = WaccFrontend.parse(inputStream);
+      rootNode = fsUtils.parseRootFile(absolutePath, inputStream);
     } catch (SyntaxException e) {
       rootNode = null;
       frontendExitCode = SYNTAX_EXIT_CODE;

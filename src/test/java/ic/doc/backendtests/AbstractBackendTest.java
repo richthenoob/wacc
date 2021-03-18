@@ -18,6 +18,7 @@ import com.github.dockerjava.api.model.Volume;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.okhttp.OkDockerHttpClient;
 import ic.doc.backend.WaccBackend;
+import ic.doc.frontend.WaccFrontend;
 import ic.doc.frontend.nodes.ProgNode;
 import ic.doc.frontendtests.AbstractFrontendTest;
 import java.io.File;
@@ -258,6 +259,7 @@ public abstract class AbstractBackendTest {
     /* Run test file through frontend to get root node of AST tree. */
     AbstractFrontendTest frontendTest = new AbstractFrontendTest() {
     };
+    WaccFrontend.OPTIMIZE = true;
     ProgNode rootNode = frontendTest.frontendTestFile(testFilepath);
 
     if (rootNode == null) {
@@ -265,8 +267,20 @@ public abstract class AbstractBackendTest {
     }
 
     /* Generate code and write to temporary file. */
-    String code = WaccBackend.generateCode(rootNode);
+    WaccBackend wrapper = WaccBackend.generateCode(rootNode);
+    String code = wrapper.getOutput();
+    int instructCount = wrapper.getInstructCount();
+
+    /* Generate code with no optimization */
+    WaccFrontend.OPTIMIZE = false;
+    ProgNode oldRootNode = frontendTest.frontendTestFile(testFilepath);
+    WaccBackend oldWrapper = WaccBackend.generateCode(oldRootNode);
+    int oldInstructCount = oldWrapper.getInstructCount();
+
     System.out.println(code);
+    System.out.println("Total number of instructions in optimized: " + instructCount);
+    System.out.println("Total number of instructions in original: " + oldInstructCount);
+    System.out.println("Reduction : " + (oldInstructCount - instructCount));
     WaccBackend.writeToFile(TEMP_DIR_PATH + TEMP_ASSEMBLY_FILENAME, code);
 
     /* Cross compilation. */

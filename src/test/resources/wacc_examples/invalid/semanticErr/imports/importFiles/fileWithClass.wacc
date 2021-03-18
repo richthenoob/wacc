@@ -1,0 +1,7 @@
+begin
+  class a {
+    int x,
+    int y
+  }
+  skip
+end

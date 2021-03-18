@@ -1,0 +1,9 @@
+begin
+    include "../function/nested_functions/fibonacciRecursive.wacc"
+
+    println "The first 20 fibonacci numbers are:" ;
+    print "0, " ;
+    int result = call fibonacci(19, true) ;
+    print result ;
+    println "..."
+end

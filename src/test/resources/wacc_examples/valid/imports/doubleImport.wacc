@@ -1,0 +1,9 @@
+#the imported file imports this file. any "double import" should be ignored
+
+begin
+    include "importFiles/importsDoubleImport.wacc"
+    int foo() is
+        return 3
+    end
+    skip
+end
