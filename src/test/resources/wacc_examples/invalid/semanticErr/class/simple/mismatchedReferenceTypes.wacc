@@ -13,8 +13,8 @@ begin
     int t,
     char c
     int f(int y) is
-        int p = t + 1;
-        return x
+        int p = y + 1;
+        return p
     end
   }
   c class1 = new c();

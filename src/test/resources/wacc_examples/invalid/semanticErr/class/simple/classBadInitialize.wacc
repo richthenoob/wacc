@@ -14,7 +14,7 @@ begin
     char c
     int f(int y) is
         int p = t + 1;
-        return x
+        return p
     end
   }
   c class1 = new m()

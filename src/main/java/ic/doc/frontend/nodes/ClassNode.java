@@ -79,7 +79,7 @@ public class ClassNode extends Node {
       String fieldName = field.getInput();
       if (!duplicateFields.add(fieldName)) {
         visitor.getSemanticErrorList()
-            .addScopeException(ctx, true, field.getType().toString(),
+            .addScopeException(ctx, true, "VARIABLE",
                 fieldName);
       }
     }

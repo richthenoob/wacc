@@ -11,8 +11,7 @@
 begin
   class c {
     int f(int y) is
-        int p = t + 1;
-        return x
+        return y
     end
     int f(bool b) is
         return 0
