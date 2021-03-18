@@ -36,6 +36,9 @@ import static ic.doc.frontend.utils.fsUtils.parseImportedFile;
 
 public class Visitor extends BasicParserBaseVisitor<Node> {
 
+  public static final String STDLIB_NAME = "stdlib.wacc";
+  public static final String STDLIB_DIR = "lib/stdlib.wacc";
+
   private SymbolTable currentSymbolTable;
 
   private SemanticErrorList semanticErrorList;
@@ -77,13 +80,18 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
      * imported files know that the root file has already been "imported" */
     allImports.add(filePath);
     String baseDirectory = (Paths.get(filePath)).getParent().toString();
-
     for(IncludeContext i : includeCtxs){
       ImportNode node = (ImportNode) visit(i);
       /* Resolves the file against the current directory and normalize it to remove . and .. */
-      String includedFilePath = Paths.get(baseDirectory).resolve(node.getFileName()).normalize().toString();
-      imports.add(includedFilePath);
-      allImports.add(includedFilePath);
+      String fileName = node.getFileName();
+      String normalizedFilePath;
+      if(fileName.equals(STDLIB_NAME)){
+        normalizedFilePath = Paths.get("").toAbsolutePath().resolve(STDLIB_DIR).toString();
+      } else {
+        normalizedFilePath = Paths.get(baseDirectory).resolve(fileName).normalize().toString();
+      }
+      imports.add(normalizedFilePath);
+      allImports.add(normalizedFilePath);
     }
 
     /* Need to make a new list that stores all of the imported functions and classes

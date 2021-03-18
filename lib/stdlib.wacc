@@ -73,7 +73,7 @@ begin
         fi;
         i = i + 1
       done;
-      print "]";
+      println "]";
       return true
     end
 
@@ -91,7 +91,7 @@ begin
         fi;
         i = i + 1
       done;
-      print "]";
+      println "]";
       return true
     end
 
@@ -103,11 +103,51 @@ begin
       return res
     end
 
-    # Performs a binary search on an array of ints and returns whether or not the number exists
-    bool binarySearch(int[] arr, int target) is
+    # Linear scan of array to return index of element being searched for
+    int indexOf(int[] arr, int target) is
+      int idx = 0;
+      int length = len arr;
+      while (idx < length) do
+        int elem = arr[idx];
+        if (elem == target) then
+          return idx
+        else
+          idx = idx + 1
+        fi
+      done;
+      return -1
+    end
+
+    # Performs a binary search on an array of ints and returns the index of the number if it exists, if not -1.
+    # Array must be sorted
+    int binSearchIndexOf(int[] arr, int target) is
       int lo = 0;
       int hi = (len arr) - 1;
-      return true
+      while (lo <= hi) do
+        int mid = (lo + hi) / 2;
+        int elem = arr[mid];
+        if (elem == target) then
+          return mid
+        else
+          if (elem < target) then
+            lo = mid + 1
+          else
+            hi = mid - 1
+          fi
+        fi
+      done;
+      return -1
+    end
+
+    # Returns the first arg to the power of the second arg
+    int power(int base, int exponent) is
+      int res = 1;
+      int cnt = 0;
+      while(cnt < exponent) do
+        res = res * base;
+        cnt = cnt + 1
+      done;
+      return res
     end
 
     skip

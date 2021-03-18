@@ -35,9 +35,14 @@ public class ImportVisitor extends BasicParserBaseVisitor<Node> {
 
     for(BasicParser.IncludeContext i : includeCtxs){
       ImportNode node = (ImportNode) visit(i);
-      /* Resolves the file against the current directory and normalize it to remove . and .. */
-      String includedFilePath = Paths.get(baseDirectory).resolve(node.getFileName()).normalize().toString();
-      imports.add(includedFilePath);
+      String fileName = node.getFileName();
+      String normalizedFilePath;
+      if(fileName.equals(Visitor.STDLIB_NAME)){
+        normalizedFilePath = Paths.get("").toAbsolutePath().resolve(Visitor.STDLIB_DIR).toString();
+      } else {
+        normalizedFilePath = Paths.get(baseDirectory).resolve(fileName).normalize().toString();
+      }
+      imports.add(normalizedFilePath);
     }
 
     ImportVisitorNode node = new ImportVisitorNode();

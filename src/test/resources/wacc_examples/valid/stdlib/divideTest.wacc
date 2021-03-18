@@ -1,0 +1,30 @@
+begin
+  include "stdlib.wacc"
+
+  pair(int, int) p1 = call divide(100, 3); # 33, 1
+  pair(int, int) p2 = call divide(27, 3); # 9, 0
+  pair(int, int) p3 = call divide(12, 5); # 2, 2
+  pair(int, int) p4 = call divide(0, 3);  # 0, 0
+
+  int fp1 = fst p1;
+  int sp1 = snd p1;
+  println fp1;
+  println sp1;
+
+  int fp2 = fst p2;
+  int sp2 = snd p2;
+  println fp2;
+  println sp2;
+
+  int fp3 = fst p3;
+  int sp3 = snd p3;
+  println fp3;
+  println sp3;
+
+  int fp4 = fst p4;
+  int sp4 = snd p4;
+  println fp4;
+  println sp4;
+
+  pair(int, int) p6 = call divide(3, 0)  # runtime error
+end

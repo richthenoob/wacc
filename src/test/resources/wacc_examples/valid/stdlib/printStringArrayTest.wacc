@@ -1,0 +1,14 @@
+begin
+  include "stdlib.wacc"
+  string[] arr1 = ["dog", "cat", "goose", "capybara", "seal"];
+  string a = "donkey";
+  string b = "camel";
+  string c = "cow";
+  string d = "sheep";
+  string e = "walrus";
+  string[] arr2 = [a,b,c,d,e];
+  string[] arr3 = [];
+  bool _ = call printStringArray(arr1);
+  _ = call printStringArray(arr2);
+  _ = call printStringArray(arr3)
+end
