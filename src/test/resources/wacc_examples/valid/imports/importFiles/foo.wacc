@@ -1,0 +1,6 @@
+begin
+    int foo(int x) is
+        return x
+    end
+    skip
+end

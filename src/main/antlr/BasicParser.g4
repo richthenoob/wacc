@@ -8,8 +8,10 @@ options {
   tokenVocab=BasicLexer;
 }
 
-/* ------------------------- PROGRAMS, CLASSES AND FUNCTIONS ------------------------- */
-prog: BEGIN (class_)* (func)* stat END EOF;
+/* ----------------------------- PROGRAMS, CLASSES, IMPORTS AND FUNCTIONS ----------------------------- */
+prog: BEGIN (include)* (class_)* (func)* stat END EOF;
+
+include: INCLUDE FILE_NAME;
 
 class_: CLASS IDENT OPEN_CURLY_BRACES (paramList (func)*) CLOSE_CURLY_BRACES;
 

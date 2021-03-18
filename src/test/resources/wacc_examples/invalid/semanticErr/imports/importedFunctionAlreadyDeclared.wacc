@@ -1,0 +1,7 @@
+begin
+    include "importFiles/fileWithFooFunction.wacc"
+	int foo() is
+		return 0
+	end
+	skip
+end

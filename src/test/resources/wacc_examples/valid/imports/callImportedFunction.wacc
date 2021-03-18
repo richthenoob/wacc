@@ -1,0 +1,5 @@
+begin
+    include "importFiles/foo.wacc"
+    int x = call foo(5);
+    println x
+end

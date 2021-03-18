@@ -1,0 +1,21 @@
+begin
+  include "stdlib.wacc"
+  int[] arr1 = [3,1,2,5,2];
+  int[] arr2 = [-5,2,-4123, 41211, -3341233, 0];
+  int[] arr3 = [0, 0, 0, 0, -5, 0];
+  int[] arr4 = [-1,-4,-5,-99,-555];
+  int[] arr5 = [];
+
+  int max1 = call max(arr1);
+  int max2 = call max(arr2);
+  int max3 = call max(arr3);
+  int max4 = call max(arr4);
+  int max5 = call max(arr5);
+
+  println max1;
+  println max2;
+  println max3;
+  println max4;
+  println max5
+
+end

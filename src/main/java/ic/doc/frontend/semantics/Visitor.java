@@ -21,13 +21,23 @@ import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.types.*;
 
 import ic.doc.frontend.nodes.TypeNode;
+
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import static ic.doc.frontend.utils.fsUtils.parseImportedFile;
+
 public class Visitor extends BasicParserBaseVisitor<Node> {
+
+  public static final String STDLIB_NAME = "stdlib.wacc";
+  public static final String STDLIB_DIR = "lib/stdlib.wacc";
 
   private SymbolTable currentSymbolTable;
 
@@ -41,35 +51,97 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     return semanticErrorList;
   }
 
+  private String filePath;
+
+  public Visitor(String filePath){
+    this.filePath = filePath;
+  }
+
   /* Called once at the start of any program
-   * eg. begin CLASSES FUNCTIONS STATEMENT end
+   * eg. begin IMPORTS CLASSES FUNCTIONS STATEMENT end
    * Initialises symbol table an semantic list */
   @Override
   public Node visitProg(BasicParser.ProgContext ctx) {
     currentSymbolTable = new SymbolTable(null);
     semanticErrorList =
-        new SemanticErrorList(
-            ctx.getStart().getInputStream().toString().split("\n"));
+        new SemanticErrorList(ctx.getStart().getInputStream().toString().split("\n"));
+    List<IncludeContext> includeCtxs = ctx.include();
 
     /* First pre-declare any classes and functions in case there are
      * mutually recursive classes/functions before actually visiting them. */
     List<Class_Context> classContexts = ctx.class_();
     List<FuncContext> functionCtxs = ctx.func();
     List<ClassNode> classNodes = new ArrayList<>();
-    for (Class_Context classContext : classContexts) {
-      declareClass(classContext);
-    }
     List<FunctionNode> functionNodes = new ArrayList<>();
+
+    Set<String> allImports = new HashSet<>();
+    List<String> imports = new ArrayList<>();
+    /* We add the root file to the imports so that other
+     * imported files know that the root file has already been "imported" */
+    allImports.add(filePath);
+    String baseDirectory = (Paths.get(filePath)).getParent().toString();
+    for(IncludeContext i : includeCtxs){
+      ImportNode node = (ImportNode) visit(i);
+      /* Resolves the file against the current directory and normalize it to remove . and .. */
+      String fileName = node.getFileName();
+      String normalizedFilePath;
+      if(fileName.equals(STDLIB_NAME)){
+        normalizedFilePath = Paths.get("").toAbsolutePath().resolve(STDLIB_DIR).toString();
+      } else {
+        normalizedFilePath = Paths.get(baseDirectory).resolve(fileName).normalize().toString();
+      }
+      imports.add(normalizedFilePath);
+      allImports.add(normalizedFilePath);
+    }
+
+    /* Need to make a new list that stores all of the imported functions and classes
+     * because we cant add to the  lists we have above */
+    List<FuncContext> importedFunctions = new ArrayList<>();
+    List<Class_Context> importedClasses = new ArrayList<>();
+
+    for(String file : imports){
+      try {
+        ImportVisitorNode node = parseImportedFile(file, allImports);
+        List<BasicParser.FuncContext> funcCtxs = node.getFuncCtxs();
+        List<BasicParser.Class_Context> classCtxs = node.getClassCtxs();
+        importedFunctions.addAll(funcCtxs);
+        importedClasses.addAll(classCtxs);
+      } catch(IllegalArgumentException e){
+        semanticErrorList.addException(ctx, e.getMessage());
+      } catch(IOException e){
+        // idk what to do here bro
+      }
+    }
+
+    /* Declare imported functions */
+    for (FuncContext f : importedFunctions){
+      declareFunction(f);
+    }
+    /* Declare imported classes */
+    for (Class_Context c : importedClasses){
+      declareClass(c);
+    }
+    /* Declare functions in root file */
     for (FuncContext f : functionCtxs) {
       declareFunction(f);
     }
+    /* Declare classes in root file */
+    for (Class_Context classContext : classContexts) {
+      declareClass(classContext);
+    }
 
     /* Actually visit classes and functions */
+    for (FuncContext f : importedFunctions){
+      functionNodes.add((FunctionNode) visit(f));
+    }
+    for (Class_Context c : importedClasses){
+      classNodes.add((ClassNode) visit(c));
+    }
     for (FuncContext f : functionCtxs) {
       functionNodes.add((FunctionNode) visit(f));
     }
-    for (Class_Context classContext : classContexts) {
-      classNodes.add((ClassNode) visit(classContext));
+    for (Class_Context c : classContexts) {
+      classNodes.add((ClassNode) visit(c));
     }
 
     StatNode statNode = (StatNode) visit(ctx.stat());
@@ -78,6 +150,13 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
         statNode);
   }
 
+  @Override
+  public Node visitInclude(BasicParser.IncludeContext ctx) {
+    String fileName = ctx.FILE_NAME().getText();
+    /* Remove start and end quotes of file name */
+    fileName = fileName.substring(1, fileName.length() - 1);
+    return new ImportNode(fileName);
+  }
   /* Helper function to called to declare functions, adds to symbol table if function name is not already defined */
   private void declareFunction(BasicParser.FuncContext ctx) {
     if (!ctx.IDENT().getText().equals("main")) {

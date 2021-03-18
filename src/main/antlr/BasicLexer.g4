@@ -72,6 +72,10 @@ BEGIN: 'begin';
 END: 'end';
 IS: 'is';
 
+//include
+INCLUDE: 'include';
+FILE_NAME: DQUOTE (CHARACTER*) '.wacc' DQUOTE;
+
 //stat
 READ: 'read';
 FREE: 'free';
