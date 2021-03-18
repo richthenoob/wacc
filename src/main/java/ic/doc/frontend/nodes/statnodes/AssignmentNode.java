@@ -139,13 +139,25 @@ public class AssignmentNode extends StatNode {
     }
 
     /* Optimization, add array size which is fixed at declaration to the symbol table */
-    if(lhs.getType() instanceof ArrayType && isDeclaration && rhs instanceof ArrayLiteralNode){
+    if (lhs.getType() instanceof ArrayType && isDeclaration && rhs instanceof ArrayLiteralNode){
       VariableNode lhsVar = (VariableNode) lhs;
       String name = lhsVar.getName();
       SymbolKey key = new SymbolKey(name, KeyTypes.VARIABLE);
       VariableIdentifier id = (VariableIdentifier) symbolTable.lookup(key);
       id.setArraySize(((ArrayLiteralNode) rhs).getValues().size());
     }
+
+    /* If we are doing something like class1 = class2, then we need to change
+     * the type of class1 to be the type of r2, both in the node and in the
+     * symbol table. */
+    if (lhs.getType() instanceof ClassType &&
+        rhs.getType() instanceof ClassType) {
+      Type newType = rhs.getType();
+      lhs.setType(newType);
+      SymbolKey key = new SymbolKey(lhs.getInput(), KeyTypes.VARIABLE);
+      symbolTable.add(key, new VariableIdentifier(newType));
+    }
+
   }
 
   @Override
