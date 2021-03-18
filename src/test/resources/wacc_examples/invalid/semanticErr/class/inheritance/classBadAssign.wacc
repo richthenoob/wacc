@@ -25,7 +25,8 @@ begin
     end
   }
   c oldClass = new c();
-  d newClass = oldClass
+  d newClass = new d();
+  newClass = oldClass
 end
 
 

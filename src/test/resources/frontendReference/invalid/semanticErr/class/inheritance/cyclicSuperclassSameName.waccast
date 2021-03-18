@@ -1,3 +1,9 @@
 -- Compiling...
 Errors detected during compilation! Exit code 200 returned.
-Semantic Error at 16:2 -- Variable f is not defined in this scope
+Semantic Error at 12:2 -- Cyclic inheritance detected for class d
+Semantic Error at 14:2 -- Cyclic inheritance detected for class e
+Semantic Error at 16:2 -- Cyclic inheritance detected for class f
+Semantic Error at 18:2 -- Class 'd' was already defined in this scope.
+Semantic Error at 18:2 -- Cyclic inheritance detected for class d
+Semantic Error at 20:2 -- Cyclic inheritance detected for class c
+Semantic Error at 22:2 -- Cyclic inheritance detected for class b

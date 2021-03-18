@@ -150,7 +150,7 @@ public class ClassNode extends Node {
                 classSymbolTable)) {
           visitor.getSemanticErrorList()
               .addTypeException(ctx, entryName,
-                  varIdentifier.getType().toString(), entryType.toString(), "");
+                  entryType.toString(), varIdentifier.getType().toString(), "");
         }
       }
 
