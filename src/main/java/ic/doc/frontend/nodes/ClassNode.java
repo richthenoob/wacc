@@ -84,6 +84,13 @@ public class ClassNode extends Node {
       }
     }
 
+    /* Check if super class exists. */
+    SymbolKey superclassKey = new SymbolKey(immediateSuperclass, KeyTypes.CLASS);
+    if (!immediateSuperclass.isEmpty() && currentSymbolTable.lookupAll(superclassKey) == null) {
+      visitor.getSemanticErrorList().addScopeException(ctx, false, "Class", immediateSuperclass);
+      return;
+    }
+
     /* Check for class inheritance cycles. */
     if (ClassType
         .hasSuperclassCycle(className, className, currentSymbolTable)) {
