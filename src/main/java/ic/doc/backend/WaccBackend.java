@@ -129,7 +129,7 @@ public class WaccBackend {
       outputString.append("\n");
     }
 
-    return outputString.toString();
+    return new WaccBackend(outputString.toString(), count);
   }
 
   public static void writeToFile(String filepath, String output) {

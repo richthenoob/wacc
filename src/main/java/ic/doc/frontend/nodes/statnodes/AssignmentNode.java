@@ -20,6 +20,7 @@ import ic.doc.frontend.semantics.SymbolKey;
 import ic.doc.frontend.semantics.SymbolKey.KeyTypes;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
+import ic.doc.frontend.types.ArrayType;
 import ic.doc.frontend.types.CharType;
 import ic.doc.frontend.types.ClassType;
 import ic.doc.frontend.types.ErrorType;
