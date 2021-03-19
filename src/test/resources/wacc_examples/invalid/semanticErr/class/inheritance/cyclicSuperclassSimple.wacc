@@ -1,0 +1,19 @@
+# cyclic inheritance
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class d extends e {
+  }
+  class e extends f {
+  }
+  class f extends d {
+  }
+  skip
+end

@@ -1,0 +1,18 @@
+# a simple class is declared and instantiated and freed
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c
+    int f() is
+        return 0
+    end
+  }
+  c class1 = new c();
+  free class1
+end

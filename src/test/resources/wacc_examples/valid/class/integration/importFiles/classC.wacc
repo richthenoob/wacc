@@ -1,0 +1,17 @@
+begin
+  include "stdlib.wacc"
+  include "classD.wacc"
+  include "../extensionIntegration.wacc"
+
+  class c extends d {
+    int t
+    string foo() is
+      println "I am a parent method!";
+      println superParentField;
+      string _ = call bar();
+      return "hello"
+    end
+  }
+
+  skip
+end

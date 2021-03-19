@@ -1,0 +1,23 @@
+# an inherited class is declared, overrides parent variable with the wrong type
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class c {
+    int t
+    int f(int x, int y, char z) is
+      return t
+    end
+  }
+
+  class d extends c {
+    char t
+  }
+  skip
+end

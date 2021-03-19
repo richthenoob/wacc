@@ -1,0 +1,23 @@
+# an inherited class is declared, and attempts to write to and read from its parent's field
+
+# Output:
+# 5
+# 5
+
+# Program:
+
+begin
+  class c {
+    int t
+  }
+  class d extends c {
+    int f() is
+      return t
+    end
+  }
+  d class1 = new d();
+  class1.t = 5;
+  println class1.t;
+  int y = call class1.f();
+  println y
+end

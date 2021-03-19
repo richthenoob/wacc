@@ -1,0 +1,21 @@
+# arrays in classes cannot be directly accessed by return and print statements etc
+
+# Output:
+# #syntax_error#
+
+# Exit:
+# 100
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c
+    int f() is
+        return 10
+    end
+  }
+  c class1 = new c();
+  return class1.f()
+end

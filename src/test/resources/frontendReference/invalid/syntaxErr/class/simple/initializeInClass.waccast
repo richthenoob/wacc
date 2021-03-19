@@ -1,0 +1,4 @@
+-- Compiling...
+Errors detected during compilation! Exit code 100 returned.
+Syntactic Error at line 10:10 -- mismatched input '=' expecting {'}', 'pair', 'int', 'bool', 'char', 'string'}
+1 parser error(s) detected, no further compilation attempted.

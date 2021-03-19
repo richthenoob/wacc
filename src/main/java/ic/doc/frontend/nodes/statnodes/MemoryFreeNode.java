@@ -8,6 +8,7 @@ import ic.doc.backend.PredefinedFunctions;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.Visitor;
 import ic.doc.frontend.types.ArrayType;
+import ic.doc.frontend.types.ClassType;
 import ic.doc.frontend.types.PairType;
 
 import ic.doc.frontend.types.Type;
@@ -31,13 +32,14 @@ public class MemoryFreeNode extends StatNode {
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     /* Expression must be of type 'pair(T1, T2)' or 'T[]' (for some T, T1, T2) */
-    if (!(exprNode.getType() instanceof PairType || exprNode.getType() instanceof ArrayType)) {
+    if (!(exprNode.getType() instanceof PairType || exprNode.getType() instanceof ArrayType
+        || exprNode.getType() instanceof ClassType)) {
       visitor
           .getSemanticErrorList()
           .addTypeException(
               ctx,
               exprNode.getInput(),
-              "PAIR or ARRAY",
+              "PAIR, ARRAY or CLASS",
               exprNode.getType().toString(),
               "",
               " 'free' statement");
@@ -63,6 +65,9 @@ public class MemoryFreeNode extends StatNode {
     } else if(exprType instanceof ArrayType){
       PredefinedFunctions.addFreeArrayFunction(context);
       curr.addToBody(BL(PredefinedFunctions.FREE_ARRAY_FUNC));
+    } else if(exprType instanceof ClassType){
+      PredefinedFunctions.addFreeClassFunction(context);
+      curr.addToBody(BL(PredefinedFunctions.FREE_CLASS_FUNC));
     }
 
     /* Register occupied by expression is freed. */

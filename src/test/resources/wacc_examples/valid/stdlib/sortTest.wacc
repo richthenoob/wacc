@@ -1,0 +1,28 @@
+# test the functionality of stdlib abs
+
+# Output:
+# [1, 2, 2, 3, 5]
+# [-3341233, -4123, -5, 0, 2, 41211]
+# [-5, 0, 0, 0, 0, 0];
+# []
+
+# Program:
+
+begin
+  include "stdlib.wacc"
+
+  int[] arr1 = [3,1,2,5,2];
+  int[] arr2 = [-5,2,-4123, 41211, -3341233, 0];
+  int[] arr3 = [0, 0, 0, 0, -5, 0];
+  int[] arr4 = [];
+
+  arr1 = call sort(arr1);
+  arr2 = call sort(arr2);
+  arr3 = call sort(arr3);
+  arr4 = call sort(arr4);
+
+  bool _ = call printIntArray(arr1);
+  _ = call printIntArray(arr2);
+  _ = call printIntArray(arr3);
+  _ = call printIntArray(arr4)
+end

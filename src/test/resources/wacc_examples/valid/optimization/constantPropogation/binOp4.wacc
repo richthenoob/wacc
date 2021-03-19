@@ -1,0 +1,10 @@
+begin
+  bool b = "hello" == "hello";
+  b = "hello" != "hello";
+  b = 'a' == 'b';
+  b = 'a' != 'b';
+  b = true == false;
+  b = true != false;
+  b = 5 != 5;
+  b = 5 == 5
+end

@@ -1,0 +1,25 @@
+# a function within a class instantiates that class and operates on its fields
+
+# Output:
+# 10
+
+# Program:
+
+begin
+  class c {
+    int a
+    int f(int x) is
+        d class1 = new d();
+        c class2 = new c();
+        class1.a = 1;
+        class2.a = class1.a + 3;
+        return x + class2.a
+    end
+  }
+  class d {
+    int a
+  }
+  c class1 = new c();
+  int ans = call class1.f(6);
+  println ans
+end

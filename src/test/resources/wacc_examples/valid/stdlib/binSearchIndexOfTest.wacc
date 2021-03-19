@@ -1,0 +1,54 @@
+# test the functionality of stdlib abs
+# undefined behaviour is to be expected when array is not sorted, so no need to test for it
+# makes no guarantees about which index will be returned if duplicates are found, so just check that idx != -1
+
+# Output:
+# 0
+# 1
+# 5
+# 7
+# -1
+# 0
+# 2
+# 3
+# 4
+# -1
+# true
+
+# Program:
+
+begin
+  include "stdlib.wacc"
+  int[] arr1 = [1,2,4,5,9,10,14,70];
+  int[] arr2 = [-100, -51, -31, 5, 123];
+  int[] arr3 = [1, 1, 1, 1, 1, 1];
+
+
+  int idx1 = call binSearchIndexOf(arr1, 1);  # 0
+  int idx2 = call binSearchIndexOf(arr1, 2);  # 1
+  int idx3 = call binSearchIndexOf(arr1, 10);  # 5
+  int idx4 = call binSearchIndexOf(arr1, 70);  # 7
+  int idx5 = call binSearchIndexOf(arr1, 11);  # -1
+
+  int idx6 = call binSearchIndexOf(arr2, -100);  # 0
+  int idx7 = call binSearchIndexOf(arr2, -31);  # 2
+  int idx8 = call binSearchIndexOf(arr2, 5);  # 3
+  int idx9 = call binSearchIndexOf(arr2, 123);  # 4
+  int idx10 = call binSearchIndexOf(arr2, -23);  # -1
+
+  int idx11 = call binSearchIndexOf(arr3, 1); # != -1
+  bool idx11Valid = idx11 != -1;
+
+  println idx1;
+  println idx2;
+  println idx3;
+  println idx4;
+  println idx5;
+  println idx6;
+  println idx7;
+  println idx8;
+  println idx9;
+  println idx10;
+  println idx11Valid
+
+end

@@ -1,0 +1,25 @@
+# two cyclic inheritance cases involving the same name for 1 of the classes in each cycle
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class d extends e {
+  }
+  class e extends f {
+  }
+  class f extends d {
+  }
+  class d extends c {
+  }
+  class c extends b {
+  }
+  class b extends d {
+  }
+  skip
+end

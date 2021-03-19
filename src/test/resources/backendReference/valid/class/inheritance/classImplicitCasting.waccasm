@@ -1,0 +1,48 @@
+# a subclass instance is assigned to its superclass, and its functions are called.
+
+# Output:
+# 2
+# 4
+# 6
+# 4
+# 4
+
+# Program:
+
+begin
+  class d extends c {
+    int y
+    int f() is
+      return 2
+    end
+  }
+  class c {
+    int x
+    int f() is
+      return 6
+    end
+  }
+
+  d oldClass = new d();
+  oldClass.x = 4;
+  int oldAns = call oldClass.f();
+  println oldAns;
+  println oldClass.x;
+
+  c newClass = new c();
+  newClass = oldClass;
+  int newAns = call newClass.f();
+  println newAns;
+  println newClass.x;
+  println oldClass.x
+end
+-- Executing...
+===========================================================
+2
+4
+2
+4
+4
+===========================================================
+The exit code is 0.
+-- Finished

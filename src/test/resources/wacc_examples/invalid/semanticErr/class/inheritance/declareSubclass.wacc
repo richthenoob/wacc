@@ -1,0 +1,22 @@
+# superclass is declared with type subclass
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class d extends e {
+    int f() is
+      return 2
+    end
+  }
+  class e extends f {
+  }
+  class f {
+  }
+  d class1 = new f()
+end

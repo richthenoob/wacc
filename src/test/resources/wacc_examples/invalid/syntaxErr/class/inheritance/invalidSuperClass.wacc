@@ -1,0 +1,14 @@
+# subclass tries to extend "class"
+# attempt
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  class d extends class {
+    int x
+  }
+  skip
+end

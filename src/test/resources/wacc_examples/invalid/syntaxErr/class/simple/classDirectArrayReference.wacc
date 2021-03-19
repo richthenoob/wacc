@@ -1,0 +1,23 @@
+# arrays in classes cannot be directly accessed by return and print statements etc
+
+# Output:
+# #syntax_error#
+
+# Exit:
+# 100
+
+# Program:
+
+begin
+  class c {
+    int[] a,
+    int[] b,
+    int[][] c
+  }
+  c class1 = new c();
+  class1.a = [1,2,3];
+  class1.b = [3,4];
+  class1.c = [class1.a,class1.b];
+  println class1.c[0][2];
+  return class1.c[1][0]
+end

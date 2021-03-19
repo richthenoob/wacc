@@ -1,0 +1,5 @@
+-- Compiling...
+Errors detected during compilation! Exit code 100 returned.
+Syntactic Error at line 14:4 -- mismatched input 'b' expecting {'}', 'pair', 'int', 'bool', 'char', 'string'}
+Syntactic Error at line 19:4 -- mismatched input 'int' expecting {'}', 'pair', 'int', 'bool', 'char', 'string'}
+2 parser error(s) detected, no further compilation attempted.

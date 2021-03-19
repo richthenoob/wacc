@@ -1,0 +1,11 @@
+# check to make sure we can import "stdlib.wacc". i.e. should not throw semantic error even though there
+# is no stdlib.wacc in the same directory as the test
+
+# Output:
+
+# Program:
+
+begin
+  include "stdlib.wacc"
+  skip
+end

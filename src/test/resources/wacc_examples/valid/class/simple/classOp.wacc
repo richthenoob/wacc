@@ -1,0 +1,25 @@
+# a simple class is declared, and the objects in it are assigned and accessed.
+# binary and unary operations are conducted on the objects.
+
+# Output:
+# 7
+# true
+# false
+# false
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c,
+    bool b
+  }
+  c class1 = new c() ;
+  class1.t = 4 ;
+  println class1.t + 3 ;
+  class1.b = true ;
+  println class1.b && true ;
+  println class1.t > 5 ;
+  println !class1.b
+end

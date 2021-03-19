@@ -1,5 +1,7 @@
 package ic.doc.backend.instructions.operands;
 
+import java.util.Objects;
+
 /* Adapted from the ARM specification.
  * [Rn]                       offset of zero
  * [Rn, <#expression>]        offset of <expression> bytes
@@ -49,6 +51,28 @@ public class PreIndexedAddressOperand extends AddressOperand {
   public PreIndexedAddressOperand withJump() {
     this.jump = true;
     return this;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(rn, rm, isNegativeRm, shift, expr);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    PreIndexedAddressOperand that = (PreIndexedAddressOperand) o;
+    return isNegativeRm == that.isNegativeRm &&
+        jump == that.jump &&
+        Objects.equals(rn, that.rn) &&
+        Objects.equals(expr, that.expr) &&
+        Objects.equals(rm, that.rm) &&
+        shift == that.shift;
   }
 
   @Override

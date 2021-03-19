@@ -1,0 +1,3 @@
+-- Compiling...
+Errors detected during compilation! Exit code 200 returned.
+Semantic Error at 24:2 -- Incompatible type at 'class1.t' for  'free' statement. Expected type: PAIR, ARRAY or CLASS. Actual type: INT.

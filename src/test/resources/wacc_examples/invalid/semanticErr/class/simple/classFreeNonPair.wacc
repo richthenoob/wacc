@@ -1,0 +1,26 @@
+# a simple class is declared, and we attempt to free non-pairs in it
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class c {
+    pair(int, int) p,
+    int[][] c,
+    int t
+    int f() is
+      return 2
+    end
+  }
+  c class1 = new c() ;
+  class1.p = newpair(10,15) ;
+  class1.t = 5;
+  free class1.p;
+  free class1.t;
+  free class1
+end

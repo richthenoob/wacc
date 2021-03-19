@@ -1,5 +1,7 @@
 package ic.doc.frontend.errors;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,10 +13,16 @@ public class SemanticErrorList {
 
   private List<String> semanticErrors;
   private final String[] programLines;
+  private String currFile;
 
-  public SemanticErrorList(String[] programLines) {
+  public SemanticErrorList(String[] programLines, String currFile) {
     semanticErrors = new ArrayList<>();
     this.programLines = programLines;
+    this.currFile = Paths.get(currFile).getFileName().toString();
+  }
+
+  public void setCurrFile(String file){
+    this.currFile = Paths.get(file).getFileName().toString();
   }
 
   public List<String> getSemanticErrors() {
@@ -65,7 +73,9 @@ public class SemanticErrorList {
             + ":"
             + ctx.getStart().getCharPositionInLine()
             + " - "
-            + errorMessage);
+            + errorMessage
+            + " at file: "
+            + currFile);
   }
 
   /* Adds an error message for mismatched types
@@ -92,6 +102,8 @@ public class SemanticErrorList {
             + ctx.getStart().getLine()
             + ":"
             + ctx.getStart().getCharPositionInLine()
+            + " at file: "
+            + currFile
             + " - Incompatible type at "
             + apostrophe
             + input
@@ -132,6 +144,8 @@ public class SemanticErrorList {
             + ctx.getStart().getLine()
             + ":"
             + ctx.getStart().getCharPositionInLine()
+            + " at file: "
+            + currFile
             + " - Incompatible type at "
             + apostrophe
             + input
@@ -158,6 +172,8 @@ public class SemanticErrorList {
             + ctx.getStart().getLine()
             + ":"
             + ctx.getStart().getCharPositionInLine()
+            + " at file: "
+            + currFile
             + " - Invalid character token '"
             + token
             + "' in string: "
@@ -178,6 +194,8 @@ public class SemanticErrorList {
             + ctx.getStart().getLine()
             + ":"
             + ctx.getStart().getCharPositionInLine()
+            + " at file: "
+            + currFile
             + " - "
             + object
             + " "

@@ -13,7 +13,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 /* Single ASCII character between two ' symbols. A '\' can be used to escape the character
  * immediately following the '\'. */
-public class CharacterLiteralNode extends LiteralNode {
+public class CharacterLiteralNode extends BasicLiteralNode {
 
   private final Character value;
 

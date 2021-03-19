@@ -1,0 +1,26 @@
+# a subclass is initialized by assigning its superclass to it
+# attempt
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class d {
+    int y
+  }
+  class e extends d {
+    int x
+  }
+
+  d class1 = new d();
+  class1.y = 1;
+  println class1.y;
+
+  e class2 = class1;
+  println class2.y
+end

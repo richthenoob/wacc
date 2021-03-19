@@ -1,0 +1,35 @@
+{
+    "name": "wacc-language",
+    "publisher": "2021-wacc-22",
+    "displayName": "Wacc Language",
+    "description": "Syntax highlighting for Wacc",
+    "version": "0.3.0",
+    "engines": {
+        "vscode": "^1.54.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "wacc",
+                "aliases": [
+                    "Wacc",
+                    "wacc"
+                ],
+                "extensions": [
+                    ".wacc"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "wacc",
+                "scopeName": "source.wacc",
+                "path": "./syntaxes/wacc.tmLanguage.json"
+            }
+        ]
+    }
+}

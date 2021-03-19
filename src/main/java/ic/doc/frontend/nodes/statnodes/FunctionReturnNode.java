@@ -8,6 +8,7 @@ import ic.doc.backend.instructions.operands.RegisterOperand;
 import ic.doc.frontend.nodes.exprnodes.ExprNode;
 import ic.doc.frontend.semantics.SymbolTable;
 import ic.doc.frontend.semantics.Visitor;
+import ic.doc.frontend.types.ErrorType;
 import ic.doc.frontend.types.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -32,7 +33,8 @@ public class FunctionReturnNode extends StatNode {
     /* Returns can only be present in the body of a non-main function */
     if (functionName.equals("main")) {
       visitor.getSemanticErrorList().addException(ctx, "Cannot return from the global scope.");
-    } else if (!exprNode.getType().getClass().equals(functionType.getClass())) {
+    } else if (!exprNode.getType().getClass().equals(functionType.getClass())
+        && !(exprNode.getType() instanceof ErrorType)) {
       /* Type of the expression given to the return statement
        * must match the return type of the function */
       visitor

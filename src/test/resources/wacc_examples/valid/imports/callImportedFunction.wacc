@@ -1,0 +1,12 @@
+# check to make sure we can call a function that is defined in an imported file
+
+# Output:
+# 5
+
+# Program:
+
+begin
+    include "importFiles/foo.wacc"
+    int x = call foo(5);
+    println x
+end

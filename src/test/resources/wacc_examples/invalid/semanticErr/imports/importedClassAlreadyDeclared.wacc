@@ -1,0 +1,14 @@
+# tries to import a file which has already defined a class a
+
+# Output:
+# Semantic error
+
+# Program:
+
+begin
+  include "importFiles/fileWithClass.wacc"
+  class a {
+    int z
+  }
+  skip
+end

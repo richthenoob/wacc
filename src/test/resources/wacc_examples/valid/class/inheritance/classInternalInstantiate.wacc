@@ -1,0 +1,30 @@
+# an inherited class is declared, and attempts to call a function defined in its parent
+
+# Output:
+# 19
+
+# Program:
+
+begin
+  class c {
+    int t
+    int f() is
+      return 15
+    end
+    int g() is
+      d class1 = new d();
+      int j = call class1.p();
+      return j + 4
+    end
+  }
+  class d extends c {
+    int p() is
+      int answer = call f();
+      return answer
+    end
+  }
+
+  d class1 = new d();
+  int i = call class1.g();
+  println i
+end

@@ -19,12 +19,15 @@ public class ProgNode extends Node {
 
   private final SymbolTable symbolTable;
   private final List<FunctionNode> functions;
+  private final List<ClassNode> classes;
   private final StatNode stat;
 
   public ProgNode(SymbolTable symbolTable,
-      List<FunctionNode> functions, StatNode stat) {
+      List<FunctionNode> functions,
+      List<ClassNode> classes, StatNode stat) {
     this.symbolTable = symbolTable;
     this.functions = functions;
+    this.classes = classes;
     this.stat = stat;
   }
 
@@ -35,13 +38,33 @@ public class ProgNode extends Node {
 
   @Override
   public void translate(Context context) {
+
     /* Add all function labels and evaluate its parameters first. This
      * ensures that any recursive definitions can properly resolve
      * a function's parameters. */
+    SymbolTable currST = context.getCurrentSymbolTable();
+
+    for (ClassNode classNode : classes) {
+      List<FunctionNode> classFunctions = classNode.getClassFunctions();
+      context.setScope(classNode.getClassSymbolTable());
+      context.setCurrentClass(classNode.getClassName());
+      for (FunctionNode funcNode : classFunctions) {
+        funcNode.translateParameters(context);
+      }
+    }
+
+    context.setScope(currST);
+    context.setCurrentClass("");
+
     Map<String, SymbolTable> functionTables = context.getFunctionTables();
     for (FunctionNode node : functions) {
       functionTables.put(node.getFuncName(), node.getFuncSymbolTable());
       node.translateParameters(context);
+    }
+
+    /* Translate classes first */
+    for (ClassNode classNode : classes) {
+      classNode.translate(context);
     }
 
     /* Properly evaluate function nodes. */

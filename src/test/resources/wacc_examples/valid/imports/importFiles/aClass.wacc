@@ -1,0 +1,10 @@
+begin
+  class c {
+    int t,
+    char c
+    int f(int x) is
+        return 6 + x
+    end
+  }
+  skip
+end

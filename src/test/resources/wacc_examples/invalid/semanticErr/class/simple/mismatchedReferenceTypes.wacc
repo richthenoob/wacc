@@ -1,0 +1,23 @@
+# attempt to assign variables and function results from class to wrong type
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c
+    int f(int y) is
+        int p = y + 1;
+        return p
+    end
+  }
+  c class1 = new c();
+  bool t = class1.t;
+  bool z = call class1.f(1)
+end

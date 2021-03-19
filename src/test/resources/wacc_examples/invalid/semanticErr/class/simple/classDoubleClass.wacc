@@ -1,0 +1,24 @@
+# two classes with the same name are declared
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  class c {
+    int t,
+    char c
+    int f(int x) is
+        return 6 + x
+    end
+  }
+  class c {
+      int j,
+      char k
+  }
+  skip
+end

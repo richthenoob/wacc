@@ -1,0 +1,7 @@
+begin
+  include "lvl3.wacc"
+  int inc2(int x) is
+    return x + 1
+  end
+  skip
+end

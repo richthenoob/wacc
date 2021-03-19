@@ -1,0 +1,17 @@
+# test the functionality of stdlib abs
+
+# Output:
+# 50
+# 30
+
+# Program:
+
+begin
+  include "stdlib.wacc"
+  int neg = -50;
+  int pos = 30;
+  int negAbs = call abs(neg);
+  int posAbs = call abs(pos);
+  println negAbs;
+  println posAbs
+end

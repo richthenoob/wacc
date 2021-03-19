@@ -4,9 +4,13 @@ import ic.doc.frontend.types.Type;
 
 public abstract class Identifier {
 
-  private final Type type;
+  private Type type;
 
   public Identifier(Type type) {
+    this.type = type;
+  }
+
+  public void setType(Type type) {
     this.type = type;
   }
 
@@ -15,4 +19,6 @@ public abstract class Identifier {
   }
 
   public abstract String toString();
+
+  public abstract Identifier getNewCopy();
 }

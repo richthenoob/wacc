@@ -1,0 +1,14 @@
+# check to make sure we can create an instantiation of a class that is defined in an imported file
+
+# Output:
+# 10
+
+# Program:
+
+begin
+  include "importFiles/aClass.wacc"
+  c class1 = new c();
+  int i = 4;
+  i = call class1.f(i);
+  println i
+end

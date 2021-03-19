@@ -19,7 +19,6 @@ public class Context {
    * (i.e. registers 4-10, where 4 corresponds to index 0) */
   public static final int MAX_INDEX = 6;
 
-
   /* -------------------------------- Registers -------------------------------- */
   /* Array of booleans corresponding to registers 4-10, true if registers are in use
    * Initialized to false by default */
@@ -37,7 +36,7 @@ public class Context {
   /* Currently active symbol table. Corresponds to current scope */
   private SymbolTable currentSymbolTable;
   /* List of all symbol tables for functions, mapped to their function names */
-  private Map<String, SymbolTable> functionTables = new HashMap<>();
+  private final Map<String, SymbolTable> functionTables = new HashMap<>();
 
   /* -------------------------------- End Functions -------------------------------- */
   /* A set of predefined functions. Compared based on function name. Guaranteed to be unique so we can use a set
@@ -53,6 +52,15 @@ public class Context {
   * */
   private final Map<String, String> dataPlaceHolders = new HashMap<>();
 
+  /* -------------------------------- Classes -------------------------------- */
+  /* Currently active class scope */
+  private String currentClass = "";
+
+  /* List of virtual tables corresponding to classes */
+  private final List<VirtualTable> virtualTables = new ArrayList<>();
+
+  /* Standard Symbol Key name for pushing addresses of class instances. */
+  public static final String CLASS_INSTANCE_KEYNAME = "class_instance_keyname";
 
   /* -------------------------------- Registers -------------------------------- */
 
@@ -196,4 +204,21 @@ public class Context {
     }
   }
 
+  /* -------------------------------- Classes -------------------------------- */
+
+  public void setCurrentClass(String currentClass) {
+    this.currentClass = currentClass;
+  }
+
+  public String getCurrentClass() {
+    return currentClass;
+  }
+
+  public void addToVirtualTables(VirtualTable virtualTable) {
+    virtualTables.add(virtualTable);
+  }
+
+  public List<VirtualTable> getVirtualTables() {
+    return virtualTables;
+  }
 }

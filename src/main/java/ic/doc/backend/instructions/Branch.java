@@ -58,6 +58,10 @@ public class Branch extends Instruction {
     return new Branch(Condition.BLCS, label);
   }
 
+  public static Branch BLX(String label) {
+    return new Branch(Condition.BLX, label);
+  }
+
   @Override
   public String toAssembly() {
     return condition.toString() + " " + destinationLabel;
