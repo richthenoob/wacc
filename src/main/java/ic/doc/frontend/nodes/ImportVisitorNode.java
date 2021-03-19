@@ -9,6 +9,7 @@ import ic.doc.frontend.errors.SemanticException;
 import ic.doc.frontend.errors.SyntaxException;
 import ic.doc.frontend.semantics.ImportVisitor;
 import ic.doc.frontend.semantics.Visitor;
+import javafx.util.Pair;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -25,28 +26,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImportVisitorNode extends Node {
-  private List<BasicParser.FuncContext> funcCtxs;
-  private List<BasicParser.Class_Context> classCtxs;
+  /* Pair of the context and the file path so we can display better error msgs*/
+  private List<Pair<BasicParser.FuncContext, String>> funcCtxs;
+  private List<Pair<BasicParser.Class_Context, String>> classCtxs;
 
   public ImportVisitorNode(){
     funcCtxs = new ArrayList<>();
     classCtxs = new ArrayList<>();
   }
 
-  public List<BasicParser.FuncContext> getFuncCtxs(){
+  public List<Pair<BasicParser.FuncContext, String>> getFuncCtxs(){
     return funcCtxs;
   }
 
-  public List<BasicParser.Class_Context> getClassCtxs(){
+  public List<Pair<BasicParser.Class_Context, String>> getClassCtxs(){
     return classCtxs;
   }
 
-  public void addFuncCtx(BasicParser.FuncContext ctx){
-    funcCtxs.add(ctx);
+  public void addFuncCtx(BasicParser.FuncContext ctx, String filePath){
+    funcCtxs.add(new Pair<>(ctx, filePath));
   }
 
-  public void addClassCtx(BasicParser.Class_Context ctx){
-    classCtxs.add(ctx);
+  public void addClassCtx(BasicParser.Class_Context ctx, String filePath){
+    classCtxs.add(new Pair<>(ctx, filePath));
   }
 
   @Override

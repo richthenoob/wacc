@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javafx.util.Pair;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -66,7 +67,7 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     currentSymbolTable = new SymbolTable(null);
     currentClass = "";
     semanticErrorList =
-        new SemanticErrorList(ctx.getStart().getInputStream().toString().split("\n"));
+        new SemanticErrorList(ctx.getStart().getInputStream().toString().split("\n"), filePath);
     List<IncludeContext> includeCtxs = ctx.include();
 
     /* First pre-declare any classes and functions in case there are
@@ -98,32 +99,34 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     /* Need to make a new list that stores all of the imported functions and classes
      * because we cant add to the  lists we have above */
-    List<FuncContext> importedFunctions = new ArrayList<>();
-    List<Class_Context> importedClasses = new ArrayList<>();
+    List<Pair<FuncContext, String>> importedFunctions = new ArrayList<>();
+    List<Pair<Class_Context, String>> importedClasses = new ArrayList<>();
 
     for(String file : imports){
       try {
         ImportVisitorNode node = parseImportedFile(file, allImports);
-        List<BasicParser.FuncContext> funcCtxs = node.getFuncCtxs();
-        List<BasicParser.Class_Context> classCtxs = node.getClassCtxs();
+        List<Pair<FuncContext, String>> funcCtxs = node.getFuncCtxs();
+        List<Pair<BasicParser.Class_Context, String>> classCtxs = node.getClassCtxs();
         importedFunctions.addAll(funcCtxs);
         importedClasses.addAll(classCtxs);
-      } catch(IllegalArgumentException e){
+      } catch(IllegalArgumentException | IOException e){
         semanticErrorList.addException(ctx, e.getMessage());
-      } catch(IOException e){
-        // idk what to do here bro
       }
     }
 
     /* Declare imported functions */
-    for (FuncContext f : importedFunctions){
-      declareFunction(f);
+    for (Pair<FuncContext, String> f : importedFunctions){
+      semanticErrorList.setCurrFile(f.getValue());
+      declareFunction(f.getKey());
     }
     /* Declare imported classes */
-    for (Class_Context c : importedClasses){
-      declareClass(c);
+    for (Pair<Class_Context, String> c : importedClasses){
+      semanticErrorList.setCurrFile(c.getValue());
+      declareClass(c.getKey());
     }
+
     /* Declare functions in root file */
+    semanticErrorList.setCurrFile(filePath);
     for (FuncContext f : functionCtxs) {
       declareFunction(f);
     }
@@ -133,12 +136,16 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
     }
 
     /* Actually visit classes and functions */
-    for (FuncContext f : importedFunctions){
-      functionNodes.add((FunctionNode) visit(f));
+    for (Pair<FuncContext, String> f : importedFunctions){
+      semanticErrorList.setCurrFile(f.getValue());
+      functionNodes.add((FunctionNode) visit(f.getKey()));
     }
-    for (Class_Context c : importedClasses){
-      classNodes.add((ClassNode) visit(c));
+    for (Pair<Class_Context, String> c : importedClasses){
+      semanticErrorList.setCurrFile(c.getValue());
+      classNodes.add((ClassNode) visit(c.getKey()));
     }
+
+    semanticErrorList.setCurrFile(filePath);
     for (FuncContext f : functionCtxs) {
       functionNodes.add((FunctionNode) visit(f));
     }

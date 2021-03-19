@@ -5,6 +5,7 @@ import ic.doc.antlr.BasicParserBaseVisitor;
 import ic.doc.frontend.errors.SemanticErrorList;
 import ic.doc.frontend.nodes.*;
 import ic.doc.frontend.nodes.statnodes.StatNode;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,11 +18,11 @@ import java.util.Set;
 import static ic.doc.frontend.utils.fsUtils.parseImportedFile;
 
 public class ImportVisitor extends BasicParserBaseVisitor<Node> {
-  private String baseDirectory;
+  private String filePath;
   private Set<String> allImports;
 
-  public ImportVisitor(String baseDirectory, Set<String> allImports){
-    this.baseDirectory = baseDirectory;
+  public ImportVisitor(String filePath, Set<String> allImports){
+    this.filePath = filePath;
     this.allImports = allImports;
   }
 
@@ -40,7 +41,7 @@ public class ImportVisitor extends BasicParserBaseVisitor<Node> {
       if(fileName.equals(Visitor.STDLIB_NAME)){
         normalizedFilePath = Paths.get("").toAbsolutePath().resolve(Visitor.STDLIB_DIR).toString();
       } else {
-        normalizedFilePath = Paths.get(baseDirectory).resolve(fileName).normalize().toString();
+        normalizedFilePath = Paths.get(filePath).resolve(fileName).normalize().toString();
       }
       imports.add(normalizedFilePath);
     }
@@ -55,23 +56,23 @@ public class ImportVisitor extends BasicParserBaseVisitor<Node> {
       allImports.add(file);
       try {
         ImportVisitorNode importedFile = parseImportedFile(file, allImports);
-        for(BasicParser.FuncContext funcCtx : importedFile.getFuncCtxs()){
-          node.addFuncCtx(funcCtx);
+        for(Pair<BasicParser.FuncContext, String> funcCtx : importedFile.getFuncCtxs()){
+          node.addFuncCtx(funcCtx.getKey(), funcCtx.getValue());
         }
-        for(BasicParser.Class_Context classCtx : importedFile.getClassCtxs()){
-          node.addClassCtx(classCtx);
+        for(Pair<BasicParser.Class_Context, String> classCtx : importedFile.getClassCtxs()){
+          node.addClassCtx(classCtx.getKey(), classCtx.getValue());
         }
       } catch(IOException e){
-        throw new IllegalArgumentException("File not found");
+        throw new IllegalArgumentException(e.getMessage());
       }
     }
 
     for(BasicParser.FuncContext funcCtx : functionCtxs){
-      node.addFuncCtx(funcCtx);
+      node.addFuncCtx(funcCtx, filePath);
     }
 
     for(BasicParser.Class_Context classCtx : classCtxs){
-      node.addClassCtx(classCtx);
+      node.addClassCtx(classCtx, filePath);
     }
 
     return node;

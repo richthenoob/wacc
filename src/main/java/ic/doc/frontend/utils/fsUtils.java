@@ -65,16 +65,17 @@ public class fsUtils {
     return rootNode;
   }
 
-  public static ImportVisitorNode parseImportedFile(String filename, Set<String> imports) throws IOException, IllegalArgumentException {
-    File file = new File(filename);
+  public static ImportVisitorNode parseImportedFile(String filePath, Set<String> imports) throws IOException, IllegalArgumentException {
+    File file = new File(filePath);
     if (!file.exists()){
-      throw new IllegalArgumentException(filename + "not found.");
+      String fileName = Paths.get(filePath).getFileName().toString();
+      throw new IllegalArgumentException("Imported file not found: " + fileName + ".");
     }
     InputStream inputStream = new FileInputStream(file);
     ParseTree tree = parseWaccFile(inputStream);
 
     /* baseDirectory */
-    String baseDirectory = (Paths.get(filename)).getParent().toString();
+    String baseDirectory = (Paths.get(filePath)).getParent().toString();
 
     ImportVisitor visitor = new ImportVisitor(baseDirectory, imports);
     ImportVisitorNode node = (ImportVisitorNode) visitor.visit(tree);
