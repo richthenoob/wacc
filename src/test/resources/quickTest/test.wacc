@@ -1,5 +1,20 @@
 begin
-  include "importFiles/hello.wacc"
-  int j = call foo();
-  println j
+  class c {
+    int t,
+    char c
+    int f(int x) is
+        int intermediate = call g(x);
+        return 6 + intermediate
+    end
+
+  }
+
+  int g(int h) is
+      return h + 1
+  end
+
+  c class1 = new c();
+  int i = 4;
+  i = call class1.f(i);
+  println i
 end

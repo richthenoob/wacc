@@ -5,11 +5,13 @@
 \usepackage{graphicx} %images
 \usepackage{array}
 \usepackage{centernot}
+\usepackage{hyperref}
+\usepackage[margin=0.75in]{geometry}
 \lstset{language=sh,basicstyle=\ttfamily}
+\graphicspath{ {./images/} }
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 
 \newcommand{\cmd}[1]{\texttt{#1}}
-\newcommand\given[1][]{\:#1\vert\:}
-\newcommand{\mytilde}{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}}
 
 \begin{document}
 \title{The WACC Compiler Report: Group 22}
@@ -75,9 +77,7 @@ To aid in our development, we used Gradle to auto-generate ANTLR files, compile 
 \subsection{Design Issues}
 The two main design issues we faced were regarding register and AST  representation. For registers, we decided that since we want dynamically allocated registers, any node should be able to call a \cmd{getFreeRegister} function and receive a free register. We decided on a bitmap-like representation similar to Pintos frame allocation while abstracting away the handling of freeing and getting registers to the context class. This helps us separate the functionality so that when we want to change our register implementation we just have to make changes in a single class.  In the special case when we run out of free registers and data needs to be pushed to the stack, we decided to just return the last register which happens to be register 10. It is then up to the \cmd{binOpNode} to infer that if both expressions are stored in register 10 the first one must have been pushed to the stack. 
 
-For the AST, we decided to separate the creation of the node, the semantic checking and the code generation into distinct functions. This is for clarity which helps us find the source of the problem during debugging. During creation, we do only the necessary checks required to create a well formed node. During checking, we perform the required checks according to the WACC specification. Finally, during code generation, we translate the AST nodes into instructions. 
-
-% -------------- ADD REFERENCE TO DIAGRAM IN APPENDIX HERE --------
+For the AST, we decided to separate the creation of the node, the semantic checking and the code generation into distinct functions. This is for clarity which helps us find the source of the problem during debugging. During creation, we do only the necessary checks required to create a well formed node. During checking, we perform the required checks according to the WACC specification. Finally, during code generation, we translate the AST nodes into instructions. A diagram encapsulating this is included below in \hyperref[sec:figure1]{Figure 1}.
 
 \subsection{Design Patterns}
 We incorporated many principles of TDD during this lab such as incremental testing and regular refactoring. Before we started implementing semantic checks for our nodes, we made sure to set up a test suite that was split up into different tests for each specific behavior. We also setup the CI/CD pipeline to automate testing with \cmd{Disable} tags on features we have not yet implemented. We made sure that our implementation passes the tests before merging to the main branch and moving on to the next feature. This way of drip-feeding tests ensures that we will not be desensitised to continually failing pipelines.
@@ -88,44 +88,114 @@ We also refactor regularly once our tests pass and we spot duplication or diffic
 
 \subsection{Optimization}
 \textbf{Constant Evaluation}: We have added optimization using constant folding, which allows us to evaluate expressions with just literals at compile time during creation of the operator node and produce the resultant literal node directly. The optimization can be seen when running our self-made test cases in optimization- ConstantFoldingTests where there was a reduction of 2-32 instructions based on the operator. 
+\newline
 
-\noindent \textbf{PeepHole Optimization}: We also added optimization where we look through the generated assembly code after translation from the AST tree and look for redundant instructions such as repeated LOAD/STORE and MOV instructions. By saving the previous instruction if it is either a STORE or MOV instruction and comparing operands with the current instruction, we can remove these unnecessary instructions. 
+\noindent \textbf{Peephole Optimization}: We also added optimization where we look through the generated assembly code after translation from the AST tree and look for redundant instructions such as repeated LOAD/STORE and MOV instructions. By saving the previous instruction if it is either a STORE or MOV instruction and comparing operands with the current instruction, we can remove these unnecessary instructions. 
 Similarly, this optimization can be seen when running our self-made test cases in optimization-PeepholeTests where we removed the STR instruction. Due to our compiler using LDR instead of MOV, the repeated MOV optimization could not be realised but could be useful if further optimizations as discussed below are implemented. 
+\newline
 
-\noindent \textbf{ControlFlow}: We added an optimization where we can replace an “If” or “While” node with the corresponding statement node in cases where the condition node is a literal node. This optimization can be seen when running our self-made test cases in optimization-ControlFlowTests where there was a reduction of 8 instructions for both “If” and “While” loops.
+\noindent \textbf{Control Flow}: We added an optimization where we can replace an “If” or “While” node with the corresponding statement node in cases where the condition node is a literal node. This optimization can be seen when running our self-made test cases in optimization-ControlFlowTests where there was a reduction of 8 instructions for both “If” and “While” loops.
+\newline
 
 \noindent \textbf{Array Bound Checking}: We added an optimization where we can omit the call to the predefined “array\_check\_bounds” function in cases where the array element index is an integer literal by doing the check at compile time. This optimization can be seen when running our self-made test cases in optimization-ArrayBoundTests where we removed the BL instruction.
 
 \subsection{Classes}
-\noindent \textbf{Basic Classes}: We implemented classes as structs that hold zero-initialized variables and defined functions. This code feature can be accessed through wrapping the contents of a class in “class CLASS\_NAME \{ \}” where CLASS\_NAME is the name of the class. Examples of valid usage can be seen by running our self made ValidClassSimpleTest. We made sure that input code follows the rules below (Appendix 3-4) with our syntax and semantic checks. The contents of classes are stored in symbol tables to allow us to check types compatibility and if accessed instances have already been declared.
+\noindent \textbf{Basic Classes}: We implemented classes as structs that hold zero-initialized variables and defined functions. This code feature can be accessed through wrapping the contents of a class in \cmd{class CLASS\_NAME \{ \}} where \cmd{CLASS\_NAME} is the name of the class. Examples of valid usage can be seen by running our self made \cmd{ValidClassSimpleTest}. We made sure that input code follows the rules below \hyperref[sec:table23]{(Table 2-3)} with our syntax and semantic checks. The contents of classes are stored in symbol tables to allow us to check types compatibility and if accessed instances have already been declared.
 
-By relying on name mangling of functions and class functions when generating assembly labels, we support functions with the same name in different classes.Classes can be initialized in the body of main code either by making a new class or by assigning an existing class instance to the new class. An existing class instance can also be assigned to another existing class instance. Each class instance has its own set of variables which are assigned values outside of class definition. Functions inside a class have access to the variables in the scope of the class as well as any parameters passed to them. 
+By relying on name mangling of functions and class functions when generating assembly labels, we support functions with the same name in different classes. Classes can be initialized in the body of main code either by making a new class or by assigning an existing class instance to the new class. An existing class instance can also be assigned to another existing class instance. Each class instance has its own set of variables which are assigned values outside of class definition. Functions inside a class have access to the variables in the scope of the class as well as any parameters passed to them. 
+\newline
 
-\noindent \textbf{Inheritance}: Inheritance was implemented through allowing subclasses to extend superclasses. This code feature can be accessed through adding the keyword “extends SUPERCLASS” behind the class name in a class struct wrapper, where SUPERCLASS is the name of the superclass. Examples of valid usage can be seen by running our self made ValidClassInheritanceTest.
-These classes are able to inherit and override the contents of its superclass according to the conventions below (Appendix 2). We only allow assigning a subclass instance to a superclass, and not assigning a superclass instance to a subclass. This is to avoid dangerous downcasting behaviour, where the programmer may (erroneously) assume which subclass an instance belongs to. (e.g. Appendix 4)
+\noindent \textbf{Inheritance}: Inheritance was implemented through allowing subclasses to extend superclasses. This code feature can be accessed through adding the keyword \cmd{extends SUPERCLASS} behind the class name in a class struct wrapper, where \cmd{SUPERCLASS} is the name of the superclass. Examples of valid usage can be seen by running our self made \cmd{ValidClassInheritanceTest}.
+These classes are able to inherit and override the contents of its superclass according to the conventions below in \hyperref[sec:table1]{Table 1}. We only allow assigning a subclass instance to a superclass, and not assigning a superclass instance to a subclass. This is to avoid dangerous downcasting behaviour, where the programmer may (erroneously) assume the subclass of the instance. (e.g. \hyperref[sec:table23]{Table 3})
 
 Meanwhile, on the back-end, we have chosen to implement virtual tables to store function references. Each class instance stores a pointer to its own class’s virtual table, where data entries holding the names of the class’s function labels are stored. When a function is called, the class’s virtual table is queried to find the required function label. 
 
-Without inheritance, the virtual table approach would be unnecessary, as there is only one possible definition of each function to call. However, when functions are overridden, static dispatching would often cause the compiler to call the wrong function definition. For instance,there exists a class e which extends class d. Function f is defined in class d and overridden in class e. Running class1 = class2 where class1 is an instance of d while class2 is an instance of e copies class2’s reference to class1. Hence, the virtual table pointer that class1 stores now points to class2’s virtual table, meaning any further calls to class1.f() will still call function f as defined according to class e. 
+Without inheritance, the virtual table approach would be unnecessary, as there is only one possible definition of each function to call. However, when functions are overridden, static dispatching would often cause the compiler to call the wrong function definition. For instance, there exists a class e which extends class d. Function f is defined in class d and overridden in class e. Running \cmd{class1 = class2} where class1 is an instance of d while class2 is an instance of e copies class2’s reference to class1. Hence, the virtual table pointer that class1 stores now points to class2’s virtual table, meaning any further calls to \cmd{class1.f()} will still call function f as defined according to class e. 
 
 In a static dispatch, directly calling the function label corresponding to class d’s f() would give us the wrong result (calling function f as defined according to class d). The virtual table approach automatically allocates the definition of an overridden function to call. 
 
 \subsection{Imports}
-\noindent \textbf{Stdlib}: We have implemented a standard library with 9 useful functions that can be accessed by adding an include “stdlib.wacc” statement at the top of the program after begin. During the AST node construction, when this statement is present, the compiler will import the stdlib.wacc file which is located in the compiler directory. The functions, as well as commented descriptions can be found in lib/stdlib.wacc of our project repository.
+\noindent \textbf{Stdlib}: We have implemented a standard library with 9 useful functions that can be accessed by adding an include \cmd{stdlib.wacc} statement at the top of the program after begin. During the AST node construction, when this statement is present, the compiler will import the \cmd{stdlib.wacc} file which is located in the compiler directory. The functions, as well as commented descriptions can be found in \cmd{lib/stdlib.wacc} of our project repository.
+\newline
 
 \noindent \textbf{Imports}: We believe that imports should parse the imported file and add all of the function definitions(and additionally class definitions) in the parsed file to the root file, ignoring the program body of the imported file. This way, any errors stemming from name clashes between functions across imported files will already be handled by our semantic checker. To keep track of which file each error comes from, we stored pairs of parsed function/class contexts along with their fileName, and updated a global currFile string as we visited the function/class contexts. When it came to nested imports, we made two key design choices:
 
 1. Duplicate imports (i.e. root file A imports file B and C, but file B imports file C) will be ignored. In this case, file A will include function definitions from both B and C only once. Since both file A and B might depend on function definitions in C, this should not be classified as an error. We achieve this by keeping a set of strings containing the absolute normalized file paths of imported files. Subsequent imported files that are already in the set will not be parsed and ignored. This also handles the case for mutual importing (i.e. file A imports file B, file B imports file A). 
 
-2. We decided to create an additional ImportVisitor class which returns an ImportVisitorNode (which contains import, function, and class information) instead of a ProgNode. When we import a file, we are only concerned with recursively parsing its imports, as well as function and class definitions. Despite the slight code duplication between our ImportVisitor and Visitor class, it will lead to better performance as we do not parse the body of the file. 
+2. We decided to create an additional ImportVisitor class which returns an \cmd{ImportVisitorNode} (which contains import, function, and class information) instead of a \cmd{ProgNode}. When we import a file, we are only concerned with recursively parsing its imports, as well as function and class definitions. Despite the slight code duplication between our ImportVisitor and Visitor class, it will lead to better performance as we do not parse the body of the file. 
 
-The above behavior can be seen when running our self made tests in valid-ValidStdLibTest and valid-ValidImportsTest.
-
-
+The above behavior can be seen when running our self made tests in \cmd{ValidStdLibTest} and \cmd{ValidImportsTest}.
 
 \subsection{Others}
-\noindent \textbf{VSCode}: We created a VSCode extension that supports syntax highlighting and a few convenient utilities for writing wacc programs (such as automatic closing of brackets and commenting out multiple lines at once). Boilerplate for the extension was generated using VSCodes yeoman templates, and the grammar for tokenizing and highlighting was written using TextMate Grammars (which VSCode uses to power its tokenization engine). The TextMate Grammar file is a JSON file which holds a collection of regular expressions that match tokens to its desired highlighted color. The extension can be downloaded and used at https://marketplace.visualstudio.com/items?itemName=2021-wacc-22.wacc-language.
+\noindent \textbf{VSCode}: We created a VSCode extension that supports syntax highlighting and a few convenient utilities for writing wacc programs (such as automatic closing of brackets and commenting out multiple lines at once). Boilerplate for the extension was generated using VSCodes yeoman templates, and the grammar for tokenizing and highlighting was written using TextMate Grammars (which VSCode uses to power its tokenization engine). The TextMate Grammar file is a JSON file which holds a collection of regular expressions that match tokens to its desired highlighted color. The extension can be downloaded and used 
+\href{https://marketplace.visualstudio.com/items?itemName=2021-wacc-22.wacc-language}{here}.
 
 \noindent \textbf{Future}: We would also like to work on further optimizations such as optimizing LDR instructions with registers and immediate into MOV instructions as they execute faster. This will also tie in to the peephole optimization we did above , allowing for further optimization. In addition, by implementing constant propagation where we will need to do SSA analysis to replace variables that do not change with their literal counterparts. This will increase the occurrence of most of our optimizations done above since they rely on literal nodes.
+\newpage
+\section{Appendix}
+
+\begin{figure}[!htb]
+    \label{sec:figure1}
+  \includegraphics[width=\textwidth]{system.jpeg}
+  \caption{System Architecture Diagram}
+\end{figure}
+
+\begin{table}
+    \label{sec:table1}
+    \begin{center}
+      \begin{tabular}{|| m{10em} | m{15em} | m{15em} ||} 
+      \hline
+        & Variables & Functions \\
+      \hline
+      Able to inherit & \multicolumn{2}{C{30em}||}{YES - 
+      A subclass automatically contains the variables and functions defined in its superclass, on top of any additional variables and functions defined in its own struct. 
+      }\\
+      \hline
+      Able to override & YES - same type, NO - different type
+      Subclasses are not allowed to override superclass variables by defining another variable with the same name but a different type, as methods in the superclass may operate on its variables.
+      &
+      YES - 
+    It is possible for the subclass to override the definitions of its superclass’s functions by defining functions with the same name. The subclass can give the function a different signature (by defining it to take in different parameters).  \\
+    \hline
+      \end{tabular}
+      \caption{Inheritance Rules}
+    \end{center}
+
+    \begin{center}
+        \label{sec:table23}
+        \begin{tabular}{|| m{10em} | m{15em} | m{15em} ||} 
+        \hline
+        Object & Able to have same name & Unable to have same name \\
+        \hline
+        Classes & Main class, Functions & Other classes \\
+        \hline
+        Class instances & Classes & Other class instances \\
+        \hline
+        Variables in classes & Variable outside of its class, Functions & Other variables in the same class, Parameters of functions defined in the same class \\
+        \hline
+        Functions in classes & Functions outside of its class or in another class & Functions defined in the same class \\
+        \hline
+        \end{tabular}
+        \caption{Naming Rules}
+    \end{center}
+
+    \begin{center}
+        \begin{tabular}{|| m{16em} | m{25em} ||} 
+        \hline
+        Code & Description \\
+        \hline
+        \cmd{Class1 c = new Class2()} & Classes can be initialized in the body of the main code by making a new class. Class1 and Class2 must be of the same class OR Class1 must be the superclass of Class2.  \\
+        \hline
+        \cmd{Class1 d = c} & Classes can also be initialized by assigning an existing class instance to the new class. c must be of class Class1 OR c’s class must be the subclass of Class1. \\
+        \hline
+        \cmd{e = c} where both e and c are class instances & An existing class instance can also be assigned to another existing class instance.
+        These instances must be of the same class OR e’s class must be the superclass of c’s class. \\
+        \hline        
+        \end{tabular}
+        \caption{Initialisation of Classes with Inheritance}
+    \end{center}
+
+
+\end{table}
 
 \end{document}
