@@ -5,7 +5,7 @@ import ic.doc.antlr.BasicParserBaseVisitor;
 import ic.doc.frontend.errors.SemanticErrorList;
 import ic.doc.frontend.nodes.*;
 import ic.doc.frontend.nodes.statnodes.StatNode;
-import javafx.util.Pair;
+import ic.doc.frontend.utils.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,10 +57,10 @@ public class ImportVisitor extends BasicParserBaseVisitor<Node> {
       try {
         ImportVisitorNode importedFile = parseImportedFile(file, allImports);
         for(Pair<BasicParser.FuncContext, String> funcCtx : importedFile.getFuncCtxs()){
-          node.addFuncCtx(funcCtx.getKey(), funcCtx.getValue());
+          node.addFuncCtx(funcCtx.getFst(), funcCtx.getSnd());
         }
         for(Pair<BasicParser.Class_Context, String> classCtx : importedFile.getClassCtxs()){
-          node.addClassCtx(classCtx.getKey(), classCtx.getValue());
+          node.addClassCtx(classCtx.getFst(), classCtx.getSnd());
         }
       } catch(IOException e){
         throw new IllegalArgumentException(e.getMessage());

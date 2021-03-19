@@ -1,6 +1,5 @@
 package ic.doc.frontend.semantics;
 
-import ic.doc.backend.WaccBackend;
 import ic.doc.frontend.WaccFrontend;
 import ic.doc.frontend.errors.SemanticErrorList;
 import ic.doc.frontend.errors.SyntaxException;
@@ -8,8 +7,6 @@ import ic.doc.antlr.BasicLexer;
 import ic.doc.antlr.BasicParser;
 import ic.doc.antlr.BasicParser.*;
 import ic.doc.antlr.BasicParserBaseVisitor;
-import ic.doc.frontend.errors.SemanticErrorList;
-import ic.doc.frontend.errors.SyntaxException;
 import ic.doc.frontend.identifiers.*;
 import ic.doc.frontend.nodes.*;
 import ic.doc.frontend.nodes.exprnodes.*;
@@ -29,7 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javafx.util.Pair;
+import ic.doc.frontend.utils.Pair;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -116,13 +113,13 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     /* Declare imported functions */
     for (Pair<FuncContext, String> f : importedFunctions){
-      semanticErrorList.setCurrFile(f.getValue());
-      declareFunction(f.getKey());
+      semanticErrorList.setCurrFile(f.getSnd());
+      declareFunction(f.getFst());
     }
     /* Declare imported classes */
     for (Pair<Class_Context, String> c : importedClasses){
-      semanticErrorList.setCurrFile(c.getValue());
-      declareClass(c.getKey());
+      semanticErrorList.setCurrFile(c.getSnd());
+      declareClass(c.getFst());
     }
 
     /* Declare functions in root file */
@@ -137,12 +134,12 @@ public class Visitor extends BasicParserBaseVisitor<Node> {
 
     /* Actually visit classes and functions */
     for (Pair<FuncContext, String> f : importedFunctions){
-      semanticErrorList.setCurrFile(f.getValue());
-      functionNodes.add((FunctionNode) visit(f.getKey()));
+      semanticErrorList.setCurrFile(f.getSnd());
+      functionNodes.add((FunctionNode) visit(f.getFst()));
     }
     for (Pair<Class_Context, String> c : importedClasses){
-      semanticErrorList.setCurrFile(c.getValue());
-      classNodes.add((ClassNode) visit(c.getKey()));
+      semanticErrorList.setCurrFile(c.getSnd());
+      classNodes.add((ClassNode) visit(c.getFst()));
     }
 
     semanticErrorList.setCurrFile(filePath);
