@@ -1,3 +1,4 @@
+# tries to import a file without enclosing it in double quotes
 begin
     include test1.wacc
     skip

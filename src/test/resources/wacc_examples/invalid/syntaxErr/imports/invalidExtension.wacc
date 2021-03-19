@@ -1,3 +1,4 @@
+# tries to import a file that is not of the .wacc extension
 begin
     include "test1.wac"
     skip

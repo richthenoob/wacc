@@ -1,3 +1,10 @@
+# tries to import a file which does not exist
+
+# Output:
+# Semantic error
+
+# Program:
+
 begin
     include "filenothere.wacc"
     skip

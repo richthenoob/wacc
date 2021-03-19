@@ -1,4 +1,9 @@
-#the imported file imports this file. any "double import" should be ignored
+# checks to make sure we appropriately handle files that import each other
+# expected behavior: any "double import" should be ignored
+
+# Output:
+
+# Program:
 
 begin
     include "importFiles/importsDoubleImport.wacc"

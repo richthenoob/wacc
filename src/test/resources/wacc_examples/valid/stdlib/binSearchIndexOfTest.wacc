@@ -1,5 +1,21 @@
+# test the functionality of stdlib abs
 # undefined behaviour is to be expected when array is not sorted, so no need to test for it
 # makes no guarantees about which index will be returned if duplicates are found, so just check that idx != -1
+
+# Output:
+# 0
+# 1
+# 5
+# 7
+# -1
+# 0
+# 2
+# 3
+# 4
+# -1
+# true
+
+# Program:
 
 begin
   include "stdlib.wacc"

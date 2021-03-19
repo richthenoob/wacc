@@ -1,3 +1,11 @@
+# test the functionality of stdlib printStringArray
+
+# Output:
+# ["dog", "cat", "goose", "capybara", "seal"]
+# ["donkey", "camel", "cow", "sheep", "walrus"]
+# []
+
+
 begin
   include "stdlib.wacc"
   string[] arr1 = ["dog", "cat", "goose", "capybara", "seal"];

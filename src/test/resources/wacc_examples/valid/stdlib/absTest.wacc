@@ -1,3 +1,11 @@
+# test the functionality of stdlib abs
+
+# Output:
+# 50
+# 30
+
+# Program:
+
 begin
   include "stdlib.wacc"
   int neg = -50;

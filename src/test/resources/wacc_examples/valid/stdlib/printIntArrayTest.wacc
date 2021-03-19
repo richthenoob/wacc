@@ -1,3 +1,10 @@
+# test the functionality of stdlib printIntArray
+
+# Output:
+# [3, 1, 2, 5, 2]
+# [5, 2, 4, 222, 412]
+# []
+
 begin
   include "stdlib.wacc"
   int[] arr1 = [3,1,2,5,2];

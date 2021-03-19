@@ -1,3 +1,17 @@
+# test the functionality of stdlib divide
+
+# Output:
+# 33
+# 1
+# 9
+# 0
+# 2
+# 2
+# 0
+# 0
+
+# Program:
+
 begin
   include "stdlib.wacc"
 

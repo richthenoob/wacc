@@ -1,3 +1,14 @@
+# test the functionality of stdlib max
+
+# Output:
+# 5
+# 41211
+# 0
+# -1
+# 0
+
+# Program:
+
 begin
   include "stdlib.wacc"
   int[] arr1 = [3,1,2,5,2];

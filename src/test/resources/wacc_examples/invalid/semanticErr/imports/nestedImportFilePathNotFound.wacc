@@ -1,3 +1,10 @@
+# tries to import a file which imports a file that does not exist
+
+# Output:
+# Semantic error
+
+# Program:
+
 begin
     include "importFiles/fileWithInvalidImport.wacc"
     skip
