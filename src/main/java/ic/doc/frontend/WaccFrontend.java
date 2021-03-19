@@ -46,23 +46,21 @@ public class WaccFrontend {
     if (file.exists()) {
       InputStream inputStream = new FileInputStream(file);
       try {
+        /* Run through frontend. */
         ProgNode rootNode = parseRootFile(file.getCanonicalPath(), inputStream);
+
+        /* Run through backend. */
         WaccBackend wrapper = WaccBackend.generateCode(rootNode);
         String output = wrapper.getOutput();
         int instructCount = wrapper.getInstructCount();
-        /* Generate code with no optimization */
-        OPTIMIZE = false;
-        ProgNode oldRootNode = parseRootFile(file.getCanonicalPath(), inputStream);
-        WaccBackend oldWrapper = WaccBackend.generateCode(oldRootNode);
-        int oldInstructCount = oldWrapper.getInstructCount();
+
         /* Strips .wacc file extension and adds .s before writing to file. */
         Path p = Paths.get(filename);
         String outputFileName = p.getFileName().toString().replaceFirst("[.][^.]+$", "");;
         WaccBackend.writeToFile(outputFileName + ".s", output);
+
         System.out.println(output);
-        System.out.println("Total number of instructions in optimized: " + instructCount);
-        System.out.println("Total number of instructions in original: " + oldInstructCount);
-        System.out.println("Reduction : " + (oldInstructCount - instructCount));
+        System.out.println("Total number of instructions" + instructCount);
 
       } catch (SyntaxException e) {
         System.err.println(e.toString());
