@@ -53,9 +53,14 @@ public class Context {
   private final Map<String, String> dataPlaceHolders = new HashMap<>();
 
   /* -------------------------------- Classes -------------------------------- */
+  /* Currently active class scope */
   private String currentClass = "";
 
+  /* List of virtual tables corresponding to classes */
   private final List<VirtualTable> virtualTables = new ArrayList<>();
+
+  /* Standard Symbol Key name for pushing addresses of class instances. */
+  public static final String CLASS_INSTANCE_KEYNAME = "class_instance_keyname";
 
   /* -------------------------------- Registers -------------------------------- */
 

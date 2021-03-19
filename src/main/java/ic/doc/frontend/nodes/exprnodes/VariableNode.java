@@ -69,7 +69,7 @@ public class VariableNode extends ExprNode {
      * (i.e. not on the stack) then we need to load the address of the
      * class into a register so that we can load the field value later. */
     if (!context.getCurrentClass().isEmpty() && id.isClassVariable()) {
-      SymbolKey classInstanceKey = new SymbolKey("specialname",
+      SymbolKey classInstanceKey = new SymbolKey(Context.CLASS_INSTANCE_KEYNAME,
           KeyTypes.VARIABLE);
       VariableIdentifier classInstanceIdentifier
           = (VariableIdentifier) currentSymbolTable.lookupAll(classInstanceKey);

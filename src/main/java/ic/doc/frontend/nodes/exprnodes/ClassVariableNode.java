@@ -29,7 +29,7 @@ public class ClassVariableNode extends VariableNode {
 
   @Override
   public void translate(Context context) {
-    throw new IllegalStateException("Translation of ClassVariableNode not implemented");
+    throw new IllegalStateException("ClassVariableNode should not be translated.");
   }
 
   @Override

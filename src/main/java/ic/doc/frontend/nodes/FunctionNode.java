@@ -98,7 +98,7 @@ public class FunctionNode extends Node {
     /* Account for classInstance when called on a class function. */
     String currentClass = context.getCurrentClass();
     if (!currentClass.isEmpty()) {
-      SymbolKey classInstanceKey = new SymbolKey("specialname", KeyTypes.VARIABLE);
+      SymbolKey classInstanceKey = new SymbolKey(Context.CLASS_INSTANCE_KEYNAME, KeyTypes.VARIABLE);
       VariableIdentifier classInstanceIdentifier = new VariableIdentifier(new ClassType(currentClass));
       funcSymbolTable.add(classInstanceKey, classInstanceIdentifier);
       funcSymbolTable.incrementOffset(Context.SIZE_OF_ADDRESS);

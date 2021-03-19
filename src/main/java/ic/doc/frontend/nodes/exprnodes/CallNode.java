@@ -141,7 +141,7 @@ public class CallNode extends ExprNode {
     if (!isExternalFunction) {
       /* After pushing arguments, push the address of the instance so
        * that the function can find class instance fields. */
-      SymbolKey classInstanceKey = new SymbolKey("specialname",
+      SymbolKey classInstanceKey = new SymbolKey(Context.CLASS_INSTANCE_KEYNAME,
           KeyTypes.VARIABLE);
       VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable
           .lookupAll(classInstanceKey);

@@ -295,7 +295,7 @@ public class AssignmentNode extends StatNode {
       RegisterOperand classInstReg = new RegisterOperand(
           context.getFreeRegister());
 
-      SymbolKey classInstanceKey = new SymbolKey("specialname",
+      SymbolKey classInstanceKey = new SymbolKey(Context.CLASS_INSTANCE_KEYNAME,
           KeyTypes.VARIABLE);
       VariableIdentifier classInstanceIdentifier = (VariableIdentifier) currentSymbolTable
           .lookupAll(classInstanceKey);
