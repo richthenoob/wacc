@@ -103,7 +103,7 @@ begin
       return res
     end
 
-    # Linear scan of array to return index of element being searched for
+    # Performs a linear scan on an array of ints and returns the index of the number if it exists, if not -1.
     int indexOf(int[] arr, int target) is
       int idx = 0;
       int length = len arr;
@@ -151,10 +151,4 @@ begin
     end
 
     skip
-    #int[] arr = [3,1,2,20,5];
-    #string[] arr2 = ["a", "f", "c"];
-    #arr = call sort(arr);
-    #bool _ = call printIntArray(arr);
-    #_ = call printStringArray(arr2)
-
 end
