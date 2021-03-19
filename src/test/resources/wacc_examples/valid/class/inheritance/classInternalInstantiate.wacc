@@ -1,8 +1,7 @@
 # an inherited class is declared, and attempts to call a function defined in its parent
 
 # Output:
-# 15
-# 15
+# 19
 
 # Program:
 
@@ -11,6 +10,11 @@ begin
     int t
     int f() is
       return 15
+    end
+    int g() is
+      d class1 = new d();
+      int j = call class1.p();
+      return j + 4
     end
   }
   class d extends c {
@@ -21,8 +25,6 @@ begin
   }
 
   d class1 = new d();
-  int i = call class1.f();
-  println i;
-  int j = call class1.p();
-  println j
+  int i = call class1.g();
+  println i
 end
