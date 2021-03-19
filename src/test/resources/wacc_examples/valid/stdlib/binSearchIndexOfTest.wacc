@@ -8,19 +8,19 @@ begin
   int[] arr3 = [1, 1, 1, 1, 1, 1];
 
 
-  int idx1 = call indexOf(arr1, 1);  # 0
-  int idx2 = call indexOf(arr1, 2);  # 1
-  int idx3 = call indexOf(arr1, 10);  # 5
-  int idx4 = call indexOf(arr1, 70);  # 7
-  int idx5 = call indexOf(arr1, 11);  # -1
+  int idx1 = call binSearchIndexOf(arr1, 1);  # 0
+  int idx2 = call binSearchIndexOf(arr1, 2);  # 1
+  int idx3 = call binSearchIndexOf(arr1, 10);  # 5
+  int idx4 = call binSearchIndexOf(arr1, 70);  # 7
+  int idx5 = call binSearchIndexOf(arr1, 11);  # -1
 
-  int idx6 = call indexOf(arr2, -100);  # 0
-  int idx7 = call indexOf(arr2, -31);  # 2
-  int idx8 = call indexOf(arr2, 5);  # 3
-  int idx9 = call indexOf(arr2, 123);  # 4
-  int idx10 = call indexOf(arr2, -23);  # -1
+  int idx6 = call binSearchIndexOf(arr2, -100);  # 0
+  int idx7 = call binSearchIndexOf(arr2, -31);  # 2
+  int idx8 = call binSearchIndexOf(arr2, 5);  # 3
+  int idx9 = call binSearchIndexOf(arr2, 123);  # 4
+  int idx10 = call binSearchIndexOf(arr2, -23);  # -1
 
-  int idx11 = call indexOf(arr3, 1); # != -1
+  int idx11 = call binSearchIndexOf(arr3, 1); # != -1
   bool idx11Valid = idx11 != -1;
 
   println idx1;
