@@ -72,6 +72,10 @@ public class ClassNode extends Node {
     return classSymbolTable;
   }
 
+  public List<FunctionNode> getClassFunctions() {
+    return classFunctions;
+  }
+
   @Override
   public void check(Visitor visitor, ParserRuleContext ctx) {
     /* Check that there are no repeated field names. */
@@ -187,10 +191,6 @@ public class ClassNode extends Node {
     context.setCurrentClass(className);
     classFields.translateHelper(context, true);
     createClassInit(context);
-
-    for (FunctionNode node : classFunctions) {
-      node.translateParameters(context);
-    }
 
     for (FunctionNode node : classFunctions) {
       node.translate(context);

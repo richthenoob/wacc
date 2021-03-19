@@ -42,6 +42,20 @@ public class ProgNode extends Node {
     /* Add all function labels and evaluate its parameters first. This
      * ensures that any recursive definitions can properly resolve
      * a function's parameters. */
+    SymbolTable currST = context.getCurrentSymbolTable();
+
+    for (ClassNode classNode : classes) {
+      List<FunctionNode> classFunctions = classNode.getClassFunctions();
+      context.setScope(classNode.getClassSymbolTable());
+      context.setCurrentClass(classNode.getClassName());
+      for (FunctionNode funcNode : classFunctions) {
+        funcNode.translateParameters(context);
+      }
+    }
+
+    context.setScope(currST);
+    context.setCurrentClass("");
+
     Map<String, SymbolTable> functionTables = context.getFunctionTables();
     for (FunctionNode node : functions) {
       functionTables.put(node.getFuncName(), node.getFuncSymbolTable());
