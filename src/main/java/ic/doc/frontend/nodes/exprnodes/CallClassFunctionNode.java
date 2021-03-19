@@ -166,7 +166,7 @@ public class CallClassFunctionNode extends CallNode {
 
     /* Finally, restore the changes we have made to the function symbol table,
      * scope, and stack space after the call. Move result of function call to free register. */
-    restoreStateAfterCall(context, classNode.getClassName(), counter, funcTable);
+    restoreStateAfterCall(context, classNode.getClassName(), counter, funcTable, false);
   }
 
   @Override

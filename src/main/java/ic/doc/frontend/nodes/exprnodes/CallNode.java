@@ -137,7 +137,10 @@ public class CallNode extends ExprNode {
     /* Stores arguments of call onto stack to be accessed by function later. */
     counter = storeArguments(context, counter);
 
-    if (!currentClass.isEmpty()) {
+    SymbolKey functionKey = new SymbolKey(identifier, KeyTypes.FUNCTION);
+    boolean isExternalFunction = currentClass.isEmpty() ||
+        classIdentifier.getClassSymbolTable().lookup(functionKey) == null;
+    if (!isExternalFunction) {
       /* After pushing arguments, push the address of the instance so
        * that the function can find class instance fields. */
       SymbolKey classInstanceKey = new SymbolKey("specialname",
@@ -151,7 +154,7 @@ public class CallNode extends ExprNode {
 
     /* Finally, restore the changes we have made to the function symbol table,
      * scope, and stack space after the call. Move result of function call to free register. */
-    restoreStateAfterCall(context, currentClass, counter, funcTable);
+    restoreStateAfterCall(context, currentClass, counter, funcTable, isExternalFunction);
   }
 
   /* Stores arguments of call onto stack to be accessed by function later. */
@@ -229,7 +232,8 @@ public class CallNode extends ExprNode {
     /* Look up the offset of the function being called, and load its address
      * back into reg. Note that we must offset this again by SIZE_OF_ADDRESS,
      * because of how we used .word 0 at the start of every virtual table. */
-    VirtualTable classVirtualTable = classIdentifier.getClassNode().getClassVirtualTable();
+    VirtualTable classVirtualTable = classIdentifier.getClassNode()
+        .getClassVirtualTable();
     int functionOffset = classVirtualTable.getFunctionOffset(identifier);
     assert (functionOffset != -1);
 
@@ -249,7 +253,8 @@ public class CallNode extends ExprNode {
   /* Finally, restore the changes we have made to the function symbol table,
    * scope, and stack space after the call. Move result of function call to free register. */
   protected void restoreStateAfterCall(Context context,
-      String currentClass, int counter, SymbolTable funcTable) {
+      String currentClass, int counter, SymbolTable funcTable,
+      boolean isExternalFunction) {
     SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
     /* Finally, restore the changes we have made to the function symbol table
      * after the call. This ensures that the function symbol table is exactly
@@ -258,8 +263,8 @@ public class CallNode extends ExprNode {
     currentSymbolTable.decrementTableSizeInBytes(counter);
 
     /* Call the function using virtual tables if necessary. */
-    if (currentClass.isEmpty()) {
-      context.addToCurrentLabel(BL(currentClass + "_" + "f_" + identifier));
+    if (isExternalFunction) {
+      context.addToCurrentLabel(BL("_f_" + identifier));
     }
 
     /* Restore any stack space used by parameters to the function. */
