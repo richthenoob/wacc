@@ -61,7 +61,10 @@ public class ClassNode extends Node {
   public SymbolTable getFunctionTable(String functionName) {
     SymbolKey functionKey = new SymbolKey(functionName, KeyTypes.FUNCTION);
     FunctionIdentifier functionIdentifier = (FunctionIdentifier) classSymbolTable
-        .lookupAll(functionKey);
+        .lookup(functionKey);
+    if (functionIdentifier == null) {
+      return null;
+    }
     return functionIdentifier.getFunctionSymbolTable();
   }
 

@@ -116,19 +116,20 @@ public class CallNode extends ExprNode {
 
     /* Find function table in class if we are in a classNode, else just
      * find function table in context. */
-    SymbolTable funcTable;
+    SymbolTable funcTable = null;
     String currentClass = context.getCurrentClass();
     SymbolTable currentSymbolTable = context.getCurrentSymbolTable();
-    SymbolKey classKey;
-    ClassIdentifier classIdentifier = null;
-    if (!currentClass.isEmpty()) {
-      classKey = new SymbolKey(currentClass, KeyTypes.CLASS);
-      classIdentifier = ((ClassIdentifier) currentSymbolTable
-          .lookupAll(classKey));
-      funcTable = classIdentifier.getClassNode().getFunctionTable(identifier);
-    } else {
-      funcTable = context.getFunctionTables().get(identifier);
-    }
+
+    SymbolKey classKey = new SymbolKey(currentClass, KeyTypes.CLASS);
+    ClassIdentifier classIdentifier = ((ClassIdentifier) currentSymbolTable
+        .lookupAll(classKey));
+
+    SymbolKey functionKey = new SymbolKey(identifier, KeyTypes.FUNCTION);
+    funcTable = ((FunctionIdentifier) currentSymbolTable.lookupAll(functionKey))
+        .getFunctionSymbolTable();
+
+    boolean isExternalFunction = currentClass.isEmpty() ||
+        classIdentifier.getClassSymbolTable().lookup(functionKey) == null;
 
     /* Use counter to track the size of parameters that have been pushed
      * onto the stack, ensuring to restore this at the end of the function call. */
@@ -137,9 +138,6 @@ public class CallNode extends ExprNode {
     /* Stores arguments of call onto stack to be accessed by function later. */
     counter = storeArguments(context, counter);
 
-    SymbolKey functionKey = new SymbolKey(identifier, KeyTypes.FUNCTION);
-    boolean isExternalFunction = currentClass.isEmpty() ||
-        classIdentifier.getClassSymbolTable().lookup(functionKey) == null;
     if (!isExternalFunction) {
       /* After pushing arguments, push the address of the instance so
        * that the function can find class instance fields. */
@@ -154,7 +152,8 @@ public class CallNode extends ExprNode {
 
     /* Finally, restore the changes we have made to the function symbol table,
      * scope, and stack space after the call. Move result of function call to free register. */
-    restoreStateAfterCall(context, currentClass, counter, funcTable, isExternalFunction);
+    restoreStateAfterCall(context, currentClass, counter, funcTable,
+        isExternalFunction);
   }
 
   /* Stores arguments of call onto stack to be accessed by function later. */
