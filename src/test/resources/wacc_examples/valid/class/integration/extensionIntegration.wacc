@@ -1,0 +1,56 @@
+# This test mainly tests for integration between imports, stdlib and classes
+# Tests that we can extend from a class defined in an imported file
+# Tests that we can call a stdlib frunction from a class method
+# Tests that we a class will prefer to call its local method rather than outer scope functions in the event that their
+# names are the same
+
+# Output:
+# "I am a parent method!"
+# "super parent"
+# "2"
+# "hello"
+# [1, 2, 3, 5, 7]
+# 3
+
+# Program:
+
+begin
+  include "stdlib.wacc"
+  include "importFiles/classC.wacc"
+
+  class b extends c {
+    int f() is
+      return t
+    end
+
+    int[] callStdLib() is
+      int[] arr = [3,1,5,7,2];
+      arr = call sort(arr);
+      return arr
+    end
+
+    int callsDivide() is
+      int res = call divide();
+      return res
+    end
+
+    int divide() is
+      return 3
+    end
+
+  }
+
+
+  b class1 = new b();
+  c class2 = new b();
+
+  class1.superParentField = "super parent";
+  class1.t = 55;
+  string x = call class1.foo();
+  int[] arr = call class1.callStdLib();
+
+  println x;
+  bool _ = call printIntArray(arr);
+  int y = call class1.callsDivide();
+  println y
+end
