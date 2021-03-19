@@ -1,27 +1,10 @@
 package ic.doc.frontend.nodes;
 
-import ic.doc.antlr.BasicLexer;
 import ic.doc.antlr.BasicParser;
 import ic.doc.backend.Context;
-import ic.doc.backend.WaccBackend;
-import ic.doc.frontend.errors.ErrorListener;
-import ic.doc.frontend.errors.SemanticException;
-import ic.doc.frontend.errors.SyntaxException;
-import ic.doc.frontend.semantics.ImportVisitor;
 import ic.doc.frontend.semantics.Visitor;
-import javafx.util.Pair;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import ic.doc.frontend.utils.Pair;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
